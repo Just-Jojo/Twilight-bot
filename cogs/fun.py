@@ -28,9 +28,24 @@ class Fun(Cog, name="fun"):
     async def fun(self, ctx):
         await ctx.send("Fun! Fun! Fun!")
 
-    @commands.command(help="Repeats what you said")
+    @commands.group(name="say")
+    async def SAY(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send("repeat (Sent what you said as plain text), frepeat (Sent what you said as an embed.)")
+
+    @SAY.command()
     async def repeat(self, ctx, *, args):
         await ctx.send(args)
+
+    @SAY.command()
+    async def frepeat(self, ctx, *, args):
+        embed = discord.Embed(
+            title="Repeat Embed",
+            description=args,
+            color=discord.Color.blue()
+        )
+        embed.set_footer(icon_url=ctx.author.avatar_url, text=ctx.author)
+        await ctx.send(embed=embed)
 
 
 def setup(client):
