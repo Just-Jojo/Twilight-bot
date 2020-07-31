@@ -24,10 +24,16 @@ class Mod(Cog, name="mod"):
             await member.ban(reason=reason)
             await ctx.send("{0} was banned.".format(member))
 
-    @commands.command(help="Gives a role to a member")
-    @commands.has_permissions(manage_roles=True)
-    @commands.bot_has_permissions(manage_roles=True)
-    async def give(self, ctx, role: discord.Role = None, member: discord.Member = None):
+    @commands.group(name="role")
+    async def _roles(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await ctx.send(
+                """```Role:
+    Add, Take```"""
+            )
+
+    @_roles.command()
+    async def add(self, ctx, role: discord.Role = None, member: discord.Member = None):
         if role == None:
             await ctx.send("You need to give a role to attach it to someone")
 
@@ -37,9 +43,7 @@ class Mod(Cog, name="mod"):
             await member.add_roles(role)
             await ctx.send("Added {0} to {1}".format(role, member))
 
-    @commands.command(help="Takes a role from a member")
-    @commands.has_permissions(manage_roles=True)
-    @commands.bot_has_permissions(manage_roles=True)
+    @_roles.command()
     async def take(self, ctx, role: discord.Role = None, member: discord.Member = None):
         if role == None:
             await ctx.send("You have to give a role to take it from someone")
@@ -70,6 +74,16 @@ class Mod(Cog, name="mod"):
     async def kick_error(self, ctx, error):
         if isinstance(error, commands.MissingPermissions):
             await ctx.send("I'm sorry that person could not be kicked because *one* of us has improper permissions.")
+
+    @add.error
+    async def add_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("I'm sorry that person could not have a role added because *one* of us has improper permissions.")
+
+    @take.error
+    async def take_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send("I'm sorry that person could not have their roles taken because *one* of us has improper permissions.")
 
 
 def setup(client):
