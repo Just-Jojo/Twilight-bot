@@ -13,17 +13,17 @@ twilight_image_links = [
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
 with open("ponies.txt", "r") as pon:
-     pon_list = pon.readlines()
-     ponies = {
-         "twilight": pon_list[0],
-         "applejack": pon_list[1]
-     }
- with open("ponyurl.txt", "r") as some:
-     pon_list = some.readlines()
-     pony_url = {
-         "twilight": pon_list[0],
-         "applejack": pon_list[1]
-     }
+    pon_list = pon.readlines()
+    ponies = {
+        "twilight": pon_list[0],
+        "applejack": pon_list[1]
+    }
+with open("ponyurl.txt", "r") as some:
+    pon_list = some.readlines()
+    pony_url = {
+        "twilight": pon_list[0],
+        "applejack": pon_list[1]
+    }
 
 
 def PonyReturner(arg):
