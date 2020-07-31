@@ -24,7 +24,7 @@ class Mod(Cog, name="mod"):
             await member.ban(reason=reason)
             await ctx.send("{0} was banned.".format(member))
 
-    @commands.group(name="role")
+    @commands.group(name="role", help="Add/Take roles from a member.")
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
     async def _roles(self, ctx):
