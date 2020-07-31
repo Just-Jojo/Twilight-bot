@@ -10,7 +10,7 @@ class Mod(Cog, name="mod"):
         self.client = client
 
     @Cog.listener()
-    async def on_read(self):
+    async def on_ready(self):
         print("Mod online")
 
     @commands.command(help="Bans a member")
