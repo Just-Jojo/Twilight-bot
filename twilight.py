@@ -1,3 +1,5 @@
+import asyncio
+
 import os
 import time
 
@@ -92,7 +94,10 @@ async def reload(ctx, extension: str = None):
 @client.command(hidden=True)
 @commands.is_owner()
 async def shutdown(ctx):
-    await ctx.send("Shutting down. Till next time")
+    msg = await ctx.send("Writting the loaded and unloaded cogs...")
+    CogWritter()
+    asyncio.sleep(2)
+    await msg.edit(content="Cogs written. Shutting down. Till next time")
     await client.logout()
 
 
