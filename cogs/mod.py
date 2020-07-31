@@ -33,6 +33,8 @@ class Mod(Cog, name="mod"):
             )
 
     @_roles.command()
+    @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     async def add(self, ctx, role: discord.Role = None, member: discord.Member = None):
         if role == None:
             await ctx.send("You need to give a role to attach it to someone")
