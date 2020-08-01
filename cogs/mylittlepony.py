@@ -12,18 +12,16 @@ twilight_image_links = [
     "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
-with open("ponies.txt", "r") as pon:
-    pon_list = pon.readlines()
-    ponies = {
-        "twilight": pon_list[0],
-        "applejack": pon_list[1]
-    }
-with open("ponyurl.txt", "r") as some:
-    pon_list = some.readlines()
-    pony_url = {
-        "twilight": pon_list[0],
-        "applejack": pon_list[1]
-    }
+ponies = {
+    "twilight": "Twilight is a unicorn",
+    "applejack": "Applejack is an earth pony",
+    "rarity": "Rarity is a unicorn"
+}
+pony_url = {
+    "twilight": "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
+    "applejack": "https://vignette.wikia.nocookie.net/mlp/images/d/d8/Applejack_S01E13_cropped.png/revision/latest?cb=20130419182236",
+    "rarity": "https://vignette.wikia.nocookie.net/mlp/images/d/d1/Rarity_standing_S1E19_CROPPED.png/revision/latest?cb=20130418142043"
+}
 
 
 def PonyReturner(arg):
@@ -84,7 +82,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 title="Ponies listing",
                 description="Here are all the ponies I have TL:DR's on:\n\n{0}".format(
                     pon_keys),
-                color=discord.Color.green()
+                color=discord.Color.dark_green()
             )
 
         else:
@@ -92,7 +90,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 pon, pon_rl = PonyReturner(pony)
                 embed = discord.Embed(
                     title="About {0}".format(pony),
-                    color=discord.Color.teal(),
+                    color=discord.Color.gold(),
                     description=pon
                 )
                 embed.set_thumbnail(
