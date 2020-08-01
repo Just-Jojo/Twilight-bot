@@ -47,7 +47,7 @@ class Fun(Cog, name="fun"):
         embed.set_footer(icon_url=ctx.author.avatar_url, text=ctx.author)
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(help="Rock paper scissors game. Use `r p s` for the arguments")
     async def rps(self, ctx, arg: str = None):
         rps_num = random.randint(0, 2)
         rps = ["Rock", "Paper", "Scissors"]
