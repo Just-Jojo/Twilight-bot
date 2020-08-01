@@ -47,6 +47,30 @@ class Fun(Cog, name="fun"):
         embed.set_footer(icon_url=ctx.author.avatar_url, text=ctx.author)
         await ctx.send(embed=embed)
 
+    @commands.command()
+    async def rps(self, ctx, arg: str = None):
+        rps_num = random.randint(0, 2)
+        rps = ["Rock", "Paper", "Scissors"]
+        rps_outcome = {
+            "r": ["Rock. We tied!", "Paper. I win!", "Scissors. You win!"],
+            "p": ["Rock. You win!", "Paper. We tied!", "Scissors. I win!"],
+            "s": ["Rock. I win!", "Paper. You win!", "Scissors. We tied!"]
+        }
+        if arg != None:
+            embed = discord.Embed(
+                title="Rock Paper Scissors",
+                color=discord.Color.blue()
+            )
+            embed.add_field(name="Your Choice", value=arg, inline=True)
+            embed.add_field(name="My Choice",
+                            value=rps[rps_num], inline=True)
+            embed.add_field(
+                name="Outcome", value=rps_outcome[arg][rps_num], inline=True)
+        else:
+            embed = discord.Embed(title="Oops!", color=discord.Color.red(
+            ), description="You didn't specify an argument!\nYou can say any of these `r, p, s`")
+        await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(Fun(client))
