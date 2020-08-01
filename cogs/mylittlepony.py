@@ -72,10 +72,9 @@ class MyLittlePony(Cog, name="mylittlepony"):
             "As the Princess of Friendship, I try to set an example for all of Equestria. But today, it was Spike who taught me that a new friend can come from anywhere. I guess everypony still has things to learn about friendship. Even me! And if Spike says Thorax is his friend, then he's my friend too."
         ]
         embed = discord.Embed(color=discord.Color.purple(
-        ), title="Twilight quote", description=quotes[random.randrange(0, len(quotes))])
+        ), title="Twilight quote", description=random.choice(quotes))
         embed.set_thumbnail(
-            url=twilight_image_links[random.randrange(
-                0, len(twilight_image_links))]
+            url=random.choice(twilight_image_links)
         )
         embed.set_footer(
             text="~Twilight Sparkle"
