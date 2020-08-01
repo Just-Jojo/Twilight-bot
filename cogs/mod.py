@@ -27,14 +27,14 @@ class Mod(Cog, name="mod"):
     @commands.group(name="role", help="Add/Take roles from a member.")
     @commands.has_permissions(manage_roles=True)
     @commands.bot_has_permissions(manage_roles=True)
-    async def _roles(self, ctx):
+    async def ROLES(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send(
                 """```Role:
     Add, Take```"""
             )
 
-    @_roles.command()
+    @ROLES.command()
     async def add(self, ctx, role: discord.Role = None, member: discord.Member = None):
         if role == None:
             await ctx.send("You need to give a role to attach it to someone")
@@ -45,7 +45,7 @@ class Mod(Cog, name="mod"):
             await member.add_roles(role)
             await ctx.send("Added {0} to {1}".format(role, member))
 
-    @_roles.command()
+    @ROLES.command()
     async def take(self, ctx, role: discord.Role = None, member: discord.Member = None):
         if role == None:
             await ctx.send("You have to give a role to take it from someone")
