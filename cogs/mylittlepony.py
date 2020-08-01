@@ -39,7 +39,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         print("MLP spells ready")
 
     @com.command(name="episode", hidden=True)
-    async def episode_search(self, ctx, *args):
+    async def _episode_search(self, ctx, *args):
         pass
 
     @com.command(aliases=["mlp"], help="About the MLP: FIM show.")
