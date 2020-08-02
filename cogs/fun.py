@@ -7,6 +7,8 @@ import random
 
 import time
 
+from rockpaperscissors import RockPaperScissors as RPS
+
 
 class Fun(Cog, name="fun"):
     """Fun for all the little ponies"""
@@ -48,28 +50,9 @@ class Fun(Cog, name="fun"):
         await ctx.send(embed=embed)
 
     @commands.command(help="Rock paper scissors game. Use `r p s` for the arguments")
-    async def rps(self, ctx, arg: str = None):
-        rps_num = random.randint(0, 2)
-        rps = ["Rock", "Paper", "Scissors"]
-        rps_outcome = {
-            "r": ["Rock. We tied!", "Paper. I win!", "Scissors. You win!"],
-            "p": ["Rock. You win!", "Paper. We tied!", "Scissors. I win!"],
-            "s": ["Rock. I win!", "Paper. You win!", "Scissors. We tied!"]
-        }
-        if arg != None:
-            embed = discord.Embed(
-                title="Rock Paper Scissors",
-                color=discord.Color.blue()
-            )
-            embed.add_field(name="Your Choice", value=arg, inline=True)
-            embed.add_field(name="My Choice",
-                            value=rps[rps_num], inline=True)
-            embed.add_field(
-                name="Outcome", value=rps_outcome[arg][rps_num], inline=True)
-        else:
-            embed = discord.Embed(title="Oops!", color=discord.Color.red(
-            ), description="You didn't specify an argument!\nYou can say any of these `r, p, s`")
-        await ctx.send(embed=embed)
+    async def rps(self, ctx, arg: str):
+        y = arg.lower()[0]
+        await ctx.send(embed=RPS(y))
 
 
 def setup(client):
