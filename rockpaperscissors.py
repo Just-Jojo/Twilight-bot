@@ -1,6 +1,8 @@
 import random
 
-from discord import Embed, Color
+import discord
+
+"""Just a fun Rock Paper Scissors command script I wrote. If you want to use it just copy/paste it into a file. <3"""
 
 
 rps_word = ["r", "p", "s"]
@@ -18,9 +20,9 @@ def RockPaperScissors(arg: str = None):
             rps_out = random.randint(0, 2)
             act = rps_arg[rps_out]
             act_2 = rps[arg][rps_out]
-            x = Embed(
+            x = discord.Embed(
                 title="Rock Paper Scissors",
-                color=Color.teal(),
+                color=discord.Color.teal(),
             )
             x.add_field(
                 name="Your choice",
@@ -36,11 +38,12 @@ def RockPaperScissors(arg: str = None):
             )
 
         else:
-            x = Embed(
-                title="Oops!", description="You need to supply a valid arugment!\nr, p, or s!", color=Color.red())
+            x = discord.Embed(
+                title="Oops!", description="You need to supply a valid arugment!\nr, p, or s!", color=discord.Color.red())
 
     else:
-        x = Embed(
-            title="Oops!", description="You need to supply a valid arugment!\nr, p, or s!", color=Color.red())
+        x = discord.Embed(
+            title="Oops!", description="You need to supply a valid arugment!\nr, p, or s!", color=discord.Color.red())
 
+    x.set_footer("Rock Paper Scissors command.")
     return x

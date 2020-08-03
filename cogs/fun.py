@@ -50,9 +50,10 @@ class Fun(Cog, name="fun"):
         await ctx.send(embed=embed)
 
     @commands.command(help="Rock paper scissors game. Use `r p s` for the arguments")
-    async def rps(self, ctx, arg: str):
-        y = arg.lower()[0]
-        await ctx.send(embed=RPS(y))
+    async def rps(self, ctx, arg: str = None):
+        if arg != None:
+            arg = arg.lower()
+        await ctx.send(embed=RPS(arg))
 
     @commands.command(name=":|", aliases=[":(", ":)"], hidden=True)
     async def _silly_commands(self, ctx):
@@ -74,6 +75,8 @@ class Fun(Cog, name="fun"):
             value=eval(args),
             inline=False
         )
+        embed.set_footer(text="Twilight bot Calculator",
+                         icon_url="https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist")
         await ctx.send(embed=embed)
 
 
