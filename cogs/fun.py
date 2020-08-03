@@ -54,9 +54,27 @@ class Fun(Cog, name="fun"):
         y = arg.lower()[0]
         await ctx.send(embed=RPS(y))
 
-    @commands.command(name=":|", alias=[":(", ":)"], hidden=True)
-    async def _l(self, ctx):
+    @commands.command(name=":|", aliases=[":(", ":)"], hidden=True)
+    async def _silly_commands(self, ctx):
         await ctx.send(":P")
+
+    @commands.command(aliases=["calc"])
+    async def calculator(self, ctx, *, args):
+        embed = discord.Embed(
+            title="Calculator",
+            color=discord.Color.blue()
+        )
+        embed.add_field(
+            name="Input",
+            value=args,
+            inline=False
+        )
+        embed.add_field(
+            name="Output",
+            value=eval(args),
+            inline=False
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(client):
