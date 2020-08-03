@@ -45,5 +45,4 @@ def RockPaperScissors(arg: str = None):
         x = discord.Embed(
             title="Oops!", description="You need to supply a valid arugment!\nr, p, or s!", color=discord.Color.red())
 
-    x.set_footer("Rock Paper Scissors command.")
     return x
