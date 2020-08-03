@@ -54,6 +54,10 @@ class Fun(Cog, name="fun"):
         y = arg.lower()[0]
         await ctx.send(embed=RPS(y))
 
+    @commands.command(name=":|", alias=[":(", ":)"], hidden=True)
+    async def _l(self, ctx):
+        await ctx.send(":P")
+
 
 def setup(client):
     client.add_cog(Fun(client))

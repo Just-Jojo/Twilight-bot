@@ -14,7 +14,7 @@ rps_arg = ["Rock", "Paper", "Scissors"]
 
 def RockPaperScissors(arg: str = None):
     if arg != None:
-        if arg in rps_word:
+        if arg.lower() in rps_word:
             rps_out = random.randint(0, 2)
             act = rps_arg[rps_out]
             act_2 = rps[arg][rps_out]
