@@ -1,5 +1,5 @@
 import discord
-from discord.ext import commands as com
+from discord.ext import commands
 from discord.ext.commands import Cog
 
 import random
@@ -38,11 +38,11 @@ class MyLittlePony(Cog, name="mylittlepony"):
     async def on_ready(self):
         print("MLP spells ready")
 
-    @com.command(name="episode", hidden=True)
+    @commands.command(name="episode", hidden=True)
     async def _episode_search(self, ctx, *args):
         pass
 
-    @com.command(aliases=["mlp"], help="About the MLP: FIM show.")
+    @commands.command(aliases=["mlp"], help="About the MLP: FIM show.")
     async def mylittlepony(self, ctx):
         with open("mlp.txt", "r") as f:
             mlp = f.read()
@@ -57,7 +57,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         )
         await ctx.send(embed=embed)
 
-    @com.command(name="quote", aliases=["twq", "twilight"], help="Get a random Twilight quote")
+    @commands.command(name="quote", aliases=["twq", "twilight"], help="Get a random Twilight quote")
     async def twilight_quotes(self, ctx):
         quotes = [
             "All the ponies in this town are crazy! Do you know what time it is?!",
@@ -81,7 +81,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         )
         await ctx.send(embed=embed)
 
-    @com.command(hidden=True)
+    @commands.command(hidden=True)
     async def pony(self, ctx, pony: str = None):
         if pony == None:
             pon_keys = "\n".join(ponies.keys())
