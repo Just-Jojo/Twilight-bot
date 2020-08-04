@@ -24,19 +24,9 @@ def RockPaperScissors(arg: str = None):
                 title="Rock Paper Scissors",
                 color=discord.Color.teal(),
             )
-            x.add_field(
-                name="Your choice",
-                value=arg
-            )
-            x.add_field(
-                name="My choice",
-                value=act
-            )
-            x.add_field(
-                inline=False,
-                name="Outcome",
-                value=act_2
-            )
+            x.add_field(name="Your choice", value=arg, inline=False)
+            x.add_field(name="My choice", value=act, inline=False)
+            x.add_field(value=act_2, name="Outcome", inline=False)
 
         else:
             x = discord.Embed(
