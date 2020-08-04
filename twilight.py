@@ -17,13 +17,6 @@ with open("uncogs.txt", "r") as f:
     unloaded_cogs = f.readlines()
 
 
-def CogWritter():
-    with open("cogs.txt", "w") as f:
-        f.write(loaded_cogs)
-    with open("uncogs.txt", "w") as f:
-        f.write(unloaded_cogs)
-
-
 @client.event
 async def on_ready():
     print("Twilight is in the castle")
@@ -56,7 +49,6 @@ async def load(ctx, extension):
     if extension in unloaded_cogs:
         unloaded_cogs.pop(unloaded_cogs.index(extension))
         loaded_cogs.append(extension)
-        CogWritter()
     await ctx.send(f"Loaded {extension}")
 
 
@@ -67,7 +59,6 @@ async def unload(ctx, extension):
     if extension in loaded_cogs:
         loaded_cogs.pop(loaded_cogs.index(extension))
         unloaded_cogs.append(extension)
-        CogWritter()
     await ctx.send(f"Unloaded {extension}")
 
 
@@ -93,10 +84,7 @@ async def reload(ctx, extension: str = None):
 @client.command(hidden=True)
 @commands.is_owner()
 async def shutdown(ctx):
-    msg = await ctx.send("Writting the loaded and unloaded cogs...")
-    CogWritter()
-    asyncio.sleep(2)
-    await msg.edit(content="Cogs written. Shutting down. Till next time")
+    await ctx.send("Shutting down. Goodbye")
     await client.logout()
 
 
