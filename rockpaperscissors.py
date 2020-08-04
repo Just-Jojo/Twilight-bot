@@ -33,6 +33,7 @@ def RockPaperScissors(arg: str = None):
                 value=act
             )
             x.add_field(
+                inline=False,
                 name="Outcome",
                 value=act_2
             )
