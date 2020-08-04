@@ -26,7 +26,7 @@ def RockPaperScissors(arg: str = None):
             )
             x.add_field(name="Your choice", value=arg, inline=False)
             x.add_field(name="My choice", value=act, inline=False)
-            x.add_field(value=act_2, name="Outcome", inline=False)
+            x.add_field(name="Outcome", value=act_2, inline=False)
 
         else:
             x = discord.Embed(
