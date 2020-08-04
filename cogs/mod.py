@@ -29,12 +29,12 @@ class Mod(Cog, name="mod"):
     @commands.bot_has_permissions(manage_roles=True)
     async def ROLES(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send(
-                """```Role:
-    Add, Take```"""
-            )
+            embed = discord.Embed(title="Role commnad",
+                                  description="Take, Give",
+                                  color=discord.Color.blue())
+            await ctx.send(embed=embed)
 
-    @ROLES.command()
+    @ROLES.command(aliases=["give"])
     async def add(self, ctx, role: discord.Role = None, member: discord.Member = None):
         if role == None:
             await ctx.send("You need to give a role to attach it to someone")
