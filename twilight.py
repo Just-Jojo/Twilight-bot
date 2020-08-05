@@ -101,8 +101,8 @@ async def shutdown(ctx):
 @client.command(hidden=True)
 @commands.is_owner()
 async def cogs(ctx):
-    lo_cog = ", ".join(loaded_cogs)
-    unlo_cog = ", ".join(unloaded_cogs)
+    lo_cog = "".join(loaded_cogs)
+    unlo_cog = "".join(unloaded_cogs)
     await ctx.send("""```diff
 + Loaded cogs
     {0}
