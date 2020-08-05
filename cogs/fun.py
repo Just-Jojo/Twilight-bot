@@ -16,10 +16,6 @@ class Fun(Cog, name="fun"):
     def __init__(self, client):
         self.client = client
 
-    @Cog.listener()
-    async def on_ready(self):
-        print("Fun spell is working")
-
     @commands.command(name="party", help="Throw a party!")
     async def party_time(self, ctx, member: discord.Member = None):
         if member == None:

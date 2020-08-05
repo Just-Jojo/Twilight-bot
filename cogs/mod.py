@@ -9,10 +9,6 @@ class Mod(Cog, name="mod"):
     def __init__(self, client):
         self.client = client
 
-    @Cog.listener()
-    async def on_ready(self):
-        print("Mod online")
-
     @commands.command(help="Bans a member")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)

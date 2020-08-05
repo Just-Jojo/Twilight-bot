@@ -34,10 +34,6 @@ class MyLittlePony(Cog, name="mylittlepony"):
     def __init__(self, client):
         self.client = client
 
-    @Cog.listener()
-    async def on_ready(self):
-        print("MLP spells ready")
-
     @commands.command(name="episode", hidden=True)
     async def _episode_search(self, ctx, *args):
         pass
