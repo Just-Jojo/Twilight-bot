@@ -17,6 +17,16 @@ with open("uncogs.txt", "r") as f:
     unloaded_cogs = f.readlines()
 
 
+def CogWritter():
+    with open("cogs.txt", "w") as f:
+        x = "\n".join(loaded_cogs)
+        f.write(x)
+
+    with open("uncogs.txt", "w") as f:
+        x = "\n".join(unloaded_cogs)
+        f.write(x)
+
+
 @client.event
 async def on_ready():
     print("Twilight is in the castle")

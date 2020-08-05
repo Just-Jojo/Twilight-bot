@@ -113,6 +113,10 @@ class MyLittlePony(Cog, name="mylittlepony"):
 
         await ctx.send(embed=embed)
 
+    @commands.command(help="Smile song!")
+    async def smile(self, ctx):
+        await ctx.send("https://www.youtube.com/watch?v=lQKaAlMNvm8")
+
 
 def setup(client):
     client.add_cog(MyLittlePony(client))
