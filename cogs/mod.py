@@ -22,7 +22,7 @@ class Mod(Cog, name="mod"):
 
     @commands.group(name="role", help="Add/Take roles from a member.")
     @commands.has_permissions(manage_roles=True)
-    @commands.bot_has_permissions(manage_roles=True)
+#    @commands.bot_has_permissions(manage_roles=True)
     async def ROLES(self, ctx):
         if ctx.invoked_subcommand is None:
             embed = discord.Embed(title="Role commnad",
@@ -63,25 +63,25 @@ class Mod(Cog, name="mod"):
             await member.kick(reason=None)
             await ctx.send("{0} was kicked".format(member))
 
-    @ban.error
-    async def ban_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send("I'm sorry that person could not be banned because *one* of us has improper permissions.")
+    # @ban.error
+    # async def ban_error(self, ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send("I'm sorry that person could not be banned because *one* of us has improper permissions.")
 
-    @kick.error
-    async def kick_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send("I'm sorry that person could not be kicked because *one* of us has improper permissions.")
+    # @kick.error
+    # async def kick_error(self, ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send("I'm sorry that person could not be kicked because *one* of us has improper permissions.")
 
-    @add.error
-    async def add_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send("I'm sorry that person could not have a role added because *one* of us has improper permissions.")
+    # @add.error
+    # async def add_error(self, ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send("I'm sorry that person could not have a role added because *one* of us has improper permissions.")
 
-    @take.error
-    async def take_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send("I'm sorry that person could not have their roles taken because *one* of us has improper permissions.")
+    # @take.error
+    # async def take_error(self, ctx, error):
+    #     if isinstance(error, commands.MissingPermissions):
+    #         await ctx.send("I'm sorry that person could not have their roles taken because *one* of us has improper permissions.")
 
 
 def setup(client):
