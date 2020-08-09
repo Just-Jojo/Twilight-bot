@@ -105,10 +105,10 @@ async def cogs(ctx):
     unlo_cog = "".join(unloaded_cogs)
     await ctx.send("""```diff
 + Loaded cogs
-    {0}
+{0}
     
 - Unloaded cogs
-    {1}```""".format(lo_cog, unlo_cog))
+{1}```""".format(lo_cog, unlo_cog))
 
 
 @client.command(hidden=True)
@@ -126,6 +126,6 @@ for cog in loaded_cogs:
     else:
         client.load_extension("cogs.{0}".format(cog))
         print("{0} online".format(cog))
-        
+
 
 client.run(bot_key, reconnect=True)

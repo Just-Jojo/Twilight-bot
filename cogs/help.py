@@ -13,10 +13,6 @@ class Help(commands.Cog, name="help"):
     def __init__(self, client):
         self.client = client
 
-    @commands.Cog.listener()
-    async def on_ready(self):
-        print("Help spell ready")
-
     @commands.command(pass_context=True)
     async def help(self, ctx, *cog):
         """Lists all the commands and cogs in the bot"""
