@@ -122,9 +122,10 @@ with open("bot_key.txt", "r") as f:
 for cog in loaded_cogs:
     if cog.endswith("\n"):
         client.load_extension("cogs.{0}".format(cog[:-1]))
+        print("{0} online".format(cog[:-1]))
     else:
         client.load_extension("cogs.{0}".format(cog))
-    print("{0} online".format(cog))
-
+        print("{0} online".format(cog))
+        
 
 client.run(bot_key, reconnect=True)
