@@ -26,6 +26,12 @@ def CogWritter():
         x = "\n".join(unloaded_cogs)
         f.write(x)
 
+# def black_list(user):
+#     with open("blacklist.txt", "r") as f:
+#         x = f.readlines()
+#         if user in x:
+#             return True
+
 
 @client.event
 async def on_ready():

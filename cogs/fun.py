@@ -30,6 +30,8 @@ class Fun(Cog, name="fun"):
     async def SAY(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("repeat (Sent what you said as plain text), frepeat (Sent what you said as an embed.)")
+        # elif ctx.author == self.client.get_user(448611959265558528):
+        #     await ctx.send("I'm sorry you can't use that command!")
 
     @SAY.command()
     async def repeat(self, ctx, *, args):
