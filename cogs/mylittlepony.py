@@ -16,7 +16,7 @@ ponies = {
     "twilight": "Twilight Sparkle is an alicorn and the main member of the Mane Six. She represents the element of magic in the elements of harmony.",
     "applejack": "Applejack is an earth pony. She runs Sweet Apple Acres with the help of Granny Smit, Big Macintosh, and Apple Bloom. She represents the element of honesty. ||Also she is best background pony||",
     "rarity": "Rarity is a unicorn. She runs boutiques all across Equestria. Rarity represents the element of generosity.",
-    "rainbowdash": "Rainbow Dash is a pegasus. She is most famous for preforming the rainboom, the same action bringing the Mane Six to Ponyville where they meet and became friends. She represents the element of loyalty.",
+    "rainbowdash": "Rainbow Dash is a pegasus. She is most famous for performing the rainboom, the same action bringing the Mane Six to Ponyville where they meet and became friends. She represents the element of loyalty.",
     "fluttershy": "Fluttershy is a pegasus. She is a shy pony who likes to spend more time with animals compared to ponykind. Fluttershy represents the element of kindness.",
     "pinkiepie": "Pinkie Pie is an earth pony. She is "
 }
