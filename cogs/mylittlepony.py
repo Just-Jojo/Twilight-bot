@@ -14,23 +14,23 @@ twilight_image_links = [
 ]
 ponies = {
     "twilight": "Twilight Sparkle is an alicorn and the main member of the Mane Six. She represents the element of magic in the elements of harmony.",
-    "applejack": "Applejack is an earth pony",
-    "rarity": "Rarity is a unicorn",
-    "rainbowdash": "Filler",
-    "fluttershy": "Filler",
-    "pinkiepie": "Filler"
+    "applejack": "Applejack is an earth pony. She runs Sweet Apple Acres with the help of Granny Smit, Big Macintosh, and Apple Bloom. She represents the element of honesty. ||Also she is best background pony||",
+    "rarity": "Rarity is a unicorn. She runs boutiques all across Equestria. Rarity represents the element of generosity.",
+    "rainbowdash": "Rainbow Dash is a pegasus. She is most famous for preforming the rainboom, the same action bringing the Mane Six to Ponyville where they meet and became friends. She represents the element of loyalty.",
+    "fluttershy": "Fluttershy is a pegasus. She is a shy pony who likes to spend more time with animals compared to ponykind. Fluttershy represents the element of kindness.",
+    "pinkiepie": "Pinkie Pie is an earth pony. She is "
 }
 pony_url = {
     "twilight": "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
     "applejack": "https://vignette.wikia.nocookie.net/mlp/images/d/d8/Applejack_S01E13_cropped.png/revision/latest?cb=20130419182236",
     "rarity": "https://vignette.wikia.nocookie.net/mlp/images/d/d1/Rarity_standing_S1E19_CROPPED.png/revision/latest?cb=20130418142043",
-    "rainbowdash": "Filler",
-    "fluttershy": "Filler",
-    "pinkiepie": "Filler"
+    "rainbowdash": "https://vignette.wikia.nocookie.net/mlp/images/4/4b/Rainbow_Dash_Wonderbolt_fantasy_cropped_S1E3.png/revision/latest?cb=20190410214837",
+    "fluttershy": "https://vignette.wikia.nocookie.net/mlp/images/d/d6/Fluttershy_ID_S1E17.png/revision/latest?cb=20190410214903",
+    "pinkiepie": "https://vignette.wikia.nocookie.net/mlp/images/b/b2/Pinkie_Pie_ID_S4E11.png/revision/latest?cb=20190410214815"
 }
 
 
-def PonyReturner(arg):
+def pony_returner(arg):
     return ponies[arg.lower()], pony_url[arg.lower()]
 
 
@@ -39,10 +39,6 @@ class MyLittlePony(Cog, name="mylittlepony"):
 
     def __init__(self, client):
         self.client = client
-
-    @commands.command(name="episode", hidden=True)
-    async def _episode_search(self, ctx, *args):
-        pass
 
     @commands.command(aliases=["mlp"], help="About the MLP: FIM show.")
     async def mylittlepony(self, ctx):
@@ -83,7 +79,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
+    @commands.command(hidden=True, help="Get TL:DR's on your favorite ponies!")
     async def pony(self, ctx, pony: str = None):
         if pony == None:
             pon_keys = "\n".join(ponies.keys())
@@ -96,7 +92,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
 
         else:
             if pony.lower() in ponies.keys():
-                pon, pon_rl = PonyReturner(pony)
+                pon, pon_rl = pony_returner(pony)
                 embed = discord.Embed(
                     title="About {0}".format(pony),
                     color=discord.Color.gold(),
