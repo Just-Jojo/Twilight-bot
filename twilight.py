@@ -46,6 +46,7 @@ async def on_guild_remove(guild):
 
 
 @client.command()
+@commands.has_guild_permissions(administrator=True)
 async def prefix(ctx, arg):
     with open("prefixes.json", "r") as f:
         prefixes = json.load(f)
@@ -81,9 +82,6 @@ async def ping(ctx):
 @commands.is_owner()
 async def load(ctx, extension):
     client.load_extension(f"cogs.{extension}")
-    # if extension in unloaded_cogs:
-    #     unloaded_cogs.pop(unloaded_cogs.index(extension))
-    #     loaded_cogs.append(extension)
     await ctx.send(f"Loaded {extension}")
 
 
@@ -91,9 +89,6 @@ async def load(ctx, extension):
 @commands.is_owner()
 async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
-    # if extension in loaded_cogs:
-    #     loaded_cogs.pop(loaded_cogs.index(extension))
-    #     unloaded_cogs.append(extension)
     await ctx.send(f"Unloaded {extension}")
 
 
@@ -121,19 +116,6 @@ async def reload(ctx, extension: str = None):
 async def shutdown(ctx):
     await ctx.send("Shutting down. Goodbye")
     await client.logout()
-
-
-# @client.command(hidden=True)
-# @commands.is_owner()
-# async def cogs(ctx):
-#     lo_cog = "".join(loaded_cogs)
-#     unlo_cog = "".join(unloaded_cogs)
-#     await ctx.send("""```diff
-# + Loaded cogs
-# {0}
-
-# - Unloaded cogs
-# {1}```""".format(lo_cog, unlo_cog))
 
 
 @client.command(hidden=True)
