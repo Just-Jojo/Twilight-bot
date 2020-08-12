@@ -54,7 +54,7 @@ async def prefix(ctx, arg):
 
     with open("prefixes.json", "w") as f:
         json.dump(prefixes, f, indent=4)
-    await ctx.send("Your prefix is now {0}".format(arg))
+    await ctx.send("Your prefix is now `{0}`".format(arg))
 
 
 @client.command(help="Probably the most important command")
