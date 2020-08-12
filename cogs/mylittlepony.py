@@ -13,19 +13,25 @@ twilight_image_links = [
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
 ponies = {
-    "twilight": "Twilight is a unicorn",
+    "twilight": "Twilight Sparkle is an alicorn and the main member of the Mane Six. She represents the element of magic in the elements of harmony.",
     "applejack": "Applejack is an earth pony",
-    "rarity": "Rarity is a unicorn"
+    "rarity": "Rarity is a unicorn",
+    "rainbowdash": "Filler",
+    "fluttershy": "Filler",
+    "pinkiepie": "Filler"
 }
 pony_url = {
     "twilight": "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
     "applejack": "https://vignette.wikia.nocookie.net/mlp/images/d/d8/Applejack_S01E13_cropped.png/revision/latest?cb=20130419182236",
-    "rarity": "https://vignette.wikia.nocookie.net/mlp/images/d/d1/Rarity_standing_S1E19_CROPPED.png/revision/latest?cb=20130418142043"
+    "rarity": "https://vignette.wikia.nocookie.net/mlp/images/d/d1/Rarity_standing_S1E19_CROPPED.png/revision/latest?cb=20130418142043",
+    "rainbowdash": "Filler",
+    "fluttershy": "Filler",
+    "pinkiepie": "Filler"
 }
 
 
 def PonyReturner(arg):
-    return ponies[arg], pony_url[arg]
+    return ponies[arg.lower()], pony_url[arg.lower()]
 
 
 class MyLittlePony(Cog, name="mylittlepony"):

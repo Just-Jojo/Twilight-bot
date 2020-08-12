@@ -1,41 +1,60 @@
 import asyncio
-
+import json
 import os
-
 import discord
 from discord.ext import commands
-
 import traceback
 
-client = commands.Bot(command_prefix=">")
+
+def get_prefix(client, message):
+    with open("prefixes.json", "r") as f:
+        prefixes = json.load(f)
+
+    return prefixes[str(message.guild.id)]
+
+
+client = commands.Bot(command_prefix=get_prefix)
 client.remove_command("help")
-
-with open("cogs.txt", "r") as f:
-    loaded_cogs = f.readlines()
-
-with open("uncogs.txt", "r") as f:
-    unloaded_cogs = f.readlines()
-
-
-def CogWritter():
-    with open("cogs.txt", "w") as f:
-        x = "\n".join(loaded_cogs)
-        f.write(x)
-
-    with open("uncogs.txt", "w") as f:
-        x = "\n".join(unloaded_cogs)
-        f.write(x)
-
-# def black_list(user):
-#     with open("blacklist.txt", "r") as f:
-#         x = f.readlines()
-#         if user in x:
-#             return True
 
 
 @client.event
 async def on_ready():
+    await client.change_presence(activity=discord.Game(name=">help"))
     print("Twilight is in the castle")
+
+
+@client.event
+async def on_guild_join(guild):
+    with open("prefixes.json", "r") as f:
+        prefixes = json.load(f)
+
+    prefixes[str(guild.id)] = ">"
+
+    with open("prefixes.json", "w") as f:
+        json.dump(prefixes, f, indent=4)
+
+
+@client.event
+async def on_guild_remove(guild):
+    with open("prefixes.json", "r") as f:
+        prefixes = json.load(f)
+
+    prefixes.pop(str(guild.id))
+
+    with open("prefixes.json", "w") as f:
+        json.dump(prefixes, f, indent=4)
+
+
+@client.command()
+async def prefix(ctx, arg):
+    with open("prefixes.json", "r") as f:
+        prefixes = json.load(f)
+
+    prefixes[str(ctx.guild.id)] = arg
+
+    with open("prefixes.json", "w") as f:
+        json.dump(prefixes, f, indent=4)
+    await ctx.send("Your prefix is now {0}".format(arg))
 
 
 @client.command(help="Probably the most important command")
@@ -62,9 +81,9 @@ async def ping(ctx):
 @commands.is_owner()
 async def load(ctx, extension):
     client.load_extension(f"cogs.{extension}")
-    if extension in unloaded_cogs:
-        unloaded_cogs.pop(unloaded_cogs.index(extension))
-        loaded_cogs.append(extension)
+    # if extension in unloaded_cogs:
+    #     unloaded_cogs.pop(unloaded_cogs.index(extension))
+    #     loaded_cogs.append(extension)
     await ctx.send(f"Loaded {extension}")
 
 
@@ -72,9 +91,9 @@ async def load(ctx, extension):
 @commands.is_owner()
 async def unload(ctx, extension):
     client.unload_extension(f"cogs.{extension}")
-    if extension in loaded_cogs:
-        loaded_cogs.pop(loaded_cogs.index(extension))
-        unloaded_cogs.append(extension)
+    # if extension in loaded_cogs:
+    #     loaded_cogs.pop(loaded_cogs.index(extension))
+    #     unloaded_cogs.append(extension)
     await ctx.send(f"Unloaded {extension}")
 
 
@@ -104,17 +123,17 @@ async def shutdown(ctx):
     await client.logout()
 
 
-@client.command(hidden=True)
-@commands.is_owner()
-async def cogs(ctx):
-    lo_cog = "".join(loaded_cogs)
-    unlo_cog = "".join(unloaded_cogs)
-    await ctx.send("""```diff
-+ Loaded cogs
-{0}
-    
-- Unloaded cogs
-{1}```""".format(lo_cog, unlo_cog))
+# @client.command(hidden=True)
+# @commands.is_owner()
+# async def cogs(ctx):
+#     lo_cog = "".join(loaded_cogs)
+#     unlo_cog = "".join(unloaded_cogs)
+#     await ctx.send("""```diff
+# + Loaded cogs
+# {0}
+
+# - Unloaded cogs
+# {1}```""".format(lo_cog, unlo_cog))
 
 
 @client.command(hidden=True)
@@ -125,13 +144,9 @@ async def invite(ctx):
 with open("bot_key.txt", "r") as f:
     bot_key = f.read()
 
-for cog in loaded_cogs:
-    if cog.endswith("\n"):
-        client.load_extension("cogs.{0}".format(cog[:-1]))
-        print("{0} online".format(cog[:-1]))
-    else:
-        client.load_extension("cogs.{0}".format(cog))
-        print("{0} online".format(cog))
-
+for cog in os.listdir("./cogs"):
+    if cog.endswith(".py"):
+        client.load_extension("cogs.{0}".format(cog[:-3]))
+        print("{0} online".format(cog[:-3]))
 
 client.run(bot_key, reconnect=True)
