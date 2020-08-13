@@ -12,11 +12,15 @@ twilight_image_links = [
     "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
+ponies = [
+    "twilight", "applejack", "rarity", "rainbow dash", "fluttershy", "pinkiepie"
+]
 
 
 def pony_returner(arg):
     with open("pony.json", "r") as f:
         pony = json.load(f)
+    return pony[arg.lower()][0], pony[arg.lower()][1]
 
 
 class MyLittlePony(Cog, name="mylittlepony"):
@@ -65,37 +69,37 @@ class MyLittlePony(Cog, name="mylittlepony"):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True, help="Get TL:DR's on your favorite ponies!")
-    async def pony(self, ctx):
-        # if pony == None:
-        #     pon_keys = "\n".join(ponies.keys())
-        #     embed = discord.Embed(
-        #         title="Ponies listing",
-        #         description="Here are all the ponies I have TL:DR's on:\n\n{0}".format(
-        #             pon_keys),
-        #         color=discord.Color.dark_green()
-        #     )
-
-        # else:
-        #     if pony.lower() in ponies.keys():
-        #         pon, pon_rl = pony_returner(pony)
-        #         embed = discord.Embed(
-        #             title="About {0}".format(pony),
-        #             color=discord.Color.gold(),
-        #             description=pon
-        #         )
-        #         embed.set_thumbnail(
-        #             url=pon_rl
-        #         )
-
-        #     else:
-        #         embed = discord.Embed(
-        #             title="Oops!",
-        #             color=discord.Color.red(),
-        #             description="I could not find that pony!"
-        #         )
-
-        # await ctx.send(embed=embed)
-        await ctx.send("Work in progress! Check back soon!")
+    async def pony(self, ctx, pony: str = None):
+        pon_list = ", ".join(ponies)
+        if pony != None:
+            try:
+                name, link = pony_returner(pony.lower())
+                embed = discord.Embed(
+                    title="{0} information".format(pony.lower()),
+                    color=discord.Color.blue(),
+                    description=name
+                )
+                embed.set_thumbnail(
+                    url=link
+                )
+                print(name)
+                await ctx.send(embed=embed)
+            except:
+                embed = discord.Embed(
+                    title="Oops!",
+                    color=discord.Color.red(),
+                    description="Here are all the ponies I have in my database!\n{0}".format(
+                        pon_list)
+                )
+                await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="Oops!",
+                color=discord.Color.red(),
+                description="Here are all the ponies I have in my database!\n{0}".format(
+                    pon_list)
+            )
+            await ctx.send(embed=embed)
 
     @commands.command(help="Smile song!")
     async def smile(self, ctx):
