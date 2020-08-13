@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import Cog
-
+import json
 import random
 
 import wikipedia
@@ -12,26 +12,11 @@ twilight_image_links = [
     "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
-ponies = {
-    "twilight": "Twilight Sparkle is an alicorn and the main member of the Mane Six. She represents the element of magic in the elements of harmony.",
-    "applejack": "Applejack is an earth pony. She runs Sweet Apple Acres with the help of Granny Smit, Big Macintosh, and Apple Bloom. She represents the element of honesty. ||Also she is best background pony||",
-    "rarity": "Rarity is a unicorn. She runs boutiques all across Equestria. Rarity represents the element of generosity.",
-    "rainbowdash": "Rainbow Dash is a pegasus. She is most famous for performing the rainboom, the same action bringing the Mane Six to Ponyville where they meet and became friends. She represents the element of loyalty.",
-    "fluttershy": "Fluttershy is a pegasus. She is a shy pony who likes to spend more time with animals compared to ponykind. Fluttershy represents the element of kindness.",
-    "pinkiepie": "Pinkie Pie is an earth pony. She is "
-}
-pony_url = {
-    "twilight": "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
-    "applejack": "https://vignette.wikia.nocookie.net/mlp/images/d/d8/Applejack_S01E13_cropped.png/revision/latest?cb=20130419182236",
-    "rarity": "https://vignette.wikia.nocookie.net/mlp/images/d/d1/Rarity_standing_S1E19_CROPPED.png/revision/latest?cb=20130418142043",
-    "rainbowdash": "https://vignette.wikia.nocookie.net/mlp/images/4/4b/Rainbow_Dash_Wonderbolt_fantasy_cropped_S1E3.png/revision/latest?cb=20190410214837",
-    "fluttershy": "https://vignette.wikia.nocookie.net/mlp/images/d/d6/Fluttershy_ID_S1E17.png/revision/latest?cb=20190410214903",
-    "pinkiepie": "https://vignette.wikia.nocookie.net/mlp/images/b/b2/Pinkie_Pie_ID_S4E11.png/revision/latest?cb=20190410214815"
-}
 
 
 def pony_returner(arg):
-    return ponies[arg.lower()], pony_url[arg.lower()]
+    with open("pony.json", "r") as f:
+        pony = json.load(f)
 
 
 class MyLittlePony(Cog, name="mylittlepony"):
@@ -80,36 +65,37 @@ class MyLittlePony(Cog, name="mylittlepony"):
         await ctx.send(embed=embed)
 
     @commands.command(hidden=True, help="Get TL:DR's on your favorite ponies!")
-    async def pony(self, ctx, pony: str = None):
-        if pony == None:
-            pon_keys = "\n".join(ponies.keys())
-            embed = discord.Embed(
-                title="Ponies listing",
-                description="Here are all the ponies I have TL:DR's on:\n\n{0}".format(
-                    pon_keys),
-                color=discord.Color.dark_green()
-            )
+    async def pony(self, ctx):
+        # if pony == None:
+        #     pon_keys = "\n".join(ponies.keys())
+        #     embed = discord.Embed(
+        #         title="Ponies listing",
+        #         description="Here are all the ponies I have TL:DR's on:\n\n{0}".format(
+        #             pon_keys),
+        #         color=discord.Color.dark_green()
+        #     )
 
-        else:
-            if pony.lower() in ponies.keys():
-                pon, pon_rl = pony_returner(pony)
-                embed = discord.Embed(
-                    title="About {0}".format(pony),
-                    color=discord.Color.gold(),
-                    description=pon
-                )
-                embed.set_thumbnail(
-                    url=pon_rl
-                )
+        # else:
+        #     if pony.lower() in ponies.keys():
+        #         pon, pon_rl = pony_returner(pony)
+        #         embed = discord.Embed(
+        #             title="About {0}".format(pony),
+        #             color=discord.Color.gold(),
+        #             description=pon
+        #         )
+        #         embed.set_thumbnail(
+        #             url=pon_rl
+        #         )
 
-            else:
-                embed = discord.Embed(
-                    title="Oops!",
-                    color=discord.Color.red(),
-                    description="I could not find that pony!"
-                )
+        #     else:
+        #         embed = discord.Embed(
+        #             title="Oops!",
+        #             color=discord.Color.red(),
+        #             description="I could not find that pony!"
+        #         )
 
-        await ctx.send(embed=embed)
+        # await ctx.send(embed=embed)
+        await ctx.send("Work in progress! Check back soon!")
 
     @commands.command(help="Smile song!")
     async def smile(self, ctx):
