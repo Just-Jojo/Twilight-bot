@@ -62,6 +62,17 @@ class Mod(Cog, name="mod"):
             await member.kick(reason=None)
             await ctx.send("{0} was kicked".format(member))
 
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def servers(self, ctx):
+        guilds = "\n".join([str(guild) for guild in self.client.guilds])
+        embed = discord.Embed(
+            title="Servers",
+            color=discord.Color.gold(),
+            description=guilds
+        )
+        await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(Mod(client))
