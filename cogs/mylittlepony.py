@@ -12,14 +12,15 @@ twilight_image_links = [
     "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
-ponies = [
-    "twilight", "applejack", "rarity", "rainbow dash", "fluttershy", "pinkiepie"
-]
+with open("pony.json", "r") as f:
+    pony = json.load(f)
+x = []
+for key, _ in pony.items():
+    x.append(key)
+pony_keys = ", ".join(x)
 
 
 def pony_returner(arg):
-    with open("pony.json", "r") as f:
-        pony = json.load(f)
     return pony[arg.lower()][0], pony[arg.lower()][1]
 
 
@@ -70,7 +71,6 @@ class MyLittlePony(Cog, name="mylittlepony"):
 
     @commands.command(hidden=True, help="Get TL:DR's on your favorite ponies!")
     async def pony(self, ctx, pony: str = None):
-        pon_list = ", ".join(ponies)
         if pony != None:
             try:
                 name, link = pony_returner(pony.lower())
@@ -89,7 +89,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                     title="Oops!",
                     color=discord.Color.red(),
                     description="Here are all the ponies I have in my database!\n{0}".format(
-                        pon_list)
+                        pony_keys)
                 )
                 await ctx.send(embed=embed)
         else:
@@ -97,7 +97,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 title="Oops!",
                 color=discord.Color.red(),
                 description="Here are all the ponies I have in my database!\n{0}".format(
-                    pon_list)
+                    pony_keys)
             )
             await ctx.send(embed=embed)
 
