@@ -14,10 +14,7 @@ twilight_image_links = [
 ]
 with open("pony.json", "r") as f:
     pony = json.load(f)
-x = []
-for key, _ in pony.items():
-    x.append(key)
-pony_keys = ", ".join(x)
+pony_keys = ", ".join([key for key, _ in pony.items()])
 
 
 def pony_returner(arg):
@@ -82,7 +79,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 embed.set_thumbnail(
                     url=link
                 )
-                print(name)
+                embed.set_footer(text="Twilight's pony TL:DR's")
                 await ctx.send(embed=embed)
             except:
                 embed = discord.Embed(
@@ -91,6 +88,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                     description="Here are all the ponies I have in my database!\n{0}".format(
                         pony_keys)
                 )
+                embed.set_footer(text="Error!")
                 await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
@@ -99,6 +97,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 description="Here are all the ponies I have in my database!\n{0}".format(
                     pony_keys)
             )
+            embed.set_footer(text="Error!")
             await ctx.send(embed=embed)
 
     @commands.command(help="Smile song!")
