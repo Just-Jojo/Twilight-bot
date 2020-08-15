@@ -66,7 +66,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True, help="Get TL:DR's on your favorite ponies!")
+    @commands.command(help="Get TL:DR's on your favorite ponies!")
     async def pony(self, ctx, pony: str = None):
         if pony != None:
             try:
