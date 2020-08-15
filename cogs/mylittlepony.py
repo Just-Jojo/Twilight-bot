@@ -92,12 +92,12 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 await ctx.send(embed=embed)
         else:
             embed = discord.Embed(
-                title="Oops!",
-                color=discord.Color.red(),
+                title="Ponies!",
+                color=discord.Color.light_grey(),
                 description="Here are all the ponies I have in my database!\n{0}".format(
                     pony_keys)
             )
-            embed.set_footer(text="Error!")
+            embed.set_footer(text="More ponies!")
             await ctx.send(embed=embed)
 
     @commands.command(help="Smile song!")
