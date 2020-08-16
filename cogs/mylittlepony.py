@@ -1,10 +1,10 @@
-import discord
-from discord.ext import commands
-from discord.ext.commands import Cog
 import json
 import random
 
+import discord
 import wikipedia
+from discord.ext import commands
+from discord.ext.commands import Cog
 
 twilight_image_links = [
     "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",

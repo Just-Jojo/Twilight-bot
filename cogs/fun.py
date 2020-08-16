@@ -30,22 +30,36 @@ class Fun(Cog, name="fun"):
     async def SAY(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("repeat (Sent what you said as plain text), frepeat (Sent what you said as an embed.)")
-        # elif ctx.author == self.client.get_user(448611959265558528):
-        #     await ctx.send("I'm sorry you can't use that command!")
 
     @SAY.command()
-    async def repeat(self, ctx, *, args):
-        await ctx.send(args)
+    async def repeat(self, ctx, *, args: str = None):
+        if args != None:
+            await ctx.send(args)
+        else:
+            embed = discord.Embed(
+                title="say repeat",
+                description="Send your arguments back as plain text\n`[p]say repeat <args>`",
+                color=discord.Color.orange()
+            )
+            await ctx.send(embed=embed)
 
     @SAY.command()
-    async def frepeat(self, ctx, *, args):
-        embed = discord.Embed(
-            title="Repeat Embed",
-            description=args,
-            color=discord.Color.blue()
-        )
-        embed.set_footer(icon_url=ctx.author.avatar_url, text=ctx.author)
-        await ctx.send(embed=embed)
+    async def frepeat(self, ctx, *, args: str = None):
+        if args != None:
+            embed = discord.Embed(
+                title="Repeat Embed",
+                description=args,
+                color=discord.Color.blue()
+            )
+            embed.set_footer(icon_url=ctx.author.avatar_url, text=ctx.author)
+            await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(
+                title="say frepeat",
+                description="Send your arguments back in a fancy embed!\n`[p]say frepeat <args>`",
+                color=discord.Color.orange()
+            )
+            await ctx.send(embed=embed)
 
     @commands.command(help="Rock paper scissors game. Use `r p s` for the arguments")
     async def rps(self, ctx, arg: str = None):
