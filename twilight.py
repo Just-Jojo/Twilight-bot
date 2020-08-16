@@ -121,7 +121,15 @@ async def shutdown(ctx):
 @client.command(hidden=True)
 @commands.is_owner()
 async def invite(ctx):
-    await ctx.send("https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot")
+    embed = discord.Embed(
+        title="Invite/Support server",
+        color=discord.Color.blue(),
+    )
+    embed.add_field(name="Get the bot",
+                    value="[bot invite link](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)")
+    embed.add_field(name="Support server",
+                    value="Join the [server](https://www.discord.gg/9cxxJSp) for help")
+    await ctx.send(embed=embed)
 
 with open("bot_key.txt", "r") as f:
     bot_key = f.read()
