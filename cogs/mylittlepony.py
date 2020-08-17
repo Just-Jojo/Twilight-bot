@@ -104,6 +104,10 @@ class MyLittlePony(Cog, name="mylittlepony"):
     async def smile(self, ctx):
         await ctx.send("https://www.youtube.com/watch?v=lQKaAlMNvm8")
 
+    @commands.command(name="equestriagirls", aliases=["eqg"], help="Equestria Girls")
+    async def equestria_girls(self, ctx):
+        await ctx.send("Equestria Girls is a weird spin-off collection that Hasbro made for ***some reason***\nIt is basically normal My Little Pony except for the fact that everyone is human, and Twilight has glasses. It exists only to haunt me and Jojo")
+
 
 def setup(client):
     client.add_cog(MyLittlePony(client))
