@@ -72,7 +72,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
             try:
                 name, link = pony_returner(pony.lower())
                 embed = discord.Embed(
-                    title="{0} information".format(pony.lower()),
+                    title="Information about {0}".format(pony.lower()),
                     color=discord.Color.blue(),
                     description=name
                 )
@@ -104,9 +104,13 @@ class MyLittlePony(Cog, name="mylittlepony"):
     async def smile(self, ctx):
         await ctx.send("https://www.youtube.com/watch?v=lQKaAlMNvm8")
 
-    @commands.command(name="equestriagirls", aliases=["eqg"], help="Equestria Girls")
+    @commands.command(name="equestriagirls", aliases=["eg"], help="Equestria Girls")
     async def equestria_girls(self, ctx):
         await ctx.send("Equestria Girls is a weird spin-off collection that Hasbro made for ***some reason***\nIt is basically normal My Little Pony except for the fact that everyone is human, and Twilight has glasses. It exists only to haunt me and Jojo")
+
+    @commands.command(hidden=True, name="episodesearch", aliases=["eps"])
+    async def _episode_search(self, ctx, *, arg: str = None):
+        await ctx.send("Working")
 
 
 def setup(client):
