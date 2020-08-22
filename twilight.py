@@ -118,9 +118,11 @@ async def shutdown(ctx):
     await client.logout()
 
 
-@client.command(hidden=True)
+@client.command()
 @commands.is_owner()
 async def invite(ctx):
+    """Get the bot invite link and the support server link."""
+
     embed = discord.Embed(
         title="Invite/Support server",
         color=discord.Color.blue(),
