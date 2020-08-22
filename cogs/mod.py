@@ -13,7 +13,7 @@ class Mod(Cog, name="mod"):
     @commands.command(help="Bans a member")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
-    async def ban(self, ctx, member: discord.Member, *reason):
+    async def ban(self, ctx, member: discord.Member, *, reason):
         if not member:
             await ctx.send("You need to supply a member to ban them.")
 
@@ -55,12 +55,12 @@ class Mod(Cog, name="mod"):
     @commands.command(help="Kicks a member")
     @commands.has_permissions(kick_members=True)
     @commands.bot_has_permissions(kick_members=True)
-    async def kick(self, ctx, member: discord.Member = None):
+    async def kick(self, ctx, member: discord.Member = None, *, reason: str = None):
         if member == None:
             await ctx.send("I can't kick a member if you don't tag one")
 
         else:
-            await member.kick(reason=None)
+            await member.kick(reason=reason)
             await ctx.send("{0} was kicked".format(member))
 
     @commands.command(hidden=True)

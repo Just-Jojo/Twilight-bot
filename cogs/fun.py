@@ -5,7 +5,7 @@ from discord.utils import get
 import json
 import random
 
-import time
+import asyncio
 
 from rockpaperscissors import RockPaperScissors as RPS
 

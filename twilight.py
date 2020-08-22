@@ -126,9 +126,11 @@ async def invite(ctx):
         color=discord.Color.blue(),
     )
     embed.add_field(name="Get the bot",
-                    value="[bot invite link](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)")
+                    value="[bot invite link](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
+                    inline=False)
     embed.add_field(name="Support server",
-                    value="Join the [server](https://www.discord.gg/9cxxJSp) for help")
+                    value="Join the [server](https://www.discord.gg/9cxxJSp) for help",
+                    inline=True)
     await ctx.send(embed=embed)
 
 with open("bot_key.txt", "r") as f:
