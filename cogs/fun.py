@@ -27,11 +27,11 @@ class Fun(Cog, name="fun"):
         await ctx.send("Fun! Fun! Fun!")
 
     @commands.group(name="say")
-    async def SAY(self, ctx):
+    async def say(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("repeat (Sent what you said as plain text), frepeat (Sent what you said as an embed.)")
 
-    @SAY.command()
+    @say.command()
     async def repeat(self, ctx, *, args: str = None):
         if args != None:
             await ctx.send(args)
@@ -43,7 +43,7 @@ class Fun(Cog, name="fun"):
             )
             await ctx.send(embed=embed)
 
-    @SAY.command()
+    @say.command()
     async def frepeat(self, ctx, *, args: str = None):
         if args != None:
             embed = discord.Embed(
