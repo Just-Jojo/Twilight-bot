@@ -26,7 +26,7 @@ class Fun(Cog, name="fun"):
     async def fun(self, ctx):
         await ctx.send("Fun! Fun! Fun!")
 
-    @commands.group(name="say")
+    @commands.group()
     async def say(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send("repeat (Sent what you said as plain text), frepeat (Sent what you said as an embed.)")
