@@ -72,24 +72,30 @@ class Fun(Cog, name="fun"):
         await ctx.send(":P")
 
     @commands.command(aliases=["calc"])
-    async def calculator(self, ctx, *, args):
-        embed = discord.Embed(
-            title="Calculator",
-            color=discord.Color.blue()
-        )
-        embed.add_field(
-            name="Input",
-            value=args,
-            inline=False
-        )
-        embed.add_field(
-            name="Output",
-            value=eval(args),
-            inline=False
-        )
-        embed.set_footer(text="Twilight bot Calculator",
-                         icon_url="https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist")
-        await ctx.send(embed=embed)
+    async def calculator(self, ctx, *, args: str = None):
+        if args != None:
+            try:
+                embed = discord.Embed(
+                    title="Calculator",
+                    color=discord.Color.blue()
+                )
+                embed.add_field(
+                    name="Input",
+                    value=args,
+                    inline=False
+                )
+                embed.add_field(
+                    name="Output",
+                    value=eval(args),
+                    inline=False
+                )
+                embed.set_footer(text="Twilight bot Calculator",
+                                 icon_url="https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist")
+                await ctx.send(embed=embed)
+            except:
+                await ctx.send("There was an error in the calculation!")
+        else:
+            await ctx.send("Sorry I need arguments to calculate them!")
 
 
 def setup(client):
