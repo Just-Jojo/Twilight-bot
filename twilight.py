@@ -47,15 +47,17 @@ async def on_guild_remove(guild):
 
 @client.command()
 @commands.has_guild_permissions(administrator=True)
-async def prefix(ctx, arg):
+async def prefix(ctx, arg: str = None):
     with open("prefixes.json", "r") as f:
         prefixes = json.load(f)
+    if arg:
+        prefixes[str(ctx.guild.id)] = arg
 
-    prefixes[str(ctx.guild.id)] = arg
-
-    with open("prefixes.json", "w") as f:
-        json.dump(prefixes, f, indent=4)
-    await ctx.send("Your prefix is now `{0}`".format(arg))
+        with open("prefixes.json", "w") as f:
+            json.dump(prefixes, f, indent=4)
+        await ctx.send("Your prefix is now `{0}`".format(arg))
+    else:
+        await ctx.send("This is your guild's prefix: `{0}`".format(prefixes[str(ctx.guild.id)]))
 
 
 @client.command(help="Probably the most important command")
