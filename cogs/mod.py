@@ -14,6 +14,7 @@ class Mod(Cog, name="mod"):
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
     async def ban(self, ctx, member: discord.Member, *, reason):
+        """Ban a member"""
         if not member:
             await ctx.send("You need to supply a member to ban them.")
 
@@ -25,15 +26,12 @@ class Mod(Cog, name="mod"):
     @commands.has_permissions(manage_roles=True)
     async def ROLES(self, ctx):
         if ctx.invoked_subcommand is None:
-            embed = discord.Embed(title="Role commnad",
-                                  description="Take, Give",
-                                  color=discord.Color.blue())
-            await ctx.send(embed=embed)
+            await ctx.send_help(ctx.command)
 
     @ROLES.command(aliases=["give"])
     async def add(self, ctx, role: discord.Role = None, *, member: discord.Member = None):
         if role == None:
-            await ctx.send("You need to give a role to attach it to someone")
+            await ctx.send_help(ctx.command)
 
         else:
             if member == None:
@@ -44,7 +42,7 @@ class Mod(Cog, name="mod"):
     @ROLES.command()
     async def take(self, ctx, role: discord.Role = None, *, member: discord.Member = None):
         if role == None:
-            await ctx.send("You have to give a role to take it from someone")
+            await ctx.send_help(ctx.command)
 
         else:
             if member == None:
@@ -57,7 +55,7 @@ class Mod(Cog, name="mod"):
     @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member = None, *, reason: str = None):
         if member == None:
-            await ctx.send("I can't kick a member if you don't tag one")
+            await ctx.send_help(ctx.command)
 
         else:
             await member.kick(reason=reason)
