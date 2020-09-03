@@ -103,6 +103,14 @@ class Fun(Cog, name="fun"):
         else:
             await ctx.send("Sorry I need arguments to calculate them!")
 
+    async def whisper(self, ctx: commands.Context, user: discord.Member, message: str):
+        await user.send(message)
+
+    @commands.command(name="dm", aliases=["whisper"], hidden=True)
+    @commands.is_owner()
+    async def dm_user(self, ctx, user: discord.Member, message: str):
+        await self.whisper(ctx, user, message)
+
 
 def setup(client):
     client.add_cog(Fun(client))
