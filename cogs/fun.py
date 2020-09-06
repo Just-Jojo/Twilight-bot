@@ -104,13 +104,28 @@ class Fun(Cog, name="fun"):
         else:
             await ctx.send_help(ctx.command)
 
-    async def whisper(self, ctx: commands.Context, user: discord.Member, message: str):
+    async def whisper(self, ctx: commands.Context, user: discord.Member, message: str = '', embed: discord.Embed = None):
+        if embed is not None:
+            await user.send(message, embed=embed)
+            return
         await user.send(message)
 
     @commands.command(name="dm", aliases=["whisper"], hidden=True)
     @commands.is_owner()
     async def dm_user(self, ctx, user: discord.Member, message: str):
         await self.whisper(ctx, user, message)
+
+    @commands.command()
+    async def invite(self, ctx):
+        """Get the bot invite link and the support server link."""
+
+        embed = self.EmbedCreator.create(ctx,
+                                         title="Invite/Support server link",
+                                         description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
+                                         footer="Twilight Bot invite link")
+        embed.add_field(name="Support Server link",
+                        value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
+        await self.whisper(ctx, ctx.author, embed=embed)
 
 
 def setup(client):

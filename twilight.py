@@ -4,10 +4,10 @@ import os
 import discord
 from discord.ext import commands
 import traceback
+from cogs.embed_create import EmbedCreator
 
 
 client = commands.Bot(command_prefix=(">", "."))
-client.remove_command("help")
 
 
 @client.event
@@ -75,22 +75,6 @@ async def shutdown(ctx):
     await ctx.send("Shutting down. Goodbye")
     await client.logout()
 
-
-@client.command()
-async def invite(ctx):
-    """Get the bot invite link and the support server link."""
-
-    embed = discord.Embed(
-        title="Invite/Support server",
-        color=discord.Color.blue(),
-    )
-    embed.add_field(name="Get the bot",
-                    value="[bot invite link](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
-                    inline=False)
-    embed.add_field(name="Support server",
-                    value="Join the [server](https://www.discord.gg/9cxxJSp) for help",
-                    inline=True)
-    await ctx.author.send(embed=embed)
 
 with open("bot_key.txt", "r") as f:
     bot_key = f.read()

@@ -8,7 +8,7 @@ class EmbedCreator:
     def __init__(self, client):
         self.client = client
 
-    def create(self, ctx: discord.command.Context, title="",
+    def create(self, ctx, title="",
                description="", color=Color.blue(), footer=None, footer_image=None):
         """
         Embed creator
