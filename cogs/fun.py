@@ -4,10 +4,9 @@ from discord.ext.commands import Cog
 from discord.utils import get
 import json
 import random
+from .embed_create import EmbedCreator
 
 import asyncio
-
-from rockpaperscissors import RockPaperScissors as RPS
 
 
 class Fun(Cog, name="fun"):
@@ -15,12 +14,13 @@ class Fun(Cog, name="fun"):
 
     def __init__(self, client):
         self.client = client
+        self.EmbedCreator = EmbedCreator(self)
 
     @commands.command(name="party", help="Throw a party!")
     async def party_time(self, ctx, member: discord.Member = None):
         if member == None:
             member = ctx.author
-        await ctx.send("We're throwing a party for {0}! 🥳".format(member.mention))
+        await ctx.send("We're throwing a party for {0.mention}! 🥳".format(member))
 
     @commands.command(help="Fun!")
     async def fun(self, ctx):
@@ -28,9 +28,12 @@ class Fun(Cog, name="fun"):
 
     @commands.group()
     async def say(self, ctx):
-        """Say
+        """
+        Say
+
         Makes the bot send your arguments either as an embed or as plan text
-        [p]say [repeat]|[frepeat] <args>"""
+        [p]say [repeat]|[frepeat] <args>
+        """
 
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
@@ -49,29 +52,22 @@ class Fun(Cog, name="fun"):
             await ctx.send_help(ctx.command)
 
     @say.command()
-    async def frepeat(self, ctx, *, args: str = None):
-        """Say frepeat
+    async def frepeat(self, ctx, title: str = None, *, args: str = None):
+        """
+        Say frepeat
 
         Have the bot send your arguments in a fancy embed.
         [p]say frepeat <args> | Eg. [p]say frepeat Test
         """
+        if title is None:
+            title = "Embed Repeater"
 
         if args != None:
-            embed = discord.Embed(
-                title="Repeat Embed",
-                description=args,
-                color=discord.Color.blue()
-            )
-            embed.set_footer(icon_url=ctx.author.avatar_url, text=ctx.author)
+            embed = self.EmbedCreator.create(
+                ctx, title=title, description=args)
             await ctx.send(embed=embed)
         else:
             await ctx.send_help(ctx.command)
-
-    @commands.command(help="Rock paper scissors game. Use `r p s` for the arguments")
-    async def rps(self, ctx, arg: str = None):
-        if arg != None:
-            arg = arg.lower()
-        await ctx.send(embed=RPS(arg))
 
     @commands.command(name=":|", aliases=[":(", ":)"], hidden=True)
     async def _silly_commands(self, ctx):
@@ -79,6 +75,11 @@ class Fun(Cog, name="fun"):
 
     @commands.command(aliases=["calc"])
     async def calculator(self, ctx, *, args: str = None):
+        """
+        Math is fun!
+
+        [p]calculator|calc <args>
+        """
         if args != None:
             try:
                 embed = discord.Embed(
@@ -101,7 +102,7 @@ class Fun(Cog, name="fun"):
             except:
                 await ctx.send("There was an error in the calculation!")
         else:
-            await ctx.send("Sorry I need arguments to calculate them!")
+            await ctx.send_help(ctx.command)
 
     async def whisper(self, ctx: commands.Context, user: discord.Member, message: str):
         await user.send(message)

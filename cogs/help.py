@@ -6,7 +6,6 @@ from discord.ext import commands
 However, you must put "bot.remove_command('help')" in your bot, and the command must be in a cog for it to work.
 Written by Jared Newsom (AKA Jared M.F.)!"""
 
-
 class Help(commands.Cog, name="help"):
     """A helpful cog"""
 
@@ -15,7 +14,13 @@ class Help(commands.Cog, name="help"):
 
     @commands.command(pass_context=True)
     async def help(self, ctx, *cog):
-        """Lists all the commands and cogs in the bot"""
+        """
+        Lists all the commands and cogs in the bot
+
+        This command will list the commands not bound to a cog and all the cogs if a cog is not specified. If a cog is specified though it will list all of the commands in that cog.
+        [p]help [cog]
+        *note that cog is optional
+        """
         try:
             if not cog:
                 """Cog listing.  What more?"""
@@ -37,13 +42,13 @@ class Help(commands.Cog, name="help"):
                                value=cmds_desc[0:len(cmds_desc)-1], inline=False)
                 halp.set_author(name="Twilight Bot",
                                 icon_url="https://cdn.discordapp.com/attachments/707431591051264121/734176068751196200/twlight_sparkle.png")
-                await ctx.send('', embed=halp)
+                await ctx.send(embed=halp)
             else:
                 """Helps me remind you if you pass too many args."""
                 if len(cog) > 1:
                     halp = discord.Embed(
                         title='Error!', description='That is way too many cogs!', color=discord.Color.red())
-                    await ctx.send('', embed=halp)
+                    await ctx.send(embed=halp)
                 else:
                     """Command listing within a cog."""
                     found = False
@@ -68,7 +73,7 @@ class Help(commands.Cog, name="help"):
                     else:
                         halp.set_author(name="Twilight Bot",
                                         icon_url="https://cdn.discordapp.com/attachments/707431591051264121/734176068751196200/twlight_sparkle.png")
-                        await ctx.send('', embed=halp)
+                        await ctx.send(embed=halp)
         except:
             await ctx.send("Excuse me, I can't send embeds.")
 

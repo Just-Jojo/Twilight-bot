@@ -6,13 +6,6 @@ from discord.ext import commands
 import traceback
 
 
-# def get_prefix(client, message):
-#     with open("prefixes.json", "r") as f:
-#         prefixes = json.load(f)
-
-#     return prefixes[str(message.guild.id)]
-
-
 client = commands.Bot(command_prefix=(">", "."))
 client.remove_command("help")
 
@@ -21,44 +14,6 @@ client.remove_command("help")
 async def on_ready():
     await client.change_presence(activity=discord.Game(name=">help | Version Beta 1.0"))
     print("Twilight is in the castle")
-
-
-# @client.event
-# async def on_guild_join(guild):
-#     with open("prefixes.json", "r") as f:
-#         prefixes = json.load(f)
-
-#     prefixes[str(guild.id)] = ">"
-
-#     with open("prefixes.json", "w") as f:
-#         json.dump(prefixes, f, indent=4)
-
-
-# @client.event
-# async def on_guild_remove(guild):
-#     with open("prefixes.json", "r") as f:
-#         prefixes = json.load(f)
-
-#     prefixes.pop(str(guild.id))
-
-#     with open("prefixes.json", "w") as f:
-#         json.dump(prefixes, f, indent=4)
-
-
-# @client.command()
-# @commands.guild_only()
-# @commands.has_guild_permissions(administrator=True)
-# async def prefix(ctx, arg: str = None):
-#     with open("prefixes.json", "r") as f:
-#         prefixes = json.load(f)
-#     if arg:
-#         prefixes[str(ctx.guild.id)] = arg
-
-#         with open("prefixes.json", "w") as f:
-#             json.dump(prefixes, f, indent=4)
-#         await ctx.send("Your prefix is now `{0}`".format(arg))
-#     else:
-#         await ctx.send("This is your guild's prefix: `{0}`".format(prefixes[str(ctx.guild.id)]))
 
 
 @client.command(help="Probably the most important command")
@@ -142,7 +97,10 @@ with open("bot_key.txt", "r") as f:
 
 for cog in os.listdir("./cogs"):
     if cog.endswith(".py"):
-        client.load_extension("cogs.{0}".format(cog[:-3]))
-        print("{0} online".format(cog[:-3]))
+        try:
+            client.load_extension("cogs.{0}".format(cog[:-3]))
+            print("{0} online".format(cog[:-3]))
+        except:
+            continue
 
 client.run(bot_key, reconnect=True)
