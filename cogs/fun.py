@@ -8,6 +8,8 @@ from .embed_create import EmbedCreator
 
 import asyncio
 
+twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
+
 
 class Fun(Cog, name="fun"):
     """Fun for all the little ponies"""
@@ -82,10 +84,7 @@ class Fun(Cog, name="fun"):
         """
         if args != None:
             try:
-                embed = discord.Embed(
-                    title="Calculator",
-                    color=discord.Color.blue()
-                )
+                embed = self.EmbedCreator.create(ctx, title="Calculator")
                 embed.add_field(
                     name="Input",
                     value=args,
@@ -126,6 +125,20 @@ class Fun(Cog, name="fun"):
         embed.add_field(name="Support Server link",
                         value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
         await self.whisper(ctx, ctx.author, embed=embed)
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def servers(self, ctx):
+        guilds = "\n".join([str(guild) for guild in self.client.guilds])
+        embed = self.EmbedCreator.create(
+            ctx,
+            title="Servers",
+            color=discord.Color.gold(),
+            description=guilds,
+            footer="Servers that Twilight is in",
+            thumbnail=twilight_pfp
+        )
+        await ctx.send(embed=embed)
 
 
 def setup(client):
