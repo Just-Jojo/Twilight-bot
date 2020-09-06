@@ -76,7 +76,7 @@ async def shutdown(ctx):
     await client.logout()
 
 
-with open("bot_key.txt", "r") as f:
+with open("bot.txt", "r") as f:
     bot_key = f.read()
 
 for cog in os.listdir("./cogs"):
