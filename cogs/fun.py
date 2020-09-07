@@ -130,6 +130,12 @@ class Fun(Cog, name="fun"):
         )
         await ctx.send(embed=embed)
 
+    @commands.command(name="embed")
+    async def embed_make(self, ctx, title, *description):
+        description = ' '.join(description)
+        embed = await self.EmbedCreator.create(ctx, title=title, description=description)
+        await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(Fun(client))
