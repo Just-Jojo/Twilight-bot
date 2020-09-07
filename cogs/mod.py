@@ -61,6 +61,20 @@ class Mod(Cog, name="mod"):
             await member.kick(reason=reason)
             await ctx.send("{0} was kicked".format(member))
 
+    @commands.command(aliases=["slow"])
+    @commands.has_permissions(manage_messages=True)
+    @commands.bot_has_permissions(manage_channels=True)
+    async def slowmode(self, ctx, seconds: int = None):
+        if seconds is not None and seconds <= 21600:
+            try:
+                await ctx.channel.edit(slowmode_delay=seconds)
+                await ctx.send("Slowmode is now {seconds} seconds long".format(seconds=seconds))
+                return
+            except:
+                pass
+        await ctx.channel.edit(slowmode_delay=0)
+        await ctx.send("Slowmode cleared.")
+
 
 def setup(client):
     client.add_cog(Mod(client))

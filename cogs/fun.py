@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 from discord.utils import get
 import json
 import random
-from .embed_create import EmbedCreator
+from twilight_tools import EmbedCreator, BasicUtils
 
 import asyncio
 
@@ -17,6 +17,7 @@ class Fun(Cog, name="fun"):
     def __init__(self, client):
         self.client = client
         self.EmbedCreator = EmbedCreator(self)
+        self.BasicUtils = BasicUtils(self)
 
     @commands.command(name="party", help="Throw a party!")
     async def party_time(self, ctx, member: discord.Member = None):
@@ -103,17 +104,6 @@ class Fun(Cog, name="fun"):
         else:
             await ctx.send_help(ctx.command)
 
-    async def whisper(self, ctx: commands.Context, user: discord.Member, message: str = '', embed: discord.Embed = None):
-        if embed is not None:
-            await user.send(message, embed=embed)
-            return
-        await user.send(message)
-
-    @commands.command(name="dm", aliases=["whisper"], hidden=True)
-    @commands.is_owner()
-    async def dm_user(self, ctx, user: discord.Member, message: str):
-        await self.whisper(ctx, user, message)
-
     @commands.command()
     async def invite(self, ctx):
         """Get the bot invite link and the support server link."""
@@ -124,7 +114,7 @@ class Fun(Cog, name="fun"):
                                          footer="Twilight Bot invite link")
         embed.add_field(name="Support Server link",
                         value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
-        await self.whisper(ctx, ctx.author, embed=embed)
+        await self.BasicUtils.whisper(ctx, ctx.author, embed=embed)
 
     @commands.command(hidden=True)
     @commands.is_owner()

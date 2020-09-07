@@ -1,4 +1,5 @@
 import discord
+from discord.ext.commands import Context
 from discord import Embed, Color
 import requests
 
@@ -40,3 +41,17 @@ class EmbedCreator:
                 url=thumbnail
             )
         return data
+
+
+class BasicUtils:
+    def __init__(self, client):
+        self.client = client
+
+    async def whisper(self, ctx: Context, user: discord.Member, message: str = '', embed: discord.Embed = None):
+        if embed is not None:
+            await user.send(message, embed=embed)
+            return
+        await user.send(message)
+
+    async def something(self, ctx: Context):
+        pass

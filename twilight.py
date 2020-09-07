@@ -4,7 +4,6 @@ import os
 import discord
 from discord.ext import commands
 import traceback
-from cogs.embed_create import EmbedCreator
 
 
 client = commands.Bot(command_prefix=(">", "."))

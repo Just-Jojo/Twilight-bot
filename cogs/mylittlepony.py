@@ -5,6 +5,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 from discord.ext.commands import Cog
+from twilight_tools import EmbedCreator, BasicUtils
 
 twilight_image_links = [
     "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
@@ -17,30 +18,16 @@ with open("pony.json", "r") as f:
 pony_keys = ", ".join([key for key, _ in pony.items()])
 
 
-def pony_returner(arg):
-    return pony[arg.lower()][0], pony[arg.lower()][1]
-
-
 class MyLittlePony(Cog, name="mylittlepony"):
     """Main MLP cog."""
 
     def __init__(self, client):
         self.client = client
+        self.EmbedCreator = EmbedCreator(self)
+        self.BasicUtils = BasicUtils
 
-    @commands.command(aliases=["mlp"], help="About the MLP: FIM show.")
-    async def mylittlepony(self, ctx):
-        with open("mlp.txt", "r") as f:
-            mlp = f.read()
-        embed = discord.Embed(color=discord.Color.purple(
-        ), description=mlp, title="About My Little Pony: Friendship is Magic")
-        embed.set_footer(
-            icon_url="https://upload.wikimedia.org/wikipedia/en/thumb/0/0d/My_Little_Pony_Friendship_Is_Magic_logo_-_2017.svg/1200px-My_Little_Pony_Friendship_Is_Magic_logo_-_2017.svg.png",
-            text="My Little Pony: Friendship is Magic."
-        )
-        embed.set_thumbnail(
-            url="https://img1.hulu.com/user/v3/artwork/3790ca9f-1a6b-4130-b0b3-e3fc0fe5a5f8?base_image_bucket_name=image_manager&base_image=0fe67d3e-8087-45eb-8e34-188c485d7999&size=400x600&format=jpeg"
-        )
-        await ctx.send(embed=embed)
+    async def pony_returner(self, arg):
+        return pony[arg.lower()][0], pony[arg.lower()][1]
 
     @commands.command(name="quote", aliases=["twq", "twilight"], help="Get a random Twilight quote")
     async def twilight_quotes(self, ctx):
@@ -56,48 +43,44 @@ class MyLittlePony(Cog, name="mylittlepony"):
             "Soup spoon, salad fork, pasta spoon, strawberry pick, I'm beginning to think that after friendship, the greatest magic of all is proper silverware placement!",
             "As the Princess of Friendship, I try to set an example for all of Equestria. But today, it was Spike who taught me that a new friend can come from anywhere. I guess everypony still has things to learn about friendship. Even me! And if Spike says Thorax is his friend, then he's my friend too."
         ]
-        embed = discord.Embed(color=discord.Color.purple(
-        ), title="Twilight quote", description=random.choice(quotes))
-        embed.set_thumbnail(
-            url=random.choice(twilight_image_links)
-        )
-        embed.set_footer(
-            text="~Twilight Sparkle"
-        )
+        embed = self.EmbedCreator.create(ctx, color=discord.Color.purple(
+        ), title="Twilight quote", description=random.choice(quotes),
+            thumbnail=random.choice(twilight_image_links),
+            footer="~ Twilight Sparkle")
         await ctx.send(embed=embed)
 
     @commands.command(help="Get TL:DR's on your favorite ponies!")
     async def pony(self, ctx, pony: str = None):
         if pony != None:
             try:
-                name, link = pony_returner(pony.lower())
-                embed = discord.Embed(
+                name, link = await self.pony_returner(pony.lower())
+                embed = self.EmbedCreator.create(
+                    ctx,
                     title="Information about {0}".format(pony.lower()),
                     color=discord.Color.blue(),
-                    description=name
+                    description=name,
+                    thumbnail=link,
+                    footer="Twilight's pony TL:DR's"
                 )
-                embed.set_thumbnail(
-                    url=link
-                )
-                embed.set_footer(text="Twilight's pony TL:DR's")
                 await ctx.send(embed=embed)
             except:
-                embed = discord.Embed(
+                embed = self.EmbedCreator.create(
+                    ctx,
                     title="Oops!",
                     color=discord.Color.red(),
                     description="Here are all the ponies I have in my database!\n{0}".format(
-                        pony_keys)
+                        pony_keys),
+                    footer="Error!"
                 )
-                embed.set_footer(text="Error!")
                 await ctx.send(embed=embed)
         else:
-            embed = discord.Embed(
+            embed = self.EmbedCreator.create(
+                ctx,
                 title="Ponies!",
-                color=discord.Color.light_grey(),
                 description="Here are all the ponies I have in my database!\n{0}".format(
-                    pony_keys)
+                    pony_keys),
+                footer="More ponies!"
             )
-            embed.set_footer(text="More ponies!")
             await ctx.send(embed=embed)
 
     @commands.command(help="Smile song!")
