@@ -7,24 +7,19 @@ from discord.ext import commands
 from discord.ext.commands import Cog
 from twilight_tools import EmbedCreator, BasicUtils
 
-twilight_image_links = [
-    "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
-    "https://i.pinimg.com/originals/5f/80/fc/5f80fc95aac0aa4448ccf954d198c3d1.png",
-    "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
-    "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
-]
+
 with open("pony.json", "r") as f:
     pony = json.load(f)
 pony_keys = ", ".join([key for key, _ in pony.items()])
 
 
-class MyLittlePony(Cog, name="mylittlepony"):
+class MyLittlePony(Cog):
     """Main MLP cog."""
 
     def __init__(self, client):
         self.client = client
         self.EmbedCreator = EmbedCreator(self)
-        self.BasicUtils = BasicUtils
+        self.BasicUtils = BasicUtils(self)
 
     async def pony_returner(self, arg):
         return pony[arg.lower()][0], pony[arg.lower()][1]
@@ -45,7 +40,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         ]
         embed = await self.EmbedCreator.create(ctx, color=discord.Color.purple(
         ), title="Twilight quote", description=random.choice(quotes),
-            thumbnail=random.choice(twilight_image_links),
+            thumbnail=await self.BasicUtils.twilight_pic(),
             footer="~ Twilight Sparkle")
         await ctx.send(embed=embed)
 
@@ -86,10 +81,6 @@ class MyLittlePony(Cog, name="mylittlepony"):
     @commands.command(help="Smile song!")
     async def smile(self, ctx):
         await ctx.send("https://www.youtube.com/watch?v=lQKaAlMNvm8")
-
-    @commands.command(name="equestriagirls", aliases=["eg"], help="Equestria Girls")
-    async def equestria_girls(self, ctx):
-        await ctx.send("Equestria Girls is a weird spin-off collection that Hasbro made for ***some reason***\nIt is basically normal My Little Pony except for the fact that everyone is human, and Twilight has glasses. It exists only to haunt me and Jojo")
 
     @commands.command(hidden=True, name="episodesearch", aliases=["eps"])
     async def _episode_search(self, ctx, *, episode_num: int = None):

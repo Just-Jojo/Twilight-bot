@@ -11,7 +11,7 @@ import asyncio
 twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
 
 
-class Fun(Cog, name="fun"):
+class Fun(Cog):
     """Fun for all the little ponies"""
 
     def __init__(self, client):
@@ -39,7 +39,7 @@ class Fun(Cog, name="fun"):
         """
 
         if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
+            await self.BasicUtils.help_returner(ctx)
 
     @say.command()
     async def repeat(self, ctx, *, args: str = None):
@@ -52,7 +52,7 @@ class Fun(Cog, name="fun"):
         if args != None:
             await ctx.send(args)
         else:
-            await ctx.send_help(ctx.command)
+            await self.BasicUtils.help_returner(ctx)
 
     @say.command()
     async def frepeat(self, ctx, title: str = None, *, args: str = None):
@@ -70,7 +70,7 @@ class Fun(Cog, name="fun"):
                 ctx, title=title, description=args)
             await ctx.send(embed=embed)
         else:
-            await ctx.send_help(ctx.command)
+            await self.BasicUtils.help_returner(ctx)
 
     @commands.command(name=":|", aliases=[":(", ":)"], hidden=True)
     async def _silly_commands(self, ctx):
@@ -102,7 +102,7 @@ class Fun(Cog, name="fun"):
             except:
                 await ctx.send("There was an error in the calculation!")
         else:
-            await ctx.send_help(ctx.command)
+            await self.BasicUtils.help_returner(ctx)
 
     @commands.command()
     async def invite(self, ctx):
@@ -131,8 +131,7 @@ class Fun(Cog, name="fun"):
         await ctx.send(embed=embed)
 
     @commands.command(name="embed")
-    async def embed_make(self, ctx, title, *description):
-        description = ' '.join(description)
+    async def embed_make(self, ctx, title, *, description):
         embed = await self.EmbedCreator.create(ctx, title=title, description=description)
         await ctx.send(embed=embed)
 

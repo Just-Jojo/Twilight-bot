@@ -4,7 +4,7 @@ from discord.ext.commands import Cog
 import json
 
 
-class Mod(Cog, name="mod"):
+class Mod(Cog):
     """Mod cog for wiping away the stain from your servers"""
 
     def __init__(self, client):
@@ -70,7 +70,7 @@ class Mod(Cog, name="mod"):
                 seconds = int(seconds)
             except:
                 seconds = 0
-        if seconds is not None and seconds <= 21600 and seconds is not 0:
+        if seconds is not None and seconds <= 21600 and seconds != 0:
             try:
                 await ctx.channel.edit(slowmode_delay=seconds)
                 await ctx.send("Slowmode is now {seconds} seconds long".format(seconds=seconds))

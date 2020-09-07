@@ -3,9 +3,15 @@ from discord.ext.commands import Context
 from discord import Embed, Color
 import requests
 import json
-
+import random
 
 twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
+twilight_image_links = [
+    "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist",
+    "https://i.pinimg.com/originals/5f/80/fc/5f80fc95aac0aa4448ccf954d198c3d1.png",
+    "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
+    "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
+]
 
 
 class EmbedCreator:
@@ -58,3 +64,9 @@ class BasicUtils:
     async def json_dumper(self, json_file: str, content):
         with open("{0}.json".format(json_file), "a") as f:
             json.dump(f)
+
+    async def help_returner(self, ctx: Context):
+        await ctx.send_help(ctx.command)
+
+    async def twilight_pic(self):
+        return random.choice(twilight_image_links)
