@@ -43,7 +43,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
             "Soup spoon, salad fork, pasta spoon, strawberry pick, I'm beginning to think that after friendship, the greatest magic of all is proper silverware placement!",
             "As the Princess of Friendship, I try to set an example for all of Equestria. But today, it was Spike who taught me that a new friend can come from anywhere. I guess everypony still has things to learn about friendship. Even me! And if Spike says Thorax is his friend, then he's my friend too."
         ]
-        embed = self.EmbedCreator.create(ctx, color=discord.Color.purple(
+        embed = await self.EmbedCreator.create(ctx, color=discord.Color.purple(
         ), title="Twilight quote", description=random.choice(quotes),
             thumbnail=random.choice(twilight_image_links),
             footer="~ Twilight Sparkle")
@@ -54,7 +54,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
         if pony != None:
             try:
                 name, link = await self.pony_returner(pony.lower())
-                embed = self.EmbedCreator.create(
+                embed = await self.EmbedCreator.create(
                     ctx,
                     title="Information about {0}".format(pony.lower()),
                     color=discord.Color.blue(),
@@ -64,7 +64,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 )
                 await ctx.send(embed=embed)
             except:
-                embed = self.EmbedCreator.create(
+                embed = await self.EmbedCreator.create(
                     ctx,
                     title="Oops!",
                     color=discord.Color.red(),
@@ -74,7 +74,7 @@ class MyLittlePony(Cog, name="mylittlepony"):
                 )
                 await ctx.send(embed=embed)
         else:
-            embed = self.EmbedCreator.create(
+            embed = await self.EmbedCreator.create(
                 ctx,
                 title="Ponies!",
                 description="Here are all the ponies I have in my database!\n{0}".format(

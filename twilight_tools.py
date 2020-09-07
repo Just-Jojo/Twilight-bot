@@ -2,6 +2,8 @@ import discord
 from discord.ext.commands import Context
 from discord import Embed, Color
 import requests
+import json
+
 
 twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
 
@@ -10,10 +12,10 @@ class EmbedCreator:
     def __init__(self, client):
         self.client = client
 
-    def create(self, ctx, title="",
-               description="", color=Color.blue(),
-               footer=None, footer_image=None,
-               thumbnail=None, image=None):
+    async def create(self, ctx, title="",
+                     description="", color=Color.blue(),
+                     footer=None, footer_image=None,
+                     thumbnail=None, image=None):
         """
         Embed creator
 
@@ -53,5 +55,6 @@ class BasicUtils:
             return
         await user.send(message)
 
-    async def something(self, ctx: Context):
-        pass
+    async def json_dumper(self, json_file: str, content):
+        with open("{0}.json".format(json_file), "a") as f:
+            json.dump(f)

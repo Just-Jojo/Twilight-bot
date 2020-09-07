@@ -66,7 +66,7 @@ class Fun(Cog, name="fun"):
             title = "Embed Repeater"
 
         if args != None:
-            embed = self.EmbedCreator.create(
+            embed = await self.EmbedCreator.create(
                 ctx, title=title, description=args)
             await ctx.send(embed=embed)
         else:
@@ -85,7 +85,7 @@ class Fun(Cog, name="fun"):
         """
         if args != None:
             try:
-                embed = self.EmbedCreator.create(ctx, title="Calculator")
+                embed = await self.EmbedCreator.create(ctx, title="Calculator")
                 embed.add_field(
                     name="Input",
                     value=args,
@@ -108,10 +108,10 @@ class Fun(Cog, name="fun"):
     async def invite(self, ctx):
         """Get the bot invite link and the support server link."""
 
-        embed = self.EmbedCreator.create(ctx,
-                                         title="Invite/Support server link",
-                                         description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
-                                         footer="Twilight Bot invite link")
+        embed = await self.EmbedCreator.create(ctx,
+                                               title="Invite/Support server link",
+                                               description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
+                                               footer="Twilight Bot invite link")
         embed.add_field(name="Support Server link",
                         value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
         await self.BasicUtils.whisper(ctx, ctx.author, embed=embed)
@@ -120,7 +120,7 @@ class Fun(Cog, name="fun"):
     @commands.is_owner()
     async def servers(self, ctx):
         guilds = "\n".join([str(guild) for guild in self.client.guilds])
-        embed = self.EmbedCreator.create(
+        embed = await self.EmbedCreator.create(
             ctx,
             title="Servers",
             color=discord.Color.gold(),
