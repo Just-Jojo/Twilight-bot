@@ -135,6 +135,14 @@ class Fun(Cog):
         embed = await self.EmbedCreator.create(ctx, title=title, description=description)
         await ctx.send(embed=embed)
 
+    @commands.command(name="mute")
+    async def _mute(self, ctx, user):
+        """Mute a user
+        
+        [p]mute <user>
+        """
+        await ctx.send("no.")
+
 
 def setup(client):
     client.add_cog(Fun(client))

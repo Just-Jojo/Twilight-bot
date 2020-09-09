@@ -9,3 +9,5 @@ pony.json
 away.json
 .vscode/launch.json
 bot.txt
+__pycache__
+cogs/__pycache__
