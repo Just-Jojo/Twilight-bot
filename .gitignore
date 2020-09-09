@@ -1,12 +1,8 @@
 ponyurl.txt
-cogs/mod.py
 ponies.txt
 about.txt
-uncogs.txt
 cogs.txt
-prefixes.json
 pony.json
-away.json
 .vscode/launch.json
 bot.txt
 __pycache__
