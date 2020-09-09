@@ -80,6 +80,26 @@ class Mod(Cog):
         await ctx.channel.edit(slowmode_delay=0)
         await ctx.send("Slowmode cleared.")
 
+    @commands.command()
+    @commands.has_permissions(manage_nicknames=True)
+    @commands.bot_has_permissions(manage_nicknames=True)
+    @commands.guild_only()
+    async def rename(self, ctx, member: discord.Member, *, name: str = None):
+        try:
+            if name is not None:
+                if len(name) <= 32 and len(name) >= 2:
+                    try:
+                        await member.edit(nick=name)
+                        await ctx.send("Done.")
+                    except:
+                        await ctx.send("Could not change that member's nickname.")
+                else:
+                    await ctx.send("Could not change that members nickname. All nicknames have to be between 2 and 32 characters.")
+            else:
+                await ctx.send("Please specify a member")
+        except:
+            await ctx.send("Oops, something went wrong!")
+
 
 def setup(client):
     client.add_cog(Mod(client))
