@@ -16,26 +16,6 @@ async def on_ready():
     print("Twilight is in the castle")
 
 
-@client.command(help="Probably the most important command")
-async def about(ctx):
-    with open("about.txt", "r") as f:
-        about_message = f.read()
-
-    embed = discord.Embed(
-        title="About Twilight",
-        description=about_message, color=discord.Color.purple()
-    )
-    embed.set_footer(
-        text="Jojo#7791", icon_url="https://media.discordapp.net/attachments/707431591051264121/722163555956162660/Jojospfp.png"
-    )
-    await ctx.send(embed=embed)
-
-
-@client.command(help="Pong!")
-async def ping(ctx):
-    await ctx.send("Pong!")
-
-
 @client.command(hidden=True)
 @commands.is_owner()
 async def load(ctx, extension):

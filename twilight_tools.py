@@ -1,9 +1,11 @@
-import discord
-from discord.ext.commands import Context
-from discord import Embed, Color
-import requests
 import json
 import random
+
+import discord
+import requests
+from discord import Color, Embed
+from discord.ext import commands
+from discord.ext.commands import Context
 
 twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
 twilight_image_links = [
@@ -71,3 +73,28 @@ class BasicUtils:
 
     async def something(self):
         pass
+
+
+class General(commands.Cog):
+    def __init__(self, client):
+        self.client = client
+
+    @commands.command()
+    async def ping(self, ctx):
+        await ctx.send("Pong.")
+
+    @client.command(help="Probably the most important command")
+    async def about(self, ctx):
+        with open("about.txt", "r") as f:
+            about_message = f.read()
+
+        embed = self.EmbedCreator.create(
+            title="About Twilight",
+            description=about_message, color=discord.Color.purple(),
+            footer="Jojo#7791"
+        )
+        await ctx.send(embed=embed)
+
+
+def setup(client):
+    client.add_cog(General(client))

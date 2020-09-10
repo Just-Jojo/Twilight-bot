@@ -22,7 +22,7 @@ class Members(commands.Cog):
             await ctx.send("{0.mention} quit it".format(_gavin))
             await ctx.send("Also {0.mention} learn to spell!".format(_gavin))
         except:
-            await ctx.send("I cannot find Gavin")
+            await ctx.send("I cannot find Gavin 👀")
 
     @commands.command()
     async def shadow(self, ctx):
@@ -38,6 +38,11 @@ class Members(commands.Cog):
     @commands.guild_only()
     async def weirdo(self, ctx):
         await ctx.send("Not a horse man, just your Average Weirdo!")
+
+    @commands.command()
+    @commands.guild_only()
+    async def jojo(self, ctx):
+        await ctx.send("Jojo, who is the dev of this bot, is an okay-ish person")
 
 
 def setup(client):
