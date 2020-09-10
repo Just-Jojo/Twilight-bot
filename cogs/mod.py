@@ -19,8 +19,11 @@ class Mod(Cog):
             await ctx.send("You need to supply a member to ban them.")
 
         else:
-            await member.ban(reason=reason)
-            await ctx.send("{0} was banned.".format(member))
+            if member.has_permissions(manage_messages=True):
+                await ctx.send("I cannot ban that member as they have mod.")
+            else:
+                await member.ban(reason=reason)
+                await ctx.send("{0} was banned.".format(member))
 
     @commands.group(name="role", help="Add/Take roles from a member.")
     @commands.has_permissions(manage_roles=True)
@@ -58,8 +61,11 @@ class Mod(Cog):
             await ctx.send_help(ctx.command)
 
         else:
-            await member.kick(reason=reason)
-            await ctx.send("{0} was kicked".format(member))
+            if member.has_permissions(manage_message=True):
+                await ctx.send("That person is a mod therefore I cannot ban them.")
+            else:
+                await member.kick(reason=reason)
+                await ctx.send("{0} was kicked".format(member))
 
     @commands.command(aliases=["slow"])
     @commands.has_permissions(manage_messages=True)

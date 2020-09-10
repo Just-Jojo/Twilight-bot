@@ -70,3 +70,6 @@ class BasicUtils:
 
     async def twilight_pic(self):
         return random.choice(twilight_image_links)
+
+    async def something():
+        pass

@@ -138,10 +138,20 @@ class Fun(Cog):
     @commands.command(name="mute")
     async def _mute(self, ctx, user):
         """Mute a user
-        
+
         [p]mute <user>
         """
         await ctx.send("no.")
+
+    @commands.command()
+    async def gavin(self, ctx):
+        """
+        Ping Gavin to tell him to stop
+
+        [p]gavin
+        """
+        _gavin = self.client.get_user(747025476152721448)
+        await ctx.send("{0.mention} quit it".format(_gavin))
 
 
 def setup(client):
