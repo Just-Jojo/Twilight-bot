@@ -25,9 +25,7 @@ class EmbedCreator:
         """
         Embed creator
 
-        `Title` is the Embed Title
-        `Color` is the Embed Color
-        `Footer` and `Footer image` is optional
+        context, title of the embed, description of the embed, color (defaults to blue), footer (optional), footer image (also optional), thumbnail, image
         """
         data = Embed(title=title, color=color)
         if description is not None:
@@ -71,5 +69,5 @@ class BasicUtils:
     async def twilight_pic(self):
         return random.choice(twilight_image_links)
 
-    async def something():
+    async def something(self):
         pass

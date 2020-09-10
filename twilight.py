@@ -50,9 +50,9 @@ async def unload(ctx, extension):
     await ctx.send(f"Unloaded {extension}")
 
 
-@client.command(aliases=["cu"], hidden=True)
+@client.command(name="reload", aliases=["cu"], hidden=True)
 @commands.is_owner()
-async def reload(ctx, extension: str = None):
+async def reload_cogs(ctx, extension: str = None):
     if extension == None:
         x = [i for i in client.cogs]
         for cog in x:

@@ -20,6 +20,7 @@ class Fun(Cog):
         self.BasicUtils = BasicUtils(self)
 
     @commands.command(name="party", help="Throw a party!")
+    @commands.guild_only()
     async def party_time(self, ctx, member: discord.Member = None):
         if member == None:
             member = ctx.author
@@ -142,16 +143,6 @@ class Fun(Cog):
         [p]mute <user>
         """
         await ctx.send("no.")
-
-    @commands.command()
-    async def gavin(self, ctx):
-        """
-        Ping Gavin to tell him to stop
-
-        [p]gavin
-        """
-        _gavin = self.client.get_user(747025476152721448)
-        await ctx.send("{0.mention} quit it".format(_gavin))
 
 
 def setup(client):

@@ -13,6 +13,7 @@ class Mod(Cog):
     @commands.command(help="Bans a member")
     @commands.has_permissions(ban_members=True)
     @commands.bot_has_permissions(ban_members=True)
+    @commands.guild_only()
     async def ban(self, ctx, member: discord.Member, *, reason):
         """Ban a member"""
         if not member:
@@ -26,6 +27,7 @@ class Mod(Cog):
                 await ctx.send("{0} was banned.".format(member))
 
     @commands.group(name="role", help="Add/Take roles from a member.")
+    @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def roles(self, ctx):
         if ctx.invoked_subcommand is None:
@@ -55,6 +57,7 @@ class Mod(Cog):
 
     @commands.command(help="Kicks a member")
     @commands.has_permissions(kick_members=True)
+    @commands.guild_only()
     @commands.bot_has_permissions(kick_members=True)
     async def kick(self, ctx, member: discord.Member = None, *, reason: str = None):
         if member == None:
@@ -69,6 +72,7 @@ class Mod(Cog):
 
     @commands.command(aliases=["slow"])
     @commands.has_permissions(manage_messages=True)
+    @commands.guild_only()
     @commands.bot_has_permissions(manage_channels=True)
     async def slowmode(self, ctx, seconds=None):
         if seconds:
