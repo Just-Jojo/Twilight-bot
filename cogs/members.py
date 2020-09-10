@@ -37,7 +37,7 @@ class Members(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def weirdo(self, ctx):
-        await ctx.send("Not a horse man, just you Average Weirdo!")
+        await ctx.send("Not a horse man, just your Average Weirdo!")
 
 
 def setup(client):
