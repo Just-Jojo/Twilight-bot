@@ -44,6 +44,11 @@ class Members(commands.Cog):
     async def jojo(self, ctx):
         await ctx.send("Jojo, who is the dev of this bot, is an okay-ish person")
 
+    @commands.command()
+    @commands.guild_only()
+    async def n64(self, ctx):
+        await ctx.send("n64 is awesome! <:RooCheer:708714718864343130>")
+
 
 def setup(client):
     client.add_cog(Members(client))
