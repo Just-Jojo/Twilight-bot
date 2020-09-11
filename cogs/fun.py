@@ -146,6 +146,11 @@ class Fun(Cog):
 
     @commands.command(name="rps")
     async def rock_paper_scissors_com(self, ctx, arg=None):
+        """Rock Paper Scissors
+
+        [p]rps <arg>
+        ``.rps Rock``
+        """
         await self.BasicUtils.rock_paper_scissors(ctx, arg)
 
 
