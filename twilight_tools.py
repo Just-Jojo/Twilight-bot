@@ -26,14 +26,15 @@ class EmbedCreator:
                      thumbnail=None, image=None):
         """
         Embed creator
+        Make an discord Embed object with arguments
 
         context, title of the embed, description of the embed, color (defaults to blue), footer (optional), footer image (also optional), thumbnail, image
         """
         data = Embed(title=title, color=color)
         if description is not None:
             data.description = description
-        data.set_author(name=ctx.message.author.display_name,
-                        icon_url=ctx.message.author.avatar_url)
+        data.set_author(name=ctx.author.display_name,
+                        icon_url=ctx.author.avatar_url)
 
         if footer is None:
             footer = "Twilight Embed"
@@ -71,5 +72,47 @@ class BasicUtils:
     async def twilight_pic(self):
         return random.choice(twilight_image_links)
 
-    async def something(self):
-        pass
+    async def rock_paper_scissors(self, ctx: Context, arg: str = None):
+        rps_arguments = ["rock", "paper", "scissors"]
+        rps_outcome = {
+            "rock": ["We tied!", "I win!", "You win!"],
+            "paper": ["You win!", "We tied!", "I win!"],
+            "scissors": ["I win!", "You win!", "We tied!"]
+        }
+        if arg is not None:
+            if arg.lower() in rps_arguments:
+                _main = random.randint(0, 2)
+                bot_choice = rps_arguments[_main]
+                embed = await EmbedCreator.create(
+                    self, ctx, title="Rock Paper Scissors",
+                    description="Rock Paper Scissors game between {0} and Me!".format(
+                        ctx.author),
+                    footer="Twilight bot Rock Paper Scissors")
+                embed.add_field(
+                    name="Your choice", value=arg.lower(),
+                    inline=True
+                )
+                embed.add_field(
+                    name="My choice", value=bot_choice,
+                    inline=True
+                ),
+                embed.add_field(
+                    name="Outcome",
+                    value=rps_outcome[arg.lower()][_main],
+                    inline=False
+                )
+                await ctx.send(embed=embed)
+            else:
+                embed = await EmbedCreator.create(
+                    self, ctx, title="Whoops!",
+                    color=discord.Color.red(),
+                    description="I'm sorry I didn't recognize that argument!\nThe arguments you can use are `Rock, Paper, and Scissors`!",
+                    footer="Twilight Rock, Paper, Scissors"
+                )
+                await ctx.send(embed=embed)
+        else:
+            embed = await EmbedCreator.create(
+                self, ctx, title="Whoops", color=discord.Color.red(),
+                description="You didn't specify an argument!\nThe arguments you can use are `Rock, Paper, Scissors`",
+                footer="Twilight Rock, Paper, Scissors")
+            await ctx.send(embed=embed)

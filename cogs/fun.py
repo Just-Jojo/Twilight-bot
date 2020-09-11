@@ -144,6 +144,10 @@ class Fun(Cog):
         """
         await ctx.send("no.")
 
+    @commands.command(name="rps")
+    async def rock_paper_scissors_com(self, ctx, arg=None):
+        await self.BasicUtils.rock_paper_scissors(ctx, arg)
+
 
 def setup(client):
     client.add_cog(Fun(client))
