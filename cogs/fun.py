@@ -56,19 +56,16 @@ class Fun(Cog):
             await self.BasicUtils.help_returner(ctx)
 
     @say.command()
-    async def frepeat(self, ctx, title: str = None, *, args: str = None):
+    async def frepeat(self, ctx, *, args: str = None):
         """
         Say frepeat
 
         Have the bot send your arguments in a fancy embed.
         [p]say frepeat <args> | Eg. [p]say frepeat Test
         """
-        if title is None:
-            title = "Embed Repeater"
-
         if args != None:
             embed = await self.EmbedCreator.create(
-                ctx, title=title, description=args)
+                ctx, description=args, footer=ctx.author)
             await ctx.send(embed=embed)
         else:
             await self.BasicUtils.help_returner(ctx)
@@ -137,6 +134,7 @@ class Fun(Cog):
         await ctx.send(embed=embed)
 
     @commands.command(name="mute")
+    @commands.guild_only()
     async def _mute(self, ctx, user):
         """Mute a user
 
