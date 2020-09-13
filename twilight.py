@@ -56,6 +56,9 @@ async def versionupdate(ctx, *, version: str = None):
     if version is not None:
         with open("version.json", "w") as f:
             json.dump(version, f)
+        with open("version.json", "r") as f:
+            __version__ = json.load(f)
+        await client.change_presence(activity=discord.Game(name=">help | Version {version}".format(version=__version__)))
         await ctx.send("Version updated to {version}".format(version=version))
 
     else:
