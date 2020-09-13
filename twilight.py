@@ -56,7 +56,7 @@ async def versionupdate(ctx, *, version: str = None):
     if version is not None:
         with open("version.json", "w") as f:
             json.dump(version, f)
-        await ctx.send("Version updated to {version}".format(version=__version__))
+        await ctx.send("Version updated to {version}".format(version=version))
 
 
 @client.command(hidden=True)
