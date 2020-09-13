@@ -14,6 +14,7 @@ twilight_image_links = [
     "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
+__version__: str = None
 
 
 class EmbedCreator:
@@ -144,3 +145,12 @@ class BasicUtils:
                 description="You didn't specify an argument!\nThe arguments you can use are `Rock, Paper, Scissors`",
                 footer="Twilight Rock, Paper, Scissors")
             await ctx.send(embed=embed)
+
+    async def get_version(self):
+        with open('version.json', "r") as f:
+            __version__ = json.load(f)
+        return __version__
+
+    async def update_version(self, version):
+        with open("version.json", "w") as f:
+            json.dump(version, f)
