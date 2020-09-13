@@ -4,7 +4,6 @@ import os
 import discord
 from discord.ext import commands
 import traceback
-import twilight_tools
 
 
 client = commands.Bot(command_prefix=(">", "."))

@@ -24,11 +24,20 @@ class EmbedCreator:
                      description="", color=Color.blue(),
                      footer=None, footer_image=None,
                      thumbnail=None, image=None):
-        """
-        Embed creator
-        Make an discord Embed object with arguments
+        """Make an Embed as easy as 1, 2, 3
 
-        context, title of the embed, description of the embed, color (defaults to blue), footer (optional), footer image (also optional), thumbnail, image
+        Args:
+            ctx ([type]): The context needed to set the author's name and url
+            title (str, optional): The Title of the embed. Defaults to "".
+            description (str, optional): The Description of the embed. Defaults to "".
+            color ([type], optional): Color/Colour of the embed (You need to use discord.Color. to set the color). Defaults to Color.blue().
+            footer ([type], optional): Set the footer of the Embed. Defaults to None.
+            footer_image ([type], optional): Set the footer icon. Defaults to None.
+            thumbnail ([type], optional): Set the thumbnail of the embed. Defaults to None.
+            image ([type], optional): Set the embed's image. Defaults to None.
+
+        Returns:
+            Embed: A Discord embed object
         """
         data = Embed(title=title, color=color)
         if description is not None:
@@ -57,6 +66,14 @@ class BasicUtils:
         self.client = client
 
     async def whisper(self, ctx: Context, user: discord.Member, message: str = '', embed: discord.Embed = None):
+        """Dm a user
+
+        Args:
+            ctx (Context): Needed to actually send the message
+            user (discord.Member): The user you want to DM
+            message (str, optional): The message you want to send to them. Defaults to ''.
+            embed (discord.Embed, optional): The Embed you want to send to them. Defaults to None.
+        """
         if embed is not None:
             await user.send(message, embed=embed)
             return
@@ -67,12 +84,23 @@ class BasicUtils:
             json.dump(f)
 
     async def help_returner(self, ctx: Context):
+        """Sends the command's help message
+
+        Args:
+            ctx (Context): Context needed to send the message
+        """
         await ctx.send_help(ctx.command)
 
     async def twilight_pic(self):
         return random.choice(twilight_image_links)
 
     async def rock_paper_scissors(self, ctx: Context, arg: str = None):
+        """Rock, Paper, Scissors command. A fun addition for your bot
+
+        Args:
+            ctx (Context): Context to send the embed and to get the message
+            arg (str, optional): The actually argument to play the game. Takes either Rock, paper, scissors. Defaults to None.
+        """
         rps_arguments = ["rock", "paper", "scissors"]
         rps_outcome = {
             "rock": ["We tied!", "I win!", "You win!"],

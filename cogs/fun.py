@@ -4,8 +4,7 @@ from discord.ext.commands import Cog
 from discord.utils import get
 import json
 import random
-from twilight_tools import EmbedCreator, BasicUtils
-
+from Tools.twilight_tools import BasicUtils, EmbedCreator
 import asyncio
 
 twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
