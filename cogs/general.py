@@ -9,7 +9,7 @@ class General(commands.Cog):
         self.basicutils = BasicUtils(self)
         self.embed = EmbedCreator(self)
 
-    @commands.Cog.listener
+    @commands.Cog.listener()
     async def on_ready(self):
         version = await self.basicutils.get_version()
         await self.client.change_presence(activity=discord.Game(name=">help | Version {version}".format(version=version)))

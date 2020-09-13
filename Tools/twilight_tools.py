@@ -17,6 +17,10 @@ twilight_image_links = [
 __version__: str = None
 
 
+class EmbedFail(Exception):
+    pass
+
+
 class EmbedCreator:
     def __init__(self, client):
         self.client = client
@@ -40,26 +44,29 @@ class EmbedCreator:
         Returns:
             Embed: A Discord embed object
         """
-        data = Embed(title=title, color=color)
-        if description is not None:
-            data.description = description
-        data.set_author(name=ctx.author.display_name,
-                        icon_url=ctx.author.avatar_url)
+        try:
+            data = Embed(title=title, color=color)
+            if description is not None:
+                data.description = description
+            data.set_author(name=ctx.author.display_name,
+                            icon_url=ctx.author.avatar_url)
 
-        if footer is None:
-            footer = "Twilight Embed"
-        if footer_image is None:
-            footer_image = twilight_pfp
-        data.set_footer(text=footer, icon_url=footer_image)
+            if footer is None:
+                footer = "Twilight Embed"
+            if footer_image is None:
+                footer_image = twilight_pfp
+            data.set_footer(text=footer, icon_url=footer_image)
 
-        if image is not None:
-            data.set_image(url=image)
+            if image is not None:
+                data.set_image(url=image)
 
-        if thumbnail is not None:
-            data.set_thumbnail(
-                url=thumbnail
-            )
-        return data
+            if thumbnail is not None:
+                data.set_thumbnail(
+                    url=thumbnail
+                )
+            return data
+        except:
+            raise EmbedFail
 
 
 class BasicUtils:
