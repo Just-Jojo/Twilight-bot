@@ -7,11 +7,13 @@ import traceback
 
 
 client = commands.Bot(command_prefix=(">", "."))
+with open("version.json", "r") as f:
+    __version__ = json.load(f)
 
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Game(name=">help | Version Beta 1.0"))
+    await client.change_presence(activity=discord.Game(name=">help | Version {version}".format(version=__version__)))
     print("Twilight is in the castle")
 
 
@@ -46,6 +48,15 @@ async def reload_cogs(ctx, extension: str = None):
 
     else:
         await ctx.send("I could not find that cog. Sorry")
+
+
+@client.command(name="version", hidden=True)
+@commands.is_owner()
+async def versionupdate(ctx, *, version: str = None):
+    if version is not None:
+        with open("version.json", "w") as f:
+            json.dump(version, f)
+        await ctx.send("Version updated to {version}".format(version=__version__))
 
 
 @client.command(hidden=True)
