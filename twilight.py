@@ -58,6 +58,9 @@ async def versionupdate(ctx, *, version: str = None):
             json.dump(version, f)
         await ctx.send("Version updated to {version}".format(version=version))
 
+    else:
+        await ctx.send("My version is {0}".format(__version__))
+
 
 @client.command(hidden=True)
 @commands.is_owner()
