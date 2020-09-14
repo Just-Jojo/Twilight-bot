@@ -154,6 +154,11 @@ class BasicUtils:
             await ctx.send(embed=embed)
 
     async def get_version(self):
+        """Get the version of the bot
+
+        Returns:
+            String: The version of the bot
+        """
         with open('version.json', "r") as f:
             __version__ = json.load(f)
         return __version__

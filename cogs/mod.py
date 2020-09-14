@@ -26,15 +26,23 @@ class Mod(Cog):
                 await member.ban(reason=reason)
                 await ctx.send("{0} was banned.".format(member))
 
-    @commands.group(name="role", help="Add/Take roles from a member.")
+    @commands.group(name="role")
     @commands.guild_only()
     @commands.has_permissions(manage_roles=True)
     async def roles(self, ctx):
+        """Roles command
+        """
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
     @roles.command(aliases=["give"])
     async def add(self, ctx, role: discord.Role = None, *, member: discord.Member = None):
+        """Adds a role to a member
+
+        Args
+            role (discord.Role, required): The role you want to add to someone
+            member (discord.Member, optional): The member you want to add the role to. Defaults to the author of the command.
+        """
         if role == None:
             await ctx.send_help(ctx.command)
 
@@ -46,6 +54,12 @@ class Mod(Cog):
 
     @roles.command()
     async def take(self, ctx, role: discord.Role = None, *, member: discord.Member = None):
+        """Takes a role from a member
+
+        Args:
+            role (discord.Role): The role you'd like to take
+            member (discord.Member, optional): The member you'd like to take a role from. Defaults to the author of the command.
+        """
         if role == None:
             await ctx.send_help(ctx.command)
 
