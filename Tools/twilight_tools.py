@@ -32,14 +32,14 @@ class EmbedCreator:
         """Make an Embed as easy as 1, 2, 3
 
         Args:
-            ctx ([type]): The context needed to set the author's name and url
+            ctx: The context needed to set the author's name and url
             title (str, optional): The Title of the embed. Defaults to "".
             description (str, optional): The Description of the embed. Defaults to "".
-            color ([type], optional): Color/Colour of the embed (You need to use discord.Color. to set the color). Defaults to Color.blue().
-            footer ([type], optional): Set the footer of the Embed. Defaults to None.
-            footer_image ([type], optional): Set the footer icon. Defaults to None.
-            thumbnail ([type], optional): Set the thumbnail of the embed. Defaults to None.
-            image ([type], optional): Set the embed's image. Defaults to None.
+            color (discord.Color, optional): Color/Colour of the embed (You need to use discord.Color. to set the color). Defaults to Color.blue().
+            footer (optional): Set the footer of the Embed. Defaults to None.
+            footer_image (optional): Set the footer icon. Defaults to None.
+            thumbnail (optional): Set the thumbnail of the embed. Defaults to None.
+            image (optional): Set the embed's image. Defaults to None.
 
         Returns:
             Embed: A Discord embed object
