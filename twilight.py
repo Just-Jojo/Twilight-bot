@@ -6,7 +6,7 @@ from discord.ext import commands
 import traceback
 
 
-client = commands.Bot(command_prefix=(">", "."))
+client = commands.Bot(command_prefix=commands.when_mentioned_or(">", "."))
 
 
 @client.event
