@@ -47,6 +47,26 @@ class General(commands.Cog):
         else:
             await ctx.send("Could not update version")
 
+    @commands.command(name="check")
+    @commands.is_owner()
+    async def _check(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        time = user.joined_at.strftime("%d %b %Y %H:%M")
+        made = user.created_at.strftime("%d %b %Y %H:%M")
+        embed = await self.embed.create(
+            ctx, title="{0}'s join and creation times".format(
+                user.display_name),
+            color=ctx.author.color, footer="User join/creation dates")
+        embed.add_field(
+            name="Joined at",
+            value=time, inline=False)
+        embed.add_field(
+            name="Account made at",
+            value=made, inline=False
+        )
+        await ctx.send(embed=embed)
+
 
 def setup(client):
     client.add_cog(General(client))
