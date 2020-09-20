@@ -13,6 +13,9 @@ client = commands.Bot(command_prefix=commands.when_mentioned_or(">", "."))
 async def on_ready():
     print("Twilight is in the castle")
 
+# Only have the load/unload/reload/off commands here
+# Every other command (including owner only) should at least go into General
+
 
 @client.command(hidden=True)
 @commands.is_owner()

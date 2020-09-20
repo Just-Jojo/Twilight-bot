@@ -26,7 +26,7 @@ class EmbedCreator:
         self.client = client
 
     async def create(self, ctx, title="",
-                     description="", color=Color.blue(),
+                     description="", color=Color.gold(),
                      footer=None, footer_image=None,
                      thumbnail=None, image=None):
         """Make an Embed as easy as 1, 2, 3
@@ -45,6 +45,8 @@ class EmbedCreator:
             Embed: A Discord embed object
         """
         try:
+            if isinstance(ctx.message.channel, discord.abc.GuildChannel):
+                color = ctx.message.author.color
             data = Embed(title=title, color=color)
             if description is not None:
                 data.description = description
