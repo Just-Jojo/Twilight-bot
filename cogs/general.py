@@ -1,8 +1,7 @@
 import discord
 from discord.ext import commands
 from Tools.twilight_tools import BasicUtils, EmbedCreator
-from twilight import get_prefix
-import json
+from copy import copy
 
 
 class General(commands.Cog):
@@ -50,7 +49,6 @@ class General(commands.Cog):
             await ctx.send("Could not update version")
 
     @commands.command(name="check")
-    @commands.is_owner()
     async def _check(self, ctx, user: discord.Member = None):
         if user is None:
             user = ctx.author
@@ -68,6 +66,22 @@ class General(commands.Cog):
             value=made, inline=False
         )
         await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    @commands.is_owner()
+    async def sudo(self, ctx, user: discord.Member, *, command):
+        """Sudo another user invoking a command.
+        The prefix must not be entered.
+        """
+        msg = copy(ctx.message)
+        msg.author = user
+        msg.content = ctx.prefix + command
+
+        ctx.bot.dispatch("message", msg)
+
+    @commands.command()
+    async def swear(self, ctx):
+        await ctx.send("<@544974305445019651> quit swearing, sweet Celestia")
 
 
 def setup(client):

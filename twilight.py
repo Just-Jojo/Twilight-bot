@@ -21,6 +21,9 @@ client = commands.Bot(
 async def on_ready():
     print("Twilight is in the castle")
 
+# Only have the load/unload/reload/off commands here
+# Every other command (including owner only) should at least go into General
+
 
 @client.event
 async def on_guild_join(guild):
