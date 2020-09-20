@@ -72,6 +72,7 @@ class EmbedCreator:
 class BasicUtils:
     def __init__(self, client):
         self.client = client
+    
 
     async def whisper(self, ctx: Context, user: discord.Member, message: str = '', embed: discord.Embed = None):
         """Dm a user

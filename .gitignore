@@ -7,3 +7,4 @@ pony.json
 bot.txt
 __pycache__
 version.json
+prefixes.json
