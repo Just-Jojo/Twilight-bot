@@ -3,6 +3,7 @@ from discord.ext import commands
 from Tools.twilight_tools import BasicUtils, EmbedCreator, guild_owner
 from copy import copy
 import json
+from random import choice
 
 
 class General(commands.Cog):
@@ -137,6 +138,18 @@ class General(commands.Cog):
             message = "".join(guilds)
             fail_message = "".join(failed_guilds)
             await ctx.send("Sent these messages out to the following servers:\n{0}\nThese servers could not have the messages sent to\n{1}".format(message, fail_message))
+
+    @commands.command()
+    async def choose(self, ctx, *options):
+        """**Choose between several options**
+        Choose between two or more options
+
+        *Yes I stole this from Red :p
+        """
+        if len(options) < 2:
+            await ctx.send("Please input more than 1 options")
+        else:
+            await ctx.send(choice(options))
 
 
 def setup(client):
