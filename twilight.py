@@ -18,12 +18,12 @@ async def on_ready():
 # Every other command (including owner only) should at least go into General
 
 
-@client.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.errors.CommandNotFound):
-        pass
-    else:
-        return
+# @client.event
+# async def on_command_error(ctx, error):
+#     if isinstance(error, commands.errors.CommandNotFound):
+#         pass
+#     else:
+#         return
 
 
 @client.command(hidden=True)

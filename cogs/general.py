@@ -11,6 +11,11 @@ class General(commands.Cog):
         self.basicutils = BasicUtils(self)
         self.embed = EmbedCreator(self)
 
+    def guild_owner():
+        async def inner(ctx):
+            return ctx.guild.owner
+        return commands.check(inner)
+
     @commands.Cog.listener()
     async def on_ready(self):
         version = await self.basicutils.get_version()
@@ -86,7 +91,8 @@ class General(commands.Cog):
 
     @commands.command(name="signup", aliases=["sign", "su"])
     @commands.guild_only()
-    @commands.has_permissions(administrator=True)
+    @guild_owner()
+    # @commands.has_permissions(administrator=True)
     async def sign_up(self, ctx, channel: discord.TextChannel = None):
         if channel is None:
             channel = ctx.channel.id
