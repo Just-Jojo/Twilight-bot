@@ -45,9 +45,15 @@ async def unload(ctx, extension):
 async def reload_cogs(ctx, extension: str = None):
     if extension == None:
         x = [i for i in client.cogs]
+        relo_cogs = []
+        fail_cog = []
         for cog in x:
-            client.reload_extension("cogs.{0}".format(cog.lower()))
-        await ctx.send("Reloaded cogs. You can use their commands now")
+            try:
+                client.reload_extension("cogs.{0}".format(cog.lower()))
+                relo_cogs.append(cog)
+            except:
+                fail_cog.append(cog)
+        await ctx.send("Reloaded cogs. You can use their commands now\nReloaded: {0}, Failed (if any): {1}".format(relo_cogs, fail_cog))
         print("\nreloaded cogs\n")
 
     elif extension:

@@ -14,7 +14,7 @@ class General(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         version = await self.basicutils.get_version()
-        await self.client.change_presence(activity=discord.Game(name=">help | Version {version}".format(version=version)))
+        await self.client.change_presence(activity=discord.Game(name=".help | Version {version}".format(version=version)))
 
     @commands.command()
     async def ping(self, ctx):
