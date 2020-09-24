@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from Tools.twilight_tools import BasicUtils, EmbedCreator
+from Tools.twilight_tools import BasicUtils, EmbedCreator, guild_owner
 from copy import copy
 import json
 
@@ -10,11 +10,6 @@ class General(commands.Cog):
         self.client = client
         self.basicutils = BasicUtils(self)
         self.embed = EmbedCreator(self)
-
-    def guild_owner():
-        async def inner(ctx):
-            return ctx.guild.owner
-        return commands.check(inner)
 
     @commands.Cog.listener()
     async def on_ready(self):

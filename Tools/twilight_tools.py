@@ -17,6 +17,12 @@ twilight_image_links = [
 __version__: str = None
 
 
+def guild_owner():
+    async def inner(ctx):
+        return ctx.guild.owner
+    return commands.check(inner)
+
+
 class EmbedFail(Exception):
     pass
 
@@ -74,7 +80,6 @@ class EmbedCreator:
 class BasicUtils:
     def __init__(self, client):
         self.client = client
-    
 
     async def whisper(self, ctx: Context, user: discord.Member, message: str = '', embed: discord.Embed = None):
         """Dm a user
