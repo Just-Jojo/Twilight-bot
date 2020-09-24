@@ -78,11 +78,4 @@ for cog in os.listdir("./cogs"):
             continue
 
 
-@update.error
-async def update_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.send("I'm sorry you don't have the proper permissions to use this command!")
-    else:
-        return
-
 client.run(bot_key, reconnect=True)
