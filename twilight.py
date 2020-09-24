@@ -6,15 +6,8 @@ from discord.ext import commands
 import traceback
 
 
-def get_prefix(client, message):
-    with open("prefixes.json", "r") as f:
-        prefixes = json.load(f)
-
-    return str(prefixes[str(message.guild.id)])
-
-
 client = commands.Bot(
-    command_prefix=commands.when_mentioned_or(str(get_prefix), "."))
+    command_prefix=commands.when_mentioned_or("."))
 
 
 @client.event
@@ -23,52 +16,6 @@ async def on_ready():
 
 # Only have the load/unload/reload/off commands here
 # Every other command (including owner only) should at least go into General
-
-
-@client.event
-async def on_guild_join(guild):
-    for channel in guild.text_channels:
-        if channel.permissions_for(guild.me).send_messages:
-            await channel.send('Hey there! this is the message i send when i join a server')
-        break
-
-
-@client.event
-async def on_guild_remove(guild):
-    with open("prefixes.json", "r") as f:
-        prefixes = json.load(f)
-
-    try:
-        prefixes.pop(str(guild.id))
-
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-    except:
-        pass
-
-
-@client.group()
-async def prefix(ctx):
-    if ctx.invoked_subcommand is None:
-        prefix = get_prefix(ctx)
-        await ctx.send("Your prefix is `{0}`!".format(prefix))
-
-
-@prefix.command()
-@commands.has_permissions(administrator=True)
-async def update(ctx, prefix):
-    if prefix:
-        with open("prefixes.json", "r") as f:
-            prefixes = json.load(f)
-
-        prefixes[str(ctx.guild.id)] = prefix
-
-        with open("prefixes.json", "w") as f:
-            json.dump(prefixes, f, indent=4)
-
-        await ctx.send("Your new prefix is `{0}`!".format(prefix))
-    else:
-        await ctx.send("You can't make an empty prefix, silly!")
 
 
 @client.command(hidden=True)
@@ -121,5 +68,13 @@ for cog in os.listdir("./cogs"):
             print("{0} online".format(cog[:-3]))
         except:
             continue
+
+
+@update.error
+async def update_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("I'm sorry you don't have the proper permissions to use this command!")
+    else:
+        return
 
 client.run(bot_key, reconnect=True)
