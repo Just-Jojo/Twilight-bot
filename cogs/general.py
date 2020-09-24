@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from Tools.twilight_tools import BasicUtils, EmbedCreator
 from copy import copy
+import json
 
 
 class General(commands.Cog):
@@ -82,6 +83,59 @@ class General(commands.Cog):
     @commands.command()
     async def swear(self, ctx):
         await ctx.send("<@544974305445019651> quit swearing, sweet Celestia")
+
+    @commands.command(name="signup", aliases=["sign", "su"])
+    @commands.guild_only()
+    @commands.has_permissions(administrator=True)
+    async def sign_up(self, ctx, channel: discord.TextChannel = None):
+        if channel is None:
+            channel = ctx.channel.id
+        else:
+            channel = channel.id
+
+        with open('newsletter.json', 'r') as f:
+            newsletter = json.load(f)
+        if str(ctx.guild) not in newsletter.keys():
+            newsletter[str(ctx.guild)] = int(channel)
+            await ctx.send("You have now been signed up for newsletters!")
+            with open('newsletter.json', 'w') as f:
+                json.dump(newsletter, f, indent=4)
+        else:
+            await ctx.send("You have already been signed up for newsletters!")
+
+    @commands.command(name="optout", aliases=["out", "oo", "opt"])
+    @commands.has_permissions(administrator=True)
+    async def opt_out(self, ctx):
+        with open("newsletter.json", "r") as f:
+            newsletter = json.load(f)
+        if str(ctx.guild) in newsletter.keys():
+            newsletter.pop(str(ctx.guild))
+            await ctx.send("You have now been opted out of newsletters!")
+            with open("newsletter.json", "w") as f:
+                json.dump(newsletter, f, indent=4)
+        else:
+            await ctx.send("I could not find your guild in the newsletter catalog")
+
+    @commands.command(aliases=["update", "news"], hidden=True)
+    @commands.is_owner()
+    async def newsletter(self, ctx, *, message: str = None):
+        if message is None:
+            await ctx.send("I cannot send an empty message :p")
+        else:
+            guilds = []
+            failed_guilds = []
+            with open("newsletter.json", "r") as f:
+                newsletters = json.load(f)
+            for guild in newsletters.keys():
+                try:
+                    guilds.append(guild)
+                    channel = self.client.get_channel(newsletters[guild])
+                    await channel.send(message)
+                except:
+                    failed_guilds.append(guild)
+            message = "".join(guilds)
+            fail_message = "".join(failed_guilds)
+            await ctx.send("Sent these messages out to the following servers:\n{0}\nThese servers could not have the messages sent to\n{1}".format(message, fail_message))
 
 
 def setup(client):

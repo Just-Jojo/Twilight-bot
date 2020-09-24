@@ -6,7 +6,8 @@ from discord.ext import commands
 import traceback
 
 
-client = commands.Bot(command_prefix=commands.when_mentioned_or(">", "."))
+client = commands.Bot(
+    command_prefix=commands.when_mentioned_or("."))
 
 
 @client.event
@@ -75,5 +76,13 @@ for cog in os.listdir("./cogs"):
             print("{0} online".format(cog[:-3]))
         except:
             continue
+
+
+@update.error
+async def update_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send("I'm sorry you don't have the proper permissions to use this command!")
+    else:
+        return
 
 client.run(bot_key, reconnect=True)
