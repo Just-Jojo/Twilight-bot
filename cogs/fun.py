@@ -101,18 +101,6 @@ class Fun(Cog):
         else:
             await self.BasicUtils.help_returner(ctx)
 
-    @commands.command()
-    async def invite(self, ctx):
-        """Get the bot invite link and the support server link."""
-
-        embed = await self.EmbedCreator.create(ctx,
-                                               title="Invite/Support server link",
-                                               description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
-                                               footer="Twilight Bot invite link")
-        embed.add_field(name="Support Server link",
-                        value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
-        await self.BasicUtils.whisper(ctx, ctx.author, embed=embed)
-
     @commands.command(hidden=True)
     @commands.is_owner()
     async def servers(self, ctx):

@@ -1,16 +1,20 @@
-import discord
-from discord.ext import commands
-from Tools.twilight_tools import BasicUtils, EmbedCreator, guild_owner
-from copy import copy
 import json
+from copy import copy
+from platform import python_version
 from random import choice
+
+import discord
+from discord import __version__ as discord_version
+from discord.ext import commands
+from discord.utils import get
+from Tools.twilight_tools import BasicUtils, EmbedCreator, guild_owner
 
 
 class General(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.basicutils = BasicUtils(self)
-        self.embed = EmbedCreator(self)
+        self.EmbedCreator = EmbedCreator(self)
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -150,6 +154,39 @@ class General(commands.Cog):
             await ctx.send("Please input more than 1 options")
         else:
             await ctx.send(choice(options))
+
+    @commands.command()
+    async def about(self, ctx):
+        jojo = self.client.get_user(544974305445019651)
+        embed = await self.EmbedCreator.create(
+            ctx,
+            title="About Twilight",
+            description="Twilight bot is a bot made by Jojo#7791 both as a fan creation/gift to the My Little Pony: Friendship is Magic community and a school project (kinda, I'm learning Python basically)\nIt is written in Python and is totally bug free... suuure.\nIf you have any questions don't be afraid to ask in the [support server!](https://discord.gg/9cxxJSp)\nThanks for checking out Twilight!",
+            footer="About Twilight",
+            footer_image=jojo.avatar_url)
+        embed.add_field(
+            name="Python Version",
+            value=python_version(),
+            inline=True
+        )
+        embed.add_field(
+            name="Discord.py Version",
+            value=discord_version,
+            inline=True
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def invite(self, ctx):
+        """Get the bot invite link and the support server link."""
+
+        embed = await self.EmbedCreator.create(ctx,
+                                               title="Invite/Support server link",
+                                               description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
+                                               footer="Twilight Bot invite link")
+        embed.add_field(name="Support Server link",
+                        value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
+        await self.BasicUtils.whisper(ctx, ctx.author, embed=embed)
 
 
 def setup(client):
