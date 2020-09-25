@@ -188,6 +188,29 @@ class General(commands.Cog):
                         value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
         await self.BasicUtils.whisper(ctx, ctx.author, embed=embed)
 
+    @commands.command()
+    async def avatar(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+        if user.is_avatar_animated():
+            url = user.avatar_url_as(format="gif")
+        elif not user.is_avatar_animated():
+            url = user.avatar_url_as(format="png")
+
+        embed = await self.EmbedCreator.create(
+            ctx,
+            title="{0.display_name}'s avatar".format(user),
+            image=url
+        )
+        await ctx.send(embed=embed)
+
+    @commands.command(hidden=True)
+    async def horse(self, ctx):
+        if ctx.author.id == 747025476152721448:
+            await ctx.send("Gavin I already told you I don't have a horse command")
+        else:
+            pass
+
 
 def setup(client):
     client.add_cog(General(client))
