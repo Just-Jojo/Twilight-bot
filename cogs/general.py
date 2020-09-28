@@ -7,7 +7,8 @@ import discord
 from discord import __version__ as discord_version
 from discord.ext import commands
 from discord.utils import get
-from Tools.twilight_tools import BasicUtils, EmbedCreator, guild_owner
+from twilight_tools import BasicUtils, EmbedCreator, guild_owner
+# from Tools.twilight_tools import BasicUtils, EmbedCreator
 
 
 class General(commands.Cog):
@@ -25,17 +26,17 @@ class General(commands.Cog):
     async def ping(self, ctx):
         await ctx.send("Pong.")
 
-    @commands.command(help="Probably the most important command")
-    async def about(self, ctx):
-        with open("about.txt", "r") as f:
-            about_message = f.read()
+    # @commands.command(help="Probably the most important command")
+    # async def about(self, ctx):
+    #     with open("about.txt", "r") as f:
+    #         about_message = f.read()
 
-        embed = self.EmbedCreator.create(
-            title="About Twilight",
-            description=about_message, color=discord.Color.purple(),
-            footer="Jojo#7791"
-        )
-        await ctx.send(embed=embed)
+    #     embed = self.EmbedCreator.create(
+    #         title="About Twilight",
+    #         description=about_message, color=discord.Color.purple(),
+    #         footer="Jojo#7791"
+    #     )
+    #     await ctx.send(embed=embed)
 
     @commands.group()
     async def version(self, ctx):
@@ -60,7 +61,7 @@ class General(commands.Cog):
             user = ctx.author
         time = user.joined_at.strftime("%d %b %Y %H:%M")
         made = user.created_at.strftime("%d %b %Y %H:%M")
-        embed = await self.embed.create(
+        embed = await self.EmbedCreator.create(
             ctx, title="{0}'s join and creation times".format(
                 user.display_name),
             color=ctx.author.color, footer="User join/creation dates")
@@ -186,7 +187,7 @@ class General(commands.Cog):
                                                footer="Twilight Bot invite link")
         embed.add_field(name="Support Server link",
                         value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
-        await self.BasicUtils.whisper(ctx, ctx.author, embed=embed)
+        await self.basicutils.whisper(ctx, ctx.author, embed=embed)
 
     @commands.command()
     async def avatar(self, ctx, user: discord.Member = None):
