@@ -7,8 +7,10 @@ import discord
 from discord import __version__ as discord_version
 from discord.ext import commands
 from discord.utils import get
+# from twilight_tools import BasicUtils, EmbedCreator, guild_owner
 from twilight_tools import BasicUtils, EmbedCreator, guild_owner
 # from Tools.twilight_tools import BasicUtils, EmbedCreator
+import traceback
 
 
 class General(commands.Cog):
@@ -21,6 +23,16 @@ class General(commands.Cog):
     async def on_ready(self):
         version = await self.basicutils.get_version()
         await self.client.change_presence(activity=discord.Game(name=".help | Version {version}".format(version=version)))
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, commands.CommandNotFound):
+            pass
+        else:
+            print('Ignoring exception in command {}:'.format(
+                ctx.command), file=sys.stderr)
+            traceback.print_exception(
+                type(error), error, error.__traceback__, file=sys.stderr)
 
     @commands.command()
     async def ping(self, ctx):

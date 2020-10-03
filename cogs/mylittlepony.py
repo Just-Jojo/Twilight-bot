@@ -5,7 +5,7 @@ import discord
 import wikipedia
 from discord.ext import commands
 from discord.ext.commands import Cog
-from Tools.twilight_tools import EmbedCreator, BasicUtils
+from twilight_tools import EmbedCreator, BasicUtils
 
 
 with open("pony.json", "r") as f:
