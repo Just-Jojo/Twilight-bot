@@ -80,7 +80,10 @@ for cog in os.listdir("./cogs"):
         try:
             client.load_extension("cogs.{0}".format(cog[:-3]))
             print("{0} online".format(cog[:-3]))
+        except commands.errors.NoEntryPointError:
+            continue
         except:
+            traceback.print_exc()
             continue
 
 

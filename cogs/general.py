@@ -29,6 +29,10 @@ class General(commands.Cog):
     async def on_command_error(self, ctx, error):
         if isinstance(error, commands.CommandNotFound):
             pass
+        elif isinstance(error, commands.NotOwner):
+            await ctx.send("You stumble upon a command. Unfortunatly it is not usable as you are not this bot's owner. The command disappears")
+        elif isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.BadArgument):
+            await self.basicutils.help_returner(ctx)
         else:
             print('Ignoring exception in command {}:'.format(
                 ctx.command), file=sys.stderr)
@@ -89,7 +93,7 @@ class General(commands.Cog):
 
     @commands.command(hidden=True)
     @commands.is_owner()
-    async def sudo(self, ctx, user: discord.Member, *, command):
+    async def sudo(self, ctx, user: commands.Greedy[discord.Member], *, command):
         """Sudo another user invoking a command.
         The prefix must not be entered.
         """

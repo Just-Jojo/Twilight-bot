@@ -4,7 +4,6 @@ from discord.ext.commands import Cog
 from discord.utils import get
 import json
 import random
-# from twilight_tools import BasicUtils, EmbedCreator
 from twilight_tools import BasicUtils, EmbedCreator
 import asyncio
 
@@ -50,10 +49,7 @@ class Fun(Cog):
         [p]say repeat | Eg. [p]say repeat Test
         """
 
-        if args != None:
-            await ctx.send(args)
-        else:
-            await self.BasicUtils.help_returner(ctx)
+        await ctx.send(args)
 
     @say.command()
     async def frepeat(self, ctx, *, args: str = None):
@@ -63,16 +59,9 @@ class Fun(Cog):
         Have the bot send your arguments in a fancy embed.
         [p]say frepeat <args> | Eg. [p]say frepeat Test
         """
-        if args != None:
-            embed = await self.EmbedCreator.create(
-                ctx, description=args, footer=ctx.author)
-            await ctx.send(embed=embed)
-        else:
-            await self.BasicUtils.help_returner(ctx)
-
-    @commands.command(name=":|", aliases=[":(", ":)"], hidden=True)
-    async def _silly_commands(self, ctx):
-        await ctx.send(":P")
+        embed = await self.EmbedCreator.create(
+            ctx, description=args, footer=ctx.author)
+        await ctx.send(embed=embed)
 
     @commands.command(aliases=["calc"])
     async def calculator(self, ctx, *, args: str = None):
@@ -81,26 +70,23 @@ class Fun(Cog):
 
         [p]calculator|calc <args>
         """
-        if args != None:
-            try:
-                embed = await self.EmbedCreator.create(ctx, title="Calculator")
-                embed.add_field(
-                    name="Input",
-                    value=args,
-                    inline=False
-                )
-                embed.add_field(
-                    name="Output",
-                    value=eval(args),
-                    inline=False
-                )
-                embed.set_footer(text="Twilight bot Calculator",
-                                 icon_url="https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist")
-                await ctx.send(embed=embed)
-            except:
-                await ctx.send("There was an error in the calculation!")
-        else:
-            await self.BasicUtils.help_returner(ctx)
+        try:
+            embed = await self.EmbedCreator.create(ctx, title="Calculator")
+            embed.add_field(
+                name="Input",
+                value=args,
+                inline=False
+            )
+            embed.add_field(
+                name="Output",
+                value=eval(args),
+                inline=False
+            )
+            embed.set_footer(text="Twilight bot Calculator",
+                             icon_url="https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist")
+            await ctx.send(embed=embed)
+        except:
+            await ctx.send("There was an error in the calculation!")
 
     @commands.command(hidden=True)
     @commands.is_owner()
@@ -138,6 +124,28 @@ class Fun(Cog):
         ``.rps Rock``
         """
         await self.BasicUtils.rock_paper_scissors(ctx, arg)
+
+    @commands.group(name="swearjar", aliases=["sj", "swearj", "jar"])
+    async def swear_jar(self, ctx):  # , user: discord.Member = None):
+        if ctx.invoked_subcommand is None:
+            await self.BasicUtils.help_returner(ctx)
+
+    @swear_jar.command()
+    async def add(self, ctx, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
+
+        with open("swear_jar.json", "r") as f:
+            jar = json.load(f)
+
+        try:
+            jar[str(user.id)] += 1
+        except KeyError:
+            jar[str(user.id)] = 1
+
+        with open("swear_jar.json", "w") as f:
+            json.dump(jar, f, indent=4)
+        await ctx.send("Update {0.display_name}'s counter in the swear jar".format(user))
 
 
 def setup(client):
