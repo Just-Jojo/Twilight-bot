@@ -104,8 +104,9 @@ class Mod(Cog):
                     await ctx.send("Could not change that members nickname. All nicknames have to be between 2 and 32 characters.")
             else:
                 await ctx.send("Please specify a member")
-        except:
-            await ctx.send("Oops, something went wrong!")
+        # or commands.errors.MissingPermissions:
+        except commands.errors.BotMissingPermissions:
+            await ctx.send("I can't rename that member as I don't have the proper permissions")
 
 
 def setup(client):
