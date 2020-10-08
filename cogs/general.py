@@ -7,9 +7,7 @@ import discord
 from discord import __version__ as discord_version
 from discord.ext import commands
 from discord.utils import get
-# from twilight_tools import BasicUtils, EmbedCreator, guild_owner
 from twilight_tools import BasicUtils, EmbedCreator, guild_owner
-# from Tools.twilight_tools import BasicUtils, EmbedCreator
 import traceback
 import sys
 
@@ -43,20 +41,10 @@ class General(commands.Cog):
     async def ping(self, ctx):
         await ctx.send("Pong.")
 
-    # @commands.command(help="Probably the most important command")
-    # async def about(self, ctx):
-    #     with open("about.txt", "r") as f:
-    #         about_message = f.read()
-
-    #     embed = self.EmbedCreator.create(
-    #         title="About Twilight",
-    #         description=about_message, color=discord.Color.purple(),
-    #         footer="Jojo#7791"
-    #     )
-    #     await ctx.send(embed=embed)
-
     @commands.group()
     async def version(self, ctx):
+        """Get the version of the bot
+        """
         if ctx.invoked_subcommand is None:
             version = await self.basicutils.get_version()
             await ctx.send("My version is {0}!".format(version))
@@ -72,8 +60,12 @@ class General(commands.Cog):
         else:
             await ctx.send("Could not update version")
 
-    @commands.command(name="check")
+    @commands.command(name="check", aliases=["userinfo"])
     async def _check(self, ctx, user: discord.Member = None):
+        """Check someone's userinfo
+
+        This will give their join date and creation date
+        """
         if user is None:
             user = ctx.author
         time = user.joined_at.strftime("%d %b %Y %H:%M")
@@ -208,6 +200,8 @@ class General(commands.Cog):
 
     @commands.command()
     async def avatar(self, ctx, user: discord.Member = None):
+        """Check a user's avatar
+        """
         if user is None:
             user = ctx.author
         if user.is_avatar_animated():
@@ -221,13 +215,6 @@ class General(commands.Cog):
             image=url
         )
         await ctx.send(embed=embed)
-
-    @commands.command(hidden=True)
-    async def horse(self, ctx):
-        if ctx.author.id == 747025476152721448:
-            await ctx.send("Gavin I already told you I don't have a horse command")
-        else:
-            pass
 
 
 def setup(client):

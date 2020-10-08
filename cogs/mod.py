@@ -26,48 +26,31 @@ class Mod(Cog):
                 await member.ban(reason=reason)
                 await ctx.send("{0} was banned.".format(member))
 
-    @commands.group(name="role")
-    @commands.guild_only()
-    @commands.has_permissions(manage_roles=True)
-    async def roles(self, ctx):
-        """Roles command
-        """
-        if ctx.invoked_subcommand is None:
-            await ctx.send_help(ctx.command)
+    @commands.command()
+    @commands.has_guild_permissions(manage_roles=True)
+    @commands.bot_has_guild_permissions(manage_roles=True)
+    async def addrole(self, ctx, role: discord.Role = None, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
 
-    @roles.command(aliases=["give"])
-    async def add(self, ctx, role: discord.Role = None, *, member: discord.Member = None):
-        """Adds a role to a member
+        try:
+            await user.add_roles(role)
+            await ctx.send("Added {0} to {1.display_name}".format(role, user))
+        except commands.errors.BotMissingPermissions:
+            await ctx.send("I can't add roles!")
 
-        Args
-            role (discord.Role, required): The role you want to add to someone
-            member (discord.Member, optional): The member you want to add the role to. Defaults to the author of the command.
-        """
-        if role == None:
-            await ctx.send_help(ctx.command)
+    @commands.command()
+    @commands.has_guild_permissions(manage_roles=True)
+    @commands.bot_has_guild_permissions(manage_roles=True)
+    async def takerole(self, ctx, role: discord.Role = None, user: discord.Member = None):
+        if user is None:
+            user = ctx.author
 
-        else:
-            if member == None:
-                member = ctx.author
-            await member.add_roles(role)
-            await ctx.send("Added {0} to {1}".format(role, member))
-
-    @roles.command()
-    async def take(self, ctx, role: discord.Role = None, *, member: discord.Member = None):
-        """Takes a role from a member
-
-        Args:
-            role (discord.Role): The role you'd like to take
-            member (discord.Member, optional): The member you'd like to take a role from. Defaults to the author of the command.
-        """
-        if role == None:
-            await ctx.send_help(ctx.command)
-
-        else:
-            if member == None:
-                member = ctx.author
-            await member.remove_roles(role)
-            await ctx.send("Took {0} from {1}".format(role, member))
+        try:
+            await user.remove_roles(role)
+            await ctx.send("Took {0} from {1.display_name}".format(role, user))
+        except commands.errors.BotMissingPermissions:
+            await ctx.send("I can't add roles!")
 
     @commands.command(help="Kicks a member")
     @commands.has_permissions(kick_members=True)
