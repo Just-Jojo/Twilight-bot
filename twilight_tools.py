@@ -17,6 +17,12 @@ twilight_image_links = [
 __version__: str = None
 
 
+def mod_role():
+    async def inner(ctx):
+        return ctx.author.has_permissions(manage_messages=True, ban_members=True, administrator=True)
+    return commands.check(inner)
+
+
 def guild_owner():
     async def inner(ctx):
         return ctx.guild.owner
