@@ -84,8 +84,24 @@ class MyLittlePony(Cog):
         await ctx.send("https://www.youtube.com/watch?v=lQKaAlMNvm8")
 
     @commands.command(hidden=True, name="episode", aliases=["eps"])
+    @commands.is_owner()
     async def _episode_search(self, ctx, *, episode_num: int = None):
-        await ctx.send("Working")
+        with open("episodes.json", "r") as f:
+            episodes = json.load(f)
+        ep_list = len(episodes.keys())
+        if episode_num is not None:
+            try:
+                embed = await self.EmbedCreator.create(
+                    title="My Little Pony: Friendship is Magic episode {0}".format(
+                        episodes[episode_num][0]),
+                    description=episodes[episode_num][1],
+                    footer="Twilight bot episode search"
+                )
+                await ctx.send(embed=embed)
+            except IndexError:
+                await ctx.send(ep_list)
+        else:
+            await ctx.send("I have {0} episodes in my database right now".format(ep_list))
 
 
 def setup(client):
