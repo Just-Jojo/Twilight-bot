@@ -4,7 +4,8 @@ import os
 import discord
 from discord.ext import commands
 import traceback
-
+import twilight_tools
+import subprocess as subp
 
 client = commands.Bot(
     command_prefix=commands.when_mentioned_or("."))
@@ -16,14 +17,6 @@ async def on_ready():
 
 # Only have the load/unload/reload/off commands here
 # Every other command (including owner only) should at least go into General
-
-
-# @client.event
-# async def on_command_error(ctx, error):
-#     if isinstance(error, commands.errors.CommandNotFound):
-#         pass
-#     else:
-#         return
 
 
 @client.command(hidden=True)
@@ -72,19 +65,33 @@ async def shutdown(ctx):
     await client.logout()
 
 
+@client.command(hidden=True)
+@commands.is_owner()
+async def pull(ctx):
+    try:
+        subp(["git", "pull"], shell=False)
+        await asyncio.sleep(5)
+        await ctx.send("Pulled the code. Please reload the cogs")
+    except:  # Gonna have a bare except here because uh... I don't know what type of errors it's going to throw
+        await ctx.send("There was an error!")
+        traceback.print_exc()
+
+
 with open("bot.txt", "r") as f:
     bot_key = f.read()
 
 for cog in os.listdir("./cogs"):
+    test = []
     if cog.endswith(".py"):
         try:
             client.load_extension("cogs.{0}".format(cog[:-3]))
             print("{0} online".format(cog[:-3]))
+            test.append(cog[:-3])
         except commands.errors.NoEntryPointError:
             continue
         except:
             traceback.print_exc()
             continue
-
+    test_ = ", ".join(test)
 
 client.run(bot_key, reconnect=True)

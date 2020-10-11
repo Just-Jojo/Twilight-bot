@@ -6,6 +6,7 @@ import requests
 from discord import Color, Embed
 from discord.ext import commands
 from discord.ext.commands import Context
+from os import system
 
 twilight_pfp = "https://vignette.wikia.nocookie.net/p__/images/c/c7/Twilight_Sparkle_Alicorn_vector.png/revision/latest?cb=20151125231105&path-prefix=protagonist"
 twilight_image_links = [
