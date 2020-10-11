@@ -99,7 +99,7 @@ class MyLittlePony(Cog):
                     footer="Twilight bot episode search"
                 )
                 await ctx.send(embed=embed)
-            except IndexError or KeyError:
+            except KeyError:
                 await ctx.send(ep_list)
         else:
             await ctx.send("I have {0} episodes in my database right now".format(ep_list))
