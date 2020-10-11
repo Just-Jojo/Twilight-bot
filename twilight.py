@@ -69,7 +69,7 @@ async def shutdown(ctx):
 @commands.is_owner()
 async def pull(ctx):
     try:
-        subp(["git", "pull"], shell=False)
+        subp.run(["git", "pull"], shell=False)
         await asyncio.sleep(5)
         await ctx.send("Pulled the code. Please reload the cogs")
     except:  # Gonna have a bare except here because uh... I don't know what type of errors it's going to throw
