@@ -45,40 +45,6 @@ class MyLittlePony(Cog):
             footer="~ Twilight Sparkle")
         await ctx.send(embed=embed)
 
-    # @commands.command(help="Get TL:DR's on your favorite ponies!")
-    # async def pony(self, ctx, pony: str = None):
-    #     if pony != None:
-    #         try:
-    #             name, link = await self.pony_returner(pony.lower())
-    #             embed = await self.EmbedCreator.create(
-    #                 ctx,
-    #                 title="Information about {0}".format(pony.lower()),
-    #                 color=discord.Color.blue(),
-    #                 description=name,
-    #                 thumbnail=link,
-    #                 footer="Twilight's pony TL:DR's"
-    #             )
-    #             await ctx.send(embed=embed)
-    #         except:
-    #             embed = await self.EmbedCreator.create(
-    #                 ctx,
-    #                 title="Oops!",
-    #                 color=discord.Color.red(),
-    #                 description="Here are all the ponies I have in my database!\n{0}".format(
-    #                     pony_keys),
-    #                 footer="Error!"
-    #             )
-    #             await ctx.send(embed=embed)
-    #     else:
-    #         embed = await self.EmbedCreator.create(
-    #             ctx,
-    #             title="Ponies!",
-    #             description="Here are all the ponies I have in my database!\n{0}".format(
-    #                 pony_keys),
-    #             footer="More ponies!"
-    #         )
-    #         await ctx.send(embed=embed)
-
     @commands.command(help="Smile song!")
     async def smile(self, ctx):
         await ctx.send("https://www.youtube.com/watch?v=lQKaAlMNvm8")
