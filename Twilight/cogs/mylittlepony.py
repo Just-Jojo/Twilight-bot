@@ -5,7 +5,10 @@ import discord
 import wikipedia
 from discord.ext import commands
 from discord.ext.commands import Cog
-from twilight_tools import EmbedCreator, BasicUtils
+from twilight_tools import (
+    BasicUtils, EmbedCreator,
+    mod_role, guild_owner
+)
 
 
 # with open("pony.json", "r") as f:
@@ -21,7 +24,6 @@ class MyLittlePony(Cog):
         self.client = client
         self.EmbedCreator = EmbedCreator(self)
         self.BasicUtils = BasicUtils(self)
-
 
     @commands.command(name="quote", aliases=["twq", "twilight"], help="Get a random Twilight quote")
     async def twilight_quotes(self, ctx):

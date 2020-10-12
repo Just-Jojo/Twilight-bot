@@ -7,7 +7,10 @@ import discord
 from discord import __version__ as discord_version
 from discord.ext import commands
 from discord.utils import get
-from twilight_tools import BasicUtils, EmbedCreator, guild_owner
+from twilight_tools import (
+    BasicUtils, EmbedCreator,
+    mod_role, guild_owner
+)
 import traceback
 import sys
 
