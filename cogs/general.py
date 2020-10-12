@@ -83,18 +83,6 @@ class General(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(hidden=True)
-    @commands.is_owner()
-    async def sudo(self, ctx, user: commands.Greedy[discord.Member], *, command):
-        """Sudo another user invoking a command.
-        The prefix must not be entered.
-        """
-        msg = copy(ctx.message)
-        msg.author = user
-        msg.content = ctx.prefix + command
-
-        ctx.bot.dispatch("message", msg)
-
     @commands.command()
     async def swear(self, ctx):
         await ctx.send("<@544974305445019651> quit swearing, sweet Celestia")
@@ -215,6 +203,18 @@ class General(commands.Cog):
             image=url
         )
         await ctx.send(embed=embed)
+
+    @commands.command(aliases=["sudo"])
+    @commands.is_owner()
+    async def mock(self, ctx, user: discord.Member, *, command):
+        """Mock another user invoking a command.
+        The prefix must not be entered.
+        """
+        msg = copy(ctx.message)
+        msg.author = user
+        msg.content = ctx.prefix + command
+
+        ctx.bot.dispatch("message", msg)
 
 
 def setup(client):
