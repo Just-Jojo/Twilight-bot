@@ -6,6 +6,7 @@ from discord.ext import commands
 import traceback
 import twilight_tools
 import subprocess as subp
+from typing import Optional
 
 client = commands.Bot(
     command_prefix=commands.when_mentioned_or("."))
@@ -35,7 +36,12 @@ async def unload(ctx, extension):
 
 @client.command(name="reload", aliases=["cu"], hidden=True)
 @commands.is_owner()
-async def reload_cogs(ctx, extension: str = None):
+async def reload_cogs(ctx, pull: Optional[bool] = False, extension: Optional[str] = None):
+    if pull is not False:
+        await ctx.send("Pulling code. Please wait")
+        subp.run(["git", "pull"])
+        await asyncio.sleep(2)
+
     if extension == None:
         x = [i for i in client.cogs]
         relo_cogs = []
@@ -50,10 +56,12 @@ async def reload_cogs(ctx, extension: str = None):
         print("\nreloaded cogs\n")
 
     elif extension:
-        client.reload_extension("cogs.{0}".format(extension))
-        await ctx.send("Reloaded {0}".format(extension))
-        print("\n{0} was reloaded".format(extension))
-
+        try:
+            client.reload_extension("cogs.{0}".format(extension))
+            await ctx.send("Reloaded {0}".format(extension))
+            print("\n{0} was reloaded".format(extension))
+        except:
+            traceback.print_exc()
     else:
         await ctx.send("I could not find that cog. Sorry")
 
@@ -65,16 +73,16 @@ async def shutdown(ctx):
     await client.logout()
 
 
-@client.command(hidden=True)
-@commands.is_owner()
-async def pull(ctx):
-    try:
-        subp.run(["git", "pull"], shell=False)
-        await asyncio.sleep(5)
-        await ctx.send("Pulled the code. Please reload the cogs")
-    except:  # Gonna have a bare except here because uh... I don't know what type of errors it's going to throw
-        await ctx.send("There was an error!")
-        traceback.print_exc()
+# @client.command(hidden=True)
+# @commands.is_owner()
+# async def pull(ctx):
+#     try:
+#         subp.run(["git", "pull"], shell=False)
+#         await asyncio.sleep(5)
+#         await ctx.send("Pulled the code. Please reload the cogs")
+#     except:  # Gonna have a bare except here because uh... I don't know what type of errors it's going to throw
+#         await ctx.send("There was an error!")
+#         traceback.print_exc()
 
 
 with open("bot.txt", "r") as f:

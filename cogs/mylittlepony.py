@@ -8,9 +8,9 @@ from discord.ext.commands import Cog
 from twilight_tools import EmbedCreator, BasicUtils
 
 
-with open("pony.json", "r") as f:
-    pony = json.load(f)
-pony_keys = ", ".join([key for key, _ in pony.items()])
+# with open("pony.json", "r") as f:
+#     pony = json.load(f)
+# pony_keys = ", ".join([key for key, _ in pony.items()])
 # Test
 
 
@@ -22,8 +22,6 @@ class MyLittlePony(Cog):
         self.EmbedCreator = EmbedCreator(self)
         self.BasicUtils = BasicUtils(self)
 
-    async def pony_returner(self, arg):
-        return pony[arg.lower()][0], pony[arg.lower()][1]
 
     @commands.command(name="quote", aliases=["twq", "twilight"], help="Get a random Twilight quote")
     async def twilight_quotes(self, ctx):
