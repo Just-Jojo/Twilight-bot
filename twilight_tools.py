@@ -102,10 +102,6 @@ class BasicUtils:
             return
         await user.send(message)
 
-    # async def json_dumper(self, json_file: str, content):
-    #     with open("{0}.json".format(json_file), "a") as f:
-    #         json.dump(f)
-
     async def help_returner(self, ctx: Context):
         """Sends the command's help message
 

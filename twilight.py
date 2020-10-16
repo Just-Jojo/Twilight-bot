@@ -73,18 +73,6 @@ async def shutdown(ctx):
     await client.logout()
 
 
-# @client.command(hidden=True)
-# @commands.is_owner()
-# async def pull(ctx):
-#     try:
-#         subp.run(["git", "pull"], shell=False)
-#         await asyncio.sleep(5)
-#         await ctx.send("Pulled the code. Please reload the cogs")
-#     except:  # Gonna have a bare except here because uh... I don't know what type of errors it's going to throw
-#         await ctx.send("There was an error!")
-#         traceback.print_exc()
-
-
 with open("bot.txt", "r") as f:
     bot_key = f.read()
 

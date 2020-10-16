@@ -35,6 +35,7 @@ class General(commands.Cog):
         elif isinstance(error, commands.MissingRequiredArgument) or isinstance(error, commands.BadArgument):
             await self.basicutils.help_returner(ctx)
         else:
+            await ctx.send("`Error in command '{0}'.".format(ctx.command))
             print('Ignoring exception in command {}:'.format(
                 ctx.command), file=sys.stderr)
             traceback.print_exception(
