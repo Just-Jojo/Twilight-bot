@@ -91,7 +91,6 @@ class Mod(Cog):
 
     @commands.command()
     @commands.guild_only()
-    # @commands.has_permissions(manage_nicknames=True)
     @mod_role()
     @commands.bot_has_permissions(manage_nicknames=True)
     async def rename(self, ctx, member: discord.Member, *, name: str = None):
@@ -107,7 +106,6 @@ class Mod(Cog):
                     await ctx.send("Could not change that members nickname. All nicknames have to be between 2 and 32 characters.")
             else:
                 await ctx.send("Please specify a member")
-        # or commands.errors.MissingPermissions:
         except commands.errors.BotMissingPermissions:
             await ctx.send("I can't rename that member as I don't have the proper permissions")
 

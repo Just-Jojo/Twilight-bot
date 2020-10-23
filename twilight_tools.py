@@ -15,7 +15,6 @@ twilight_image_links = [
     "https://i.pinimg.com/originals/d5/08/a6/d508a6dae0f0e51bc9157e0d98885846.png",
     "https://upload.wikimedia.org/wikipedia/sco/thumb/5/5b/Twilight_sparkle.png/1200px-Twilight_sparkle.png"
 ]
-__version__: str = None
 
 
 def mod_role():
@@ -41,22 +40,8 @@ class EmbedCreator:
     async def create(self, ctx, title="",
                      description="", color=Color.gold(),
                      footer=None, footer_image=None,
-                     thumbnail=None, image=None):
-        """Make an Embed as easy as 1, 2, 3
-
-        Args:
-            ctx: The context needed to set the author's name and url
-            title (str, optional): The Title of the embed. Defaults to "".
-            description (str, optional): The Description of the embed. Defaults to "".
-            color (discord.Color, optional): Color/Colour of the embed (You need to use discord.Color. to set the color). Defaults to Color.blue().
-            footer (optional): Set the footer of the Embed. Defaults to None.
-            footer_image (optional): Set the footer icon. Defaults to None.
-            thumbnail (optional): Set the thumbnail of the embed. Defaults to None.
-            image (optional): Set the embed's image. Defaults to None.
-
-        Returns:
-            Embed: A Discord embed object
-        """
+                     thumbnail=None, image=None) -> discord.Embed:
+        """Make an Embed as easy as 1, 2, 3"""
         try:
             if isinstance(ctx.message.channel, discord.abc.GuildChannel):
                 color = ctx.message.author.color
@@ -163,17 +148,3 @@ class BasicUtils:
                 description="You didn't specify an argument!\nThe arguments you can use are `Rock, Paper, Scissors`",
                 footer="Twilight Rock, Paper, Scissors")
             await ctx.send(embed=embed)
-
-    async def get_version(self):
-        """Get the version of the bot
-
-        Returns:
-            String: The version of the bot
-        """
-        with open('version.txt', "r") as f:
-            __version__ = f.read()
-        return __version__
-
-    async def update_version(self, version):
-        with open("version.txt", "w") as f:
-            f.write(version)

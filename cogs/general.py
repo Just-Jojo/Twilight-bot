@@ -11,6 +11,7 @@ from twilight_tools import (
     BasicUtils, EmbedCreator,
     mod_role, guild_owner
 )
+from twilight import __version__
 import traceback
 import sys
 
@@ -23,8 +24,7 @@ class General(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        version = await self.basicutils.get_version()
-        await self.client.change_presence(activity=discord.Game(name=".help | Version {version} | Happy B-Day MLP!".format(version=version)))
+        await self.client.change_presence(activity=discord.Game(name=".help | Version {version} | Happy B-Day MLP!".format(version=__version__)))
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -50,19 +50,7 @@ class General(commands.Cog):
         """Get the version of the bot
         """
         if ctx.invoked_subcommand is None:
-            version = await self.basicutils.get_version()
-            await ctx.send("My version is {0}!".format(version))
-
-    @version.command(hidden=True)
-    @commands.is_owner()
-    async def update(self, ctx, version: str = None):
-        if version is not None:
-            await self.basicutils.update_version(version)
-            version = await self.basicutils.get_version()
-            await self.client.change_presence(activity=discord.Game(name=">help | Version {version}".format(version=version)))
-            await ctx.send("Updated version!")
-        else:
-            await ctx.send("Could not update version")
+            await ctx.send("My version is {0}!".format(__version__))
 
     @commands.command(name="check", aliases=["userinfo"])
     async def _check(self, ctx, user: discord.Member = None):
@@ -182,10 +170,12 @@ class General(commands.Cog):
     async def invite(self, ctx):
         """Get the bot invite link and the support server link."""
 
-        embed = await self.EmbedCreator.create(ctx,
-                                               title="Invite/Support server link",
-                                               description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
-                                               footer="Twilight Bot invite link")
+        embed = await self.EmbedCreator.create(
+            ctx,
+            title="Invite/Support server link",
+            description="Get the [bot](https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=8&scope=bot)",
+            footer="Twilight Bot invite link"
+        )
         embed.add_field(name="Support Server link",
                         value="Get the [link](https://discord.gg/9cxxJSp) to the support server")
         await self.basicutils.whisper(ctx, ctx.author, embed=embed)

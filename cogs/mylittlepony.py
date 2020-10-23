@@ -11,12 +11,6 @@ from twilight_tools import (
 )
 
 
-# with open("pony.json", "r") as f:
-#     pony = json.load(f)
-# pony_keys = ", ".join([key for key, _ in pony.items()])
-# Test
-
-
 class MyLittlePony(Cog):
     """Main MLP cog."""
 
@@ -27,7 +21,7 @@ class MyLittlePony(Cog):
 
     @commands.command(name="quote", aliases=["twq", "twilight"], help="Get a random Twilight quote")
     async def twilight_quotes(self, ctx):
-        quotes = [
+        quotes = (
             "All the ponies in this town are crazy! Do you know what time it is?!",
             "You see, Nightmare Moon, when those Elements are ignited by the... the spark, that resides in the heart of us all, it creates the sixth element: the element of... magic!",
             "Hee-hee! Isn't this exciting? We'll do everything by the book, and that will make my slumber party officially fun.",
@@ -38,10 +32,10 @@ class MyLittlePony(Cog):
             "Huh? I'm pancake...I mean awake!",
             "Soup spoon, salad fork, pasta spoon, strawberry pick, I'm beginning to think that after friendship, the greatest magic of all is proper silverware placement!",
             "As the Princess of Friendship, I try to set an example for all of Equestria. But today, it was Spike who taught me that a new friend can come from anywhere. I guess everypony still has things to learn about friendship. Even me! And if Spike says Thorax is his friend, then he's my friend too."
-        ]
+        )
         embed = await self.EmbedCreator.create(ctx, color=discord.Color.purple(
         ), title="Twilight quote", description=random.choice(quotes),
-            thumbnail=await self.BasicUtils.twilight_pic(),
+            thumbnail=await BasicUtils.twilight_pic(),
             footer="~ Twilight Sparkle")
         await ctx.send(embed=embed)
 

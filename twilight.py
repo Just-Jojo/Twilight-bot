@@ -11,6 +11,8 @@ from typing import Optional
 client = commands.Bot(
     command_prefix=commands.when_mentioned_or("."))
 
+__version__ = "0.1.3"
+
 
 @client.event
 async def on_ready():
