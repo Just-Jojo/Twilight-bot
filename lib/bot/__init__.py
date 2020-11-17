@@ -59,7 +59,7 @@ class Twilight(Bot):
         super().run(token)
 
     async def process_commands(self, message):
-        ctx = self.get_context(message)
+        ctx = await self.get_context(message)
         if ctx.command is not None:
             self.invoke(ctx)
 
