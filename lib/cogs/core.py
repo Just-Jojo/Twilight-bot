@@ -1,9 +1,17 @@
+### ~~~ Basic Discord and other utilities imports ~~~ ###
 import discord
+from discord.ext import commands
 from discord.ext.commands import (
-    command, Cog, is_owner, Context
+    command, Cog, is_owner, Context, check, group
 )
 import asyncio
+import json
+
+### ~~~ Local imports ~~~ ###
 from .utils.embed import Embed
+from .utils.basic_utils import (
+    moderator, administrator, Moderation
+)
 
 
 class Core(Cog):
@@ -13,6 +21,24 @@ class Core(Cog):
     @command()
     async def ping(self, ctx):
         await ctx.send("Pong.")
+
+    @group(name="set")
+    @is_owner()
+    async def _set(self, ctx: Context):
+        """Set up Twilight"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @_set.command(aliases=('admin', ))
+    async def administrator(self, ctx: Context, role: discord.Role):
+        """Set the adminstrator role"""
+        Moderation.add_role(ctx.gulid, "administrator", role)
+        await ctx.send(
+            content="Set up {} as the administrator role".format(role.mention),
+            allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=True, roles=False
+            )
+        )
 
     @command(name="reload", aliases=["cu", "update"])
     @is_owner()
@@ -41,6 +67,24 @@ class Core(Cog):
             self, ctx, title="Invite Twilight to your server!", description=description
         )
         await ctx.send(embed=embed)
+
+    @Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
+        Moderation.setup(guild)
+
+    @Cog.listener()
+    async def on_guild_leave(self, guild: discord.Guild):
+        Moderation.teardown(guild)
+
+    @command()
+    @is_owner()
+    async def trace(self, ctx):
+        """Sends the latest traceback error"""
+        if self.bot.last_exception == None:
+            return await ctx.send("No exceptions have occured yet!")
+        if len(self.bot.last_exception) > 1990:
+            return await ctx.send("I can't send the traceback as it's over 2000 characters long")
+        await ctx.send(self.bot.last_exception)
 
     @Cog.listener()
     async def on_ready(self):

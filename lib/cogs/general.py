@@ -1,9 +1,13 @@
+### ~~~ General Discord and other utils imports ~~~ ###
 import discord
 from discord.ext.commands import (
     Context, command, Cog
 )
 import asyncio
 import random
+### ~~~ Twilight bot utils imports ~~~ ###
+from .utils.embed import Embed
+from .utils.basic_utils import administrator, moderator
 
 
 class General(Cog):

@@ -34,6 +34,7 @@ class Twilight(BotBase):
     def __init__(self):
         self.ready = False
         self.cogs_ready = Ready()
+        self.last_exception = None
         super().__init__(command_prefix=">", owner_ids=OWNERS)
 
     def setup(self):
@@ -65,6 +66,7 @@ class Twilight(BotBase):
         elif isinstance(exc, MissingRequiredArgument):
             return await ctx.send_help(ctx.command)
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
+        self.last_exception = "```py\n{}```".format(exc)
         if hasattr(exc, "original"):
             if isinstance(exc, Forbidden):
                 await ctx.send("Discord has forbidden me to do that")

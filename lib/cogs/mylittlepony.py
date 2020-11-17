@@ -16,12 +16,12 @@ class MyLittlePony(Cog):
         title = "From My Little Pony: Friendship is Magic, Season 2, Episode 18, the Smile song!",
         description = (
             "Pinkie Pie loves to make ponies smile, so she had to sing about it."
-            " This song is very upbeat and happy :D"
+            " This song is very upbeat and happy :D\n[Smile](https://www.youtube.com/watch?v=lQKaAlMNvm8&ab_channel=MyLittlePonyOfficial)"
         )
         embed = Embed.create(self, ctx, title=title, description=description)
-        embed.video(
-            url="https://www.youtube.com/watch?v=lQKaAlMNvm8&ab_channel=MyLittlePonyOfficial"
-        )
+        # embed.video(
+        #     url="https://www.youtube.com/watch?v=lQKaAlMNvm8&ab_channel=MyLittlePonyOfficial"
+        # )
         await ctx.send(embed=embed)
 
     @Cog.listener()
