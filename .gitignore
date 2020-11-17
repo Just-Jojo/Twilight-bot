@@ -1,3 +1,4 @@
 token.txt
 lib/cogs/twisettings.json
-lib/cogs/__pycache__
+**/__pycache__
+*.pyc

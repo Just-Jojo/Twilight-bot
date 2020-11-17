@@ -35,8 +35,8 @@ class General(Cog):
 
     @Cog.listener()
     async def on_ready(self):
-        if not self.bot.ready():
-            self.bot.cogs_ready.ready_up("core")
+        if not self.bot.ready:
+            self.bot.cogs_ready.ready_up("general")
 
 
 def setup(bot):
