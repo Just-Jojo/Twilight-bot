@@ -9,7 +9,8 @@ from asyncio import sleep
 
 cogs = [
     "general",
-    "core"
+    "core",
+    "mylittlepony"
 ]
 
 OWNERS = [544974305445019651, ]
@@ -60,16 +61,16 @@ class Twilight(BotBase):
 
     async def on_command_error(self, ctx, exc):
         if any([isinstance(exc, error) for error in IGNORE_EXECEPTIONS]):
-            pass
+            return
         elif isinstance(exc, MissingRequiredArgument):
-            await ctx.send_help(ctx.command)
-        elif hasattr(exc, "original"):
+            return await ctx.send_help(ctx.command)
+        await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
+        if hasattr(exc, "original"):
             if isinstance(exc, Forbidden):
                 await ctx.send("Discord has forbidden me to do that")
             else:
                 raise exc.original
         else:
-            await ctx.send("`Error in command '{}'. Check your console for details".format(ctx.command))
             raise exc
 
     async def on_ready(self):
@@ -86,14 +87,34 @@ class Twilight(BotBase):
             return  # Pesky bots
         await self.process_commands(message)
 
-    async def reload_extension(self, extension):
+    def reload_extension(self, extension: str):
+        extension = extension.lower()
         if extension not in cogs:
             return "I don't have a cog named `{}`".format(extension)
         if extension == "core":
-            return "I can't reload `core` as it would break the bot"
+            return "I can't reload/unload `core` as it would break Twilight"
         else:
-            super().reload_extension("cogs.{}".format(extension))
+            super().reload_extension("lib.cogs.{}".format(extension))
             return "Reloaded `{}`".format(extension)
+
+    def load_extension(self, extension: str):
+        extension = extension.lower()
+        if extension not in cogs:
+            return "I don't have a cog named `{}`".format(extension)
+        if extension == "core":
+            return "Core is already loaded, silly"
+        else:
+            super().load_extension("lib.cogs.{}".format(extension))
+            return "Loaded `{}`".format(extension)
+
+    def unload_extension(self, extension: str):
+        extension = extension.lower()
+        if extension not in cogs:
+            return "I don't have a cog named `{}`".format(extension)
+        if extension == "core":
+            return "I can't reload/unload `core` as it would break Twilight"
+        else:
+            super().unload_extension("lib.cogs.{}".format(extension))
 
 
 twilight = Twilight()
