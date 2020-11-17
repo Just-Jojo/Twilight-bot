@@ -61,7 +61,7 @@ class Twilight(Bot):
     async def process_commands(self, message):
         ctx = await self.get_context(message)
         if ctx.command is not None:
-            self.invoke(ctx)
+            await self.invoke(ctx)
 
     async def on_command_error(self, ctx, exc):
         if isinstance(exc, CommandNotFound):
