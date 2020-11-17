@@ -1,14 +1,3 @@
-ponyurl.txt
-ponies.txt
-about.txt
-cogs.txt
-pony.json
-.vscode/launch.json
-bot.txt
-version.json
-prefixes.json
-newsletter.json
-swear_jar.json
-.vscode
-__pycache__
-startup.py
+token.txt
+lib/cogs/twisettings.json
+lib/cogs/__pycache__
