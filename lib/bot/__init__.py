@@ -23,7 +23,7 @@ class Ready(object):
 
     def ready_up(self, cog):
         setattr(self, cog, True)
-        print("{} is ready".format(cog))
+        print("{} is ready\n".format(cog))
 
     def all_ready(self):
         return all([getattr(self, cog) for cog in cogs])
@@ -44,13 +44,13 @@ class Twilight(BotBase):
     def run(self, version):
         self.VERSION = version
 
-        print("Setting up the bot")
+        print("Waking up Twilight")
         self.setup()
 
         with open("./lib/bot/token.txt", "r") as token:
             self.TOKEN = token.read()
 
-        print("Starting the bot")
+        print("Giving Twilight coffee")
         super().run(self.TOKEN, reconnect=True)
 
     async def process_commands(self, message):

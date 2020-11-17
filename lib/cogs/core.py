@@ -31,6 +31,12 @@ class Core(Cog):
         result = self.bot.load_extension(cog)
         await ctx.send(result)
 
+    @command()
+    @is_owner()
+    async def shutdown(self, ctx: Context):
+        await ctx.send("Logging out")
+        await self.bot.close()
+
     @Cog.listener()
     async def on_ready(self):
         if not self.bot.ready:
