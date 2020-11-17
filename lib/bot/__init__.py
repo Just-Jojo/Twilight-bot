@@ -97,24 +97,5 @@ class Twilight(BotBase):
             super().reload_extension("lib.cogs.{}".format(extension))
             return "Reloaded `{}`".format(extension)
 
-    def load_extension(self, extension: str):
-        extension = extension.lower()
-        if extension not in cogs:
-            return "I don't have a cog named `{}`".format(extension)
-        if extension == "core":
-            return "Core is already loaded, silly"
-        else:
-            super().load_extension("lib.cogs.{}".format(extension))
-            return "Loaded `{}`".format(extension)
-
-    def unload_extension(self, extension: str):
-        extension = extension.lower()
-        if extension not in cogs:
-            return "I don't have a cog named `{}`".format(extension)
-        if extension == "core":
-            return "I can't reload/unload `core` as it would break Twilight"
-        else:
-            super().unload_extension("lib.cogs.{}".format(extension))
-
 
 twilight = Twilight()

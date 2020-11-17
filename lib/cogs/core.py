@@ -22,18 +22,6 @@ class Core(Cog):
 
     @command()
     @is_owner()
-    async def unload(self, ctx: Context, cog: str):
-        result = self.bot.unload_extension(cog)
-        await ctx.send(result)
-
-    @command()
-    @is_owner()
-    async def load(self, ctx: Context, cog: str):
-        result = self.bot.load_extension(cog)
-        await ctx.send(result)
-
-    @command()
-    @is_owner()
     async def shutdown(self, ctx: Context):
         await ctx.send("Logging out")
         await self.bot.close()
