@@ -5,6 +5,7 @@ from discord.ext.commands import (
     Context, CommandNotFound, BadArgument, MissingRequiredArgument,
 )
 from asyncio import sleep
+import traceback
 
 
 cogs = [
@@ -82,13 +83,17 @@ class Twilight(BotBase):
         if ctx.command is not None:
             await self.invoke(ctx)
 
-    async def on_command_error(self, ctx, exc):
+    async def on_command_error(self, ctx, exc: Exception):
         if any([isinstance(exc, error) for error in IGNORE_EXECEPTIONS]):
             return
         elif isinstance(exc, MissingRequiredArgument):
             return await ctx.send_help(ctx.command)
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
-        self.last_exception = "```py\n{}```".format(exc)
+        self.last_exception = "```py\n{}```".format(
+            traceback.format_exception(
+                type(exc), exc, exc.__traceback__
+            )
+        )
         if hasattr(exc, "original"):
             if isinstance(exc, Forbidden):
                 await ctx.send("Discord has forbidden me to do that")

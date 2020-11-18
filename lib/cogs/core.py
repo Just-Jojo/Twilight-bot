@@ -26,7 +26,7 @@ import discord
 from discord import __version__ as dpyversion
 from discord.ext import commands
 from discord.ext.commands import (
-    command, Cog, is_owner, Context, check, group
+    command, Cog, is_owner, Context, check, group, guild_only
 )
 import asyncio
 import json
@@ -36,6 +36,11 @@ from .utils.embed import Embed
 from .utils.basic_utils import (
     moderator, administrator, Moderation
 )
+
+types = {
+    "administrator": ["admin", "administrator", "adm"],
+    "moderator": ["mod", "moderator", "moder"]
+}
 
 
 class Core(Cog):
@@ -47,22 +52,51 @@ class Core(Cog):
         await ctx.send("Pong.")
 
     @group(name="set")
+    @guild_only()
     @is_owner()
     async def _set(self, ctx: Context):
         """Set up Twilight"""
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
-    @_set.command(aliases=('admin', ))
-    async def administrator(self, ctx: Context, role: discord.Role):
-        """Set the adminstrator role"""
-        Moderation.add_role(ctx.gulid, "administrator", role)
-        await ctx.send(
-            content="Set up {} as the administrator role".format(role.mention),
-            allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=True, roles=False
+    @_set.command(name="add")
+    async def _add(self, ctx: Context, role_type: str, role: discord.Role):
+        """Add a role
+
+        `role_type` means the role type you want to add (eg. moderator or admin)"""
+        role_type = role_type.lower()
+        if (
+            role_type not in types["administrator"] and role_type not in types["moderator"]
+        ):
+            return await ctx.send(content=(
+                "I could not understand what type of role you wanted to set"
+                ", you can add one using `admin` or `mod`"
             )
-        )
+            )
+        role_type = "administrator" if role_type in types["administrator"]\
+            else "moderator"
+        result = Moderation.add_role(self, ctx.guild, role_type, role)
+        await ctx.send(content=result)
+
+    @_set.command()
+    async def remove(self, ctx: Context, role_type: str):
+        """Remove a role
+
+        `role_type` means the role type you want to remove (eg. moderator or admin)"""
+        role_type = role_type.lower()
+        if (
+            role_type not in types["administrator"] and role_type not in types["moderator"]
+        ):
+            return await ctx.send(
+                content=(
+                    "I could not understand the type of role you wanted to remove"
+                    ", you can remove one using `admin` or `mod`"
+                )
+            )
+        role_type = "administrator" if role_type in types["administrator"]\
+            else "moderator"
+        result = Moderation.remove_role(self, ctx.guild, role_type)
+        await ctx.send(content=result)
 
     @command(name="reload", aliases=["cu", "update"])
     @is_owner()
@@ -130,6 +164,26 @@ class Core(Cog):
             description=self.bot.license, footer="Twilight bot License :D"
         )
         await ctx.send(embed=embed)
+
+    @group()
+    @administrator()
+    @guild_only()
+    async def announceset(self, ctx: Context):
+        """Base announcement channel command"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help()
+
+    @announceset.command()
+    async def add(self, ctx: Context, channel: discord.TextChannel):
+        """Add a channel as the announcement channel"""
+        result = Moderation.announcement_set(self, False, ctx.guild, channel)
+        await ctx.send(content=result)
+
+    @announceset.command()
+    async def _remove(self, ctx: Context):
+        """Remove the announcement channel"""
+        result = Moderation.announcement_set(self, True, ctx.guild)
+        await ctx.send(content=result)
 
     @Cog.listener()
     async def on_ready(self):
