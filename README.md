@@ -6,8 +6,8 @@ A Discord bot created by Jojo#7791, Twilight is a functional (suuuure) Discord b
 
 ### Features
 - [x] A working Moderation set up using JSON files to store data
-- [] An Episode search feature (Dang you, episodes)
-- [] A working character search feature
+- [ ] An Episode search feature (Dang you, episodes)
+- [ ] A working character search feature
 
 ### Support
 
