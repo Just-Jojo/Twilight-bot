@@ -6,6 +6,8 @@ from discord.ext.commands import (
 )
 from asyncio import sleep
 import traceback
+from enum import IntEnum  # For the restart command :D
+import sys
 
 
 cogs = [
@@ -59,6 +61,7 @@ class Twilight(BotBase):
         self.cogs_ready = Ready()
         self.last_exception = None
         self.license = LICENSE
+        self._shutdown_level = ShutdownLevels.CRITICAL
         super().__init__(command_prefix=">", owner_ids=OWNERS)
 
     def setup(self):
@@ -66,6 +69,16 @@ class Twilight(BotBase):
             self.load_extension("lib.cogs.{}".format(cog))
             print("{} loaded".format(cog))
         print("Cogs loaded")
+
+    async def logout(self):
+        await super().logout()
+
+    async def shutdown(self, *, restart: bool = False):
+        if restart is True:
+            self._shutdown_level = ShutdownLevels.RESTART
+        elif restart is False:
+            self._shutdown_level = ShutdownLevels.SHUTDOWN
+        sys.exit(self._shutdown_level)
 
     def run(self, version):
         self.version = version
@@ -126,6 +139,12 @@ class Twilight(BotBase):
         else:
             super().reload_extension("lib.cogs.{}".format(extension))
             return "Reloaded `{}`".format(extension)
+
+
+class ShutdownLevels(IntEnum):
+    SHUTDOWN = 0
+    CRITICAL = 1
+    RESTART = 26
 
 
 twilight = Twilight()

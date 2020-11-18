@@ -35,7 +35,8 @@ import json
 from ..bot import Twilight  # Type hinting
 from .utils.embed import Embed
 from .utils.basic_utils import (
-    moderator, administrator, Moderation
+    moderator, administrator, Moderation,
+    guild_owner
 )
 
 types = {
@@ -54,7 +55,7 @@ class Core(Cog):
 
     @group(name="set")
     @guild_only()
-    @is_owner()
+    @guild_owner()
     async def _set(self, ctx: Context):
         """Set up Twilight"""
         if ctx.invoked_subcommand is None:
@@ -108,8 +109,16 @@ class Core(Cog):
     @command()
     @is_owner()
     async def shutdown(self, ctx: Context):
-        await ctx.send("Logging out")
-        await self.bot.close()
+        await ctx.send("Shutting down Twilight")
+        await asyncio.sleep(2)
+        await self.bot.shutdown(restart=False)
+
+    @command()
+    @is_owner()
+    async def restart(self, ctx: Context):
+        await ctx.send("Restarting...")
+        await asyncio.sleep(2)
+        await self.bot.shutdown(restart=True)
 
     @command()
     async def invite(self, ctx):
