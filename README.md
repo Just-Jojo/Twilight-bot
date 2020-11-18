@@ -2,9 +2,7 @@
 
 ---
 
-A Discord bot created by Jojo#7791, Twilight is a functional[^] Discord bot designed for the My Little Pony community (Sorry, Twilight readers, this isn't Bella :p).
-
-[^]: Sure
+A Discord bot created by Jojo#7791, Twilight is a functional (suuuure) Discord bot designed for the My Little Pony community (Sorry, Twilight readers, this isn't Bella :p).
 
 ### Features
 - [x] A working Moderation set up using JSON files to store data
