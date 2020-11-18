@@ -126,14 +126,6 @@ class Core(Cog):
         )
         await ctx.send(embed=embed)
 
-    @Cog.listener()
-    async def on_guild_join(self, guild: discord.Guild):
-        Moderation.setup(self, guild)
-
-    @Cog.listener()
-    async def on_guild_leave(self, guild: discord.Guild):
-        Moderation.teardown(self, guild)
-
     @command()
     @is_owner()
     async def trace(self, ctx):
@@ -184,6 +176,14 @@ class Core(Cog):
         """Remove the announcement channel"""
         result = Moderation.announcement_set(self, True, ctx.guild)
         await ctx.send(content=result)
+
+    @Cog.listener()
+    async def on_guild_join(self, guild: discord.Guild):
+        Moderation.setup(self, guild)
+
+    @Cog.listener()
+    async def on_guild_leave(self, guild: discord.Guild):
+        Moderation.teardown(self, guild)
 
     @Cog.listener()
     async def on_ready(self):
