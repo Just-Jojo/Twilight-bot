@@ -10,7 +10,7 @@ def moderator():
         with open("./lib/cogs/twisettings.json", "r") as f:
             twiset = json.load(f)
         mod_role = ctx.guild.get_role(twiset[str(ctx.guild)]["moderator"])
-        if not await ctx.bot.is_owner(ctx.author):
+        if not await ctx.bot.is_owner(ctx.author) and ctx.author is not ctx.guild.owner:
             return mod_role in ctx.author.roles
         else:
             return True
@@ -23,7 +23,7 @@ def administrator():
             twiset = json.load(f)
         admin_role = ctx.guild.get_role(
             twiset[str(ctx.guild.id)]["administrator"])
-        if not await ctx.bot.is_owner(ctx.author):
+        if not await ctx.bot.is_owner(ctx.author) and ctx.author is not ctx.guild.owner:
             return admin_role in ctx.author.roles
         return True
     return check(inner)
