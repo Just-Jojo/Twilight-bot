@@ -6,12 +6,13 @@ from discord.ext.commands import (
 import asyncio
 import random
 ### ~~~ Twilight bot utils imports ~~~ ###
+from ..bot import Twilight # Type hinting
 from .utils.embed import Embed
 from .utils.basic_utils import administrator, moderator
 
 
 class General(Cog):
-    def __init__(self, bot):
+    def __init__(self, bot: Twilight):
         self.bot = bot
 
     @command()
@@ -43,5 +44,5 @@ class General(Cog):
             self.bot.cogs_ready.ready_up("general")
 
 
-def setup(bot):
+def setup(bot: Twilight):
     bot.add_cog(General(bot))

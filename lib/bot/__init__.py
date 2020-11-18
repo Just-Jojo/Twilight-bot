@@ -11,7 +11,8 @@ import traceback
 cogs = [
     "general",
     "core",
-    "mylittlepony"
+    "mylittlepony",
+    "mod"
 ]
 
 OWNERS = [544974305445019651, ]
