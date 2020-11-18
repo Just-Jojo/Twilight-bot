@@ -1,6 +1,19 @@
-# About Twilight
+# Twilight bot
 
-Twilight bot is a bot made by Jojo#7791 both as a fan creation/gift to the My Little Pony: Friendship is Magic community and a school project (kinda, I'm learning Python basically)
-It is written in Python and is totally bug free... suuure.
-If you have any questions don't be afraid to ask in the support server! *which you can find here https://discord.gg/9cxxJSp*
-Thanks for checking out Twilight!
+---
+
+A Discord bot created by Jojo#7791, Twilight is a functional[^1] Discord bot designed for the My Little Pony community (Sorry, Twilight readers, this isn't Bella :p).
+
+[^1]: Sure
+
+### Features
+> [x] A working Moderation set up using JSON files to store data
+> [] An Episode search feature (Dang you, episodes)
+> [] A working character search feature
+
+### Support
+
+For support, please either DM Jojo on Discord (username is Jojo#7791, just shoot me a friend requst and say you're here for Twilight) or join [Vanguards](https://discord.gg/JmCFyq7) and go to `support-jojo-cogs`
+
+
+#### Thanks for checking out Twilight!
