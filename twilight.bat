@@ -7,4 +7,14 @@ IF %ERRORLEVEL% NEQ 0 (
     GOTO twily
 ) ELSE (
     CLS
+    GOTO RESTART
+)
+:RESTART
+echo Would you like to restart?
+set /P restart = "(y/n) "
+if "%restart%" == "y" (
+    goto twily
+) else (
+    echo Okay. Good day!
+    cls
 )
