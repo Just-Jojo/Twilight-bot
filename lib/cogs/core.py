@@ -36,8 +36,9 @@ from ..bot import Twilight  # Type hinting
 from .utils.embed import Embed
 from .utils.basic_utils import (
     moderator, administrator, Moderation,
-    guild_owner
+    guild_owner, Getters
 )
+from .utils.converter import RawUserIds
 
 types = {
     "administrator": ["admin", "administrator", "adm"],
@@ -53,9 +54,13 @@ class Core(Cog):
     async def ping(self, ctx):
         await ctx.send("Pong.")
 
+    @command()
+    @is_owner()
+    async def sudo(self, ctx: Context, user: discord.Member, *, command):
+        pass
+
     @group(name="set")
     @guild_only()
-    @guild_owner()
     async def _set(self, ctx: Context):
         """Set up Twilight"""
         if ctx.invoked_subcommand is None:
@@ -66,6 +71,9 @@ class Core(Cog):
         """Add a role
 
         `role_type` means the role type you want to add (eg. moderator or admin)"""
+        if ctx.author != ctx.guild.owner:
+            print("They aren't owners")
+            return
         role_type = role_type.lower()
         if (
             role_type not in types["administrator"] and role_type not in types["moderator"]
@@ -173,7 +181,7 @@ class Core(Cog):
     async def announceset(self, ctx: Context):
         """Base announcement channel command"""
         if ctx.invoked_subcommand is None:
-            await ctx.send_help()
+            await ctx.send_help(ctx.command)
 
     @announceset.command()
     async def add(self, ctx: Context, channel: discord.TextChannel):
@@ -187,9 +195,35 @@ class Core(Cog):
         result = Moderation.announcement_set(self, True, ctx.guild)
         await ctx.send(content=result)
 
+    @command()
+    @is_owner()
+    async def announce(self, ctx: Context, *, announcement: str):
+        embed = Embed.create(
+            self, ctx, title="Twilight bot Announcement",
+            description=announcement, thumbnail=ctx.bot.avatar_url,
+            color=discord.Color.purple(), footer="Twilight bot updates by Jojo#7791"
+        )
+        await self.announce_to_guilds(embed)
+
+    async def announce_to_guilds(self, message: discord.Embed):
+        channels = Getters.get_all_announce()
+        for channel in channels:
+            if channel is not None:
+                chan = self.bot.get_channel(channel)
+                await chan.send(embed=message)
+
     @Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
         Moderation.setup(self, guild)
+        embed_basic = {
+            "title": "Twilight has joined {}!".format(guild.name),
+            "color": 0x11C5E5
+        }
+        embed = discord.Embed(**embed_basic)
+        embed.set_author(name=guild.name, icon_url=guild.icon_url)
+        embed.set_thumbnail(url=guild.icon_url)
+        channel: discord.TextChannel = self.bot.get_channel(707431591051264121)
+        await channel.send(embed=embed)
 
     @Cog.listener()
     async def on_guild_leave(self, guild: discord.Guild):

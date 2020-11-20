@@ -94,6 +94,8 @@ class Twilight(BotBase):
 
     async def process_commands(self, message):
         ctx = await self.get_context(message)
+        if not self.is_ready:
+            return await ctx.send("I am not ready for commands yet!")
         if ctx.command is not None:
             await self.invoke(ctx)
 
@@ -122,10 +124,11 @@ class Twilight(BotBase):
                 await sleep(1.5)
 
             self.ready = True
+            print(discord.Intents.members)
         else:
             print("Bot reconnected")
 
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
         if message.author.bot:
             return  # Pesky bots
         await self.process_commands(message)

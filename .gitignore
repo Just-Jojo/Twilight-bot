@@ -3,6 +3,7 @@ token.txt
 lib/cogs/twisettings.json
 twilight.bat
 lib/cogs/help.py
+lib/bot/blocklist.txt
 # Coming soon
 db/
 # Getting rid of the annoying pycache and cpy files

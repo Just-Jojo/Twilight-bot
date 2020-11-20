@@ -38,10 +38,11 @@ from ..bot import Twilight
 
 
 class Mod(Cog):
-    """Moderation to make sure everything runs smoothly on your Guild"""
+    """self.mod to make sure everything runs smoothly on your Guild"""
 
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.mod = Moderation
 
     @command()
     @moderator()
@@ -51,7 +52,7 @@ class Mod(Cog):
             ctx.author, ctx.author.id)
         if reason is not None:
             _reason += reason
-        result = await Moderation.ban_kick(self, ctx, user, "ban", _reason, days)
+        result = await self.mod.ban_kick(ctx, user, "ban", _reason, days)
         await ctx.send(content=result)
 
     @command()
@@ -62,7 +63,7 @@ class Mod(Cog):
             ctx.author, ctx.author.id)
         if reason is not None:
             _reason += reason
-        result = await Moderation.ban_kick(self, ctx, user, "kick", _reason, days)
+        result = await self.mod.ban_kick(ctx, user, "kick", _reason, days)
         await ctx.send(result)
 
     @command()
@@ -75,7 +76,7 @@ class Mod(Cog):
         `>mute @Jojo #testing`"""
         if channel is None:
             channel = ctx.channel
-        result = await Moderation.mute_member(self, ctx, user, channel)
+        result = await self.mod.mute_member(ctx, user, channel)
         await ctx.send(result)
 
     @command()
@@ -88,7 +89,7 @@ class Mod(Cog):
         `>unmute @Jojo #testing"""
         if channel is None:
             channel = ctx.channel
-        result = await Moderation.unmute_member(self, ctx, user, channel)
+        result = await self.mod.unmute_member(ctx=ctx, user=user, channel=channel)
         await ctx.send(result)
 
     @Cog.listener()

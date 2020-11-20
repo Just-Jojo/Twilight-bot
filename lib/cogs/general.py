@@ -1,12 +1,12 @@
 ### ~~~ General Discord and other utils imports ~~~ ###
 import discord
 from discord.ext.commands import (
-    Context, command, Cog
+    Context, command, Cog, is_owner
 )
 import asyncio
 import random
 ### ~~~ Twilight bot utils imports ~~~ ###
-from ..bot import Twilight # Type hinting
+from ..bot import Twilight  # Type hinting
 from .utils.embed import Embed
 from .utils.basic_utils import administrator, moderator
 
@@ -37,6 +37,12 @@ class General(Cog):
     @command()
     async def flip(self, ctx):
         await ctx.send("*Flips a coin and..... {}!!!*".format(random.choice(["HEADS", "TAILS"])))
+
+    @command()
+    async def test(self, ctx):
+        guild: discord.Guild = ctx.guild
+        owner: discord.Member = guild.get_member(guild.owner_id)
+        await ctx.send("Owner: {}".format(owner))
 
     @Cog.listener()
     async def on_ready(self):
