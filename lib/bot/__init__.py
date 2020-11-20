@@ -1,4 +1,5 @@
 import discord
+from discord import Intents
 from discord.ext.commands import Bot as BotBase
 from discord import Forbidden
 from discord.ext.commands import (
@@ -62,7 +63,10 @@ class Twilight(BotBase):
         self.last_exception = None
         self.license = LICENSE
         self._shutdown_level = ShutdownLevels.CRITICAL
-        super().__init__(command_prefix=">", owner_ids=OWNERS)
+        super().__init__(
+            command_prefix=">", owner_ids=OWNERS,
+            intents=Intents.all()
+        )
 
     def setup(self):
         for cog in cogs:
@@ -78,6 +82,7 @@ class Twilight(BotBase):
             self._shutdown_level = ShutdownLevels.RESTART
         elif restart is False:
             self._shutdown_level = ShutdownLevels.SHUTDOWN
+        await self.logout()
         sys.exit(self._shutdown_level)
 
     def run(self, version):
@@ -124,7 +129,6 @@ class Twilight(BotBase):
                 await sleep(1.5)
 
             self.ready = True
-            print(discord.Intents.members)
         else:
             print("Bot reconnected")
 

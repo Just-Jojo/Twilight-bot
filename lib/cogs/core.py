@@ -60,6 +60,7 @@ class Core(Cog):
         pass
 
     @group(name="set")
+    @guild_owner()
     @guild_only()
     async def _set(self, ctx: Context):
         """Set up Twilight"""
@@ -71,9 +72,6 @@ class Core(Cog):
         """Add a role
 
         `role_type` means the role type you want to add (eg. moderator or admin)"""
-        if ctx.author != ctx.guild.owner:
-            print("They aren't owners")
-            return
         role_type = role_type.lower()
         if (
             role_type not in types["administrator"] and role_type not in types["moderator"]
