@@ -1,7 +1,8 @@
 # Things that shouldn't be on my repo :p
 token.txt
 lib/cogs/twisettings.json
-# twilight.bat
+twilight.bat
+lib/cogs/help.py
 # Coming soon
 db/
 # Getting rid of the annoying pycache and cpy files
