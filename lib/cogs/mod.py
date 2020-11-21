@@ -32,7 +32,7 @@ from typing import Optional
 ### ~~~ Utils and others ~~~  ###
 from .utils.basic_utils import (
     moderator, administrator,
-    Moderation
+    Moderation, Getters
 )
 from ..bot import Twilight
 
@@ -42,28 +42,54 @@ class Mod(Cog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
-        self.mod = Moderation
+
+    async def ban_kick(self, ctx: Context, user: discord.Member, kick_ban: str, reason: str = None, days: int = 0):
+        """Ban or kick a user"""
+        _reason = "Banned {} ({}). Action requested by {} ({})".format(
+            user.name, user.id, ctx.author.name, ctx.author.id)
+        if reason:
+            _reason += f" {reason}"
+        if ctx.author.id == user.id:
+            return "Self harm is bad 😔"
+        if user is ctx.guild.owner:
+            return "Trying to pull a coup, eh?"
+
+        if kick_ban == "ban":
+            try:
+                await user.ban(reason=reason, delete_message_days=days)
+                if reason:
+                    return "Banned {} for the reason {}".format(user, reason)
+                else:
+                    return "Banned {}".format(user)
+            except discord.Forbidden:
+                return "I could not ban that member. Sorry"
+        else:
+            try:
+                await user.kick(reason)
+                return "Kicked {} for the reason {}".format(user, reason)
+            except discord.Forbidden:
+                return "I could not kick that member. Sorry"
 
     @command()
     @moderator()
     @guild_only()
     async def ban(self, ctx: Context, user: discord.Member, days: Optional[int] = 0, *, reason: str = None):
-        _reason = "Action requested by {} ({})\n".format(
-            ctx.author, ctx.author.id)
-        if reason is not None:
-            _reason += reason
-        result = await self.mod.ban_kick(ctx, user, "ban", _reason, days)
+        """Ban a member
+
+        Example:
+        `>ban @Jojo Breaking rules`"""
+        result = await self.ban_kick(ctx, user, "ban", reason, days)
         await ctx.send(content=result)
 
     @command()
     @moderator()
     @guild_only()
     async def kick(self, ctx: Context, user: discord.Member, days: Optional[int] = 0, *, reason: str = None):
-        _reason = "Action requested by {} ({})\n".format(
-            ctx.author, ctx.author.id)
-        if reason is not None:
-            _reason += reason
-        result = await self.mod.ban_kick(ctx, user, "kick", _reason, days)
+        """Kick a member
+
+        Example:
+        `>kick @Jojo He deserved it!`"""
+        result = await self.ban_kick(ctx, user, "kick", reason, days)
         await ctx.send(result)
 
     @command()
@@ -76,7 +102,7 @@ class Mod(Cog):
         `>mute @Jojo #testing`"""
         if channel is None:
             channel = ctx.channel
-        result = await self.mod.mute_member(ctx, user, channel)
+        result = await self.mute_member(ctx, user, channel)
         await ctx.send(result)
 
     @command()
@@ -89,8 +115,50 @@ class Mod(Cog):
         `>unmute @Jojo #testing"""
         if channel is None:
             channel = ctx.channel
-        result = await self.mod.unmute_member(ctx=ctx, user=user, channel=channel)
+        result = await self.unmute_member(ctx=ctx, user=user, channel=channel)
         await ctx.send(result)
+
+    async def mute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel):
+        """Channel mute a member"""
+        if ctx.guild is None:
+            return "This functionality is only available in guilds!"
+        if user is ctx.guild.owner:
+            return "You can't mute the owner!"
+        if user == ctx.author:
+            return "Don't mute yourself lol"
+        if (
+            Getters.get_admin_role(ctx.guild) in user.roles or
+            Getters.get_mod_role(ctx.guild) in user.roles
+        ):
+            return "This user is a mod/admin therefore I cannot mute them"
+        try:
+            await channel.set_permissions(user, send_messages=False)
+        except discord.Forbidden:
+            return "I could not mute this user."
+        # else:
+        #     await self.mod.create_case(ctx, ctx.guild, "mute", user)
+        return "Muted {} in {}".format(user.name, channel.mention)
+
+    async def unmute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel):
+        """Channel unmute a member"""
+        if ctx.guild is None:
+            return "This functionality is only available in guilds!"
+        if user is ctx.guild.owner:
+            return "Owners can't be muted to be unmuted."
+        if user == ctx.author:
+            return "Let's think logically for a second... how can you type to tell me to unmute you..."
+        if (
+            Getters.get_admin_role(ctx.guild) in user.roles or
+            Getters.get_mod_role(ctx.guild) in user.roles
+        ):
+            return "Mods and Admins can't be muted so unmuting an unmutable person would be silly"
+        try:
+            await channel.set_permissions(user, send_messages=True)
+        except discord.Forbidden:
+            return "I couldn't unmute the user."
+        return "Unmuted that user"
+        # else:
+        #     await Moderation.create_case(self, ctx=ctx, guild=ctx.guild, action="unmute", user=user)
 
     @Cog.listener()
     async def on_ready(self):

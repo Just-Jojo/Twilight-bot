@@ -40,6 +40,7 @@ class MyLittlePony(Cog):
 
     @command()
     async def smile(self, ctx):
+        """Smile song!"""
         title = "From My Little Pony: Friendship is Magic, Season 2, Episode 18, the Smile song!",
         description = (
             "Pinkie Pie loves to make ponies smile, so she had to sing about it."
@@ -51,6 +52,7 @@ class MyLittlePony(Cog):
     @command()
     @is_owner()
     async def episode(self, ctx: Context, number: int, title, *, description: str):
+        """This command doesn't work :D"""
         db.execute(
             "INSERT INTO episodes VALUES(?, ?, ?)",
             number, title, description

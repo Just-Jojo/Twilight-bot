@@ -62,12 +62,13 @@ class Core(Cog):
 
     @command()
     async def ping(self, ctx):
+        """Pong."""
         await ctx.send("Pong.")
 
-    @command()
-    @is_owner()
-    async def sudo(self, ctx: Context, user: discord.Member, *, command):
-        pass
+    # @command()
+    # @is_owner()
+    # async def sudo(self, ctx: Context, user: discord.Member, *, command):
+    #     pass
 
     @group(name="set")
     @guild_owner()
@@ -119,12 +120,14 @@ class Core(Cog):
     @command(name="reload", aliases=["cu", "update"])
     @is_owner()
     async def _reload(self, ctx: Context, cog: str):
+        """Reload a cog"""
         result = self.bot.reload_extension(cog)
         await ctx.send(result)
 
     @command()
     @is_owner()
     async def shutdown(self, ctx: Context):
+        """Shuts Twilight down"""
         await ctx.send("Shutting down Twilight")
         await asyncio.sleep(2)
         await self.bot.shutdown(restart=False)
@@ -132,6 +135,7 @@ class Core(Cog):
     @command()
     @is_owner()
     async def restart(self, ctx: Context):
+        """Attempts to restart the bot"""
         await ctx.send("Restarting...")
         await asyncio.sleep(2)
         await self.bot.shutdown(restart=True)
@@ -164,6 +168,7 @@ class Core(Cog):
 
     @command()
     async def info(self, ctx: Context):
+        """Twilight's info"""
         embed = Embed.create(
             self, ctx, title="Twilight bot Info", footer="Twilight bot Info"
         )
@@ -181,6 +186,7 @@ class Core(Cog):
 
     @command()
     async def uptime(self, ctx: Context):
+        """Get Twilight's uptime"""
         since = self.bot._uptime.strftime("%Y-%m-%D %H:%M:%S")
         uptime = datetime.utcnow() - self.bot._uptime
         uptime_str = humanize_timedelta(
@@ -194,6 +200,7 @@ class Core(Cog):
 
     @command(name="license")
     async def _license(self, ctx):
+        """Twilight's license"""
         embed = Embed.create(
             self, ctx, title="Twilight bot License",
             description=self.bot.license, footer="Twilight bot License :D"
@@ -223,6 +230,7 @@ class Core(Cog):
     @command()
     @is_owner()
     async def announce(self, ctx: Context, *, announcement: str):
+        """Announce a message to Twilight's guilds"""
         embed = Embed.create(
             self, ctx, title="Twilight bot Announcement",
             description=announcement, thumbnail=ctx.bot.avatar_url,

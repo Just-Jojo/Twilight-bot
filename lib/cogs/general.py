@@ -5,6 +5,7 @@ from discord.ext.commands import (
 )
 import asyncio
 import random
+from typing import Optional
 ### ~~~ Twilight bot utils imports ~~~ ###
 from ..bot import Twilight  # Type hinting
 from .utils.embed import Embed
@@ -16,12 +17,13 @@ class General(Cog):
         self.bot = bot
 
     @command()
-    async def say(self, ctx, *, message):
+    async def say(self, ctx: Context, channel: Optional[discord.TextChannel], *, message):
         """Have the bot repeat you"""
         await ctx.send(message)
 
     @command()
     async def roll(self, ctx, amount: int = 6):
+        """Roll a dice"""
         if amount < 2:
             await ctx.send("You can't roll a dice with less that 2 sides, silly")
         elif amount > 4000:
@@ -36,11 +38,14 @@ class General(Cog):
 
     @command()
     async def flip(self, ctx):
-        await ctx.send("*Flips a coin and..... {}!!!*".format(random.choice(["HEADS", "TAILS"])))
+        """Flip a coin"""
+        heads_tails = ["HEADS", "TAILS"]
+        await ctx.send("*Flips a coin and..... {}!!!*".format(random.choice(heads_tails)))
 
     @command()
     @is_owner()
     async def test(self, ctx):
+        """This is my testing command :D"""
         pass
 
     @Cog.listener()

@@ -3,7 +3,7 @@ from discord import Intents
 from discord.ext.commands import Bot as BotBase
 from discord import Forbidden
 from discord.ext.commands import (
-    Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure
+    Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure, NotOwner
 )
 from asyncio import sleep
 import traceback
@@ -16,7 +16,8 @@ cogs = [
     "general",
     "core",
     "mylittlepony",
-    "mod"
+    "mod",
+    "help"
 ]
 
 OWNERS = [544974305445019651, ]
@@ -58,6 +59,12 @@ class Ready(object):
 
 
 class Twilight(BotBase):
+    """
+        The Twilight bot core.
+        This core allows me to have a customized Discord bot that still has all of the functions of a normal bot
+        Mostly, this allows me to have more control over different events and such
+    """
+
     def __init__(self):
         self.ready = False
         self.cogs_ready = Ready()
@@ -111,6 +118,8 @@ class Twilight(BotBase):
             return
         elif isinstance(exc, MissingRequiredArgument):
             return await ctx.send_help(ctx.command)
+        elif isinstance(exc, NotOwner):
+            return  # Don't need to do anything for owner only
         elif isinstance(exc, CheckFailure):  # Check failures are the worstest
             return await ctx.send("You did not pass the required check for command `{}`".format(ctx.command))
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
@@ -136,7 +145,7 @@ class Twilight(BotBase):
             self._uptime = datetime.utcnow()
         else:
             print("Bot reconnected")
-        channel = self.get_channel(707431591051264121)
+        channel = self.get_channel(779822877460660274)
         embed = discord.Embed(
             title="Twilight Online again", description="Twilight is back online.",
             color=discord.Color.blue()
