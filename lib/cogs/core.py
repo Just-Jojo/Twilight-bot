@@ -30,13 +30,14 @@ from discord.ext.commands import (
 )
 import asyncio
 import json
-
+from platform import python_version as pver
+from datetime import datetime
 ### ~~~ Local imports ~~~ ###
 from ..bot import Twilight  # Type hinting
 from .utils.embed import Embed
 from .utils.basic_utils import (
     moderator, administrator, Moderation,
-    guild_owner, Getters
+    guild_owner, Getters, humanize_timedelta
 )
 from .utils.converter import RawUserIds
 
@@ -44,6 +45,15 @@ types = {
     "administrator": ["admin", "administrator", "adm"],
     "moderator": ["mod", "moderator", "moder"]
 }
+information = r"""
+    Twilight is a Discord bot written in Python by Jojo#7791.
+    Twilight is designed mostly for MLP features but also has moderation tools.
+    
+                            \~\~\~\~\~\~
+    
+    To invite Twilight to your server, use `>invite` and click on the link.
+    You can find the [support](https://discord.gg/JmCFyq7) server
+"""
 
 
 class Core(Cog):
@@ -134,7 +144,7 @@ class Core(Cog):
             "(https://discord.com/api/oauth2/authorize?client_id=734159757488685126&permissions=470117622&scope=bot)"
             " is the link to add her to your server (Note,"
             " in order to add a bot to a server you must have the `adminstrator` permission)"
-            "\nTo receive support, join the [Vanguard](https://discord.gg/JmCFyq7) support server"
+            "\n\nTo receive support, join the [Vanguard](https://discord.gg/JmCFyq7) support server"
             "\nThank you for checking out Twilight! <3"
         )
         embed = Embed.create(
@@ -155,14 +165,31 @@ class Core(Cog):
     @command()
     async def info(self, ctx: Context):
         embed = Embed.create(
-            self, ctx, title="Twilight bot Info", description="Version informations"
+            self, ctx, title="Twilight bot Info", footer="Twilight bot Info"
         )
         embed.add_field(
-            name="discord.py version", value=dpyversion, inline=False
+            name="<:dpy:779489296389767208>", value="Version: `{}`".format(dpyversion)
         )
         embed.add_field(
-            name="Twilight bot version", value=self.bot.version, inline=False
+            name="<:twilight:734586922910875750>", value="Version: `{}`".format(self.bot.version)
         )
+        embed.add_field(
+            name="<:python:760888220228780063>", value="Version: `{}`".format(pver())
+        )
+        embed.add_field(name="Info", value=information, inline=False)
+        await ctx.send(embed=embed)
+
+    @command()
+    async def uptime(self, ctx: Context):
+        since = self.bot._uptime.strftime("%Y-%m-%D %H:%M:%S")
+        uptime = datetime.utcnow() - self.bot._uptime
+        uptime_str = humanize_timedelta(
+            timedelta=uptime) or "Less than one second"
+        # await ctx.send("Been up for: **{}** (since {} UTC)".format(uptime_str, since))
+        embed = Embed.create(self, ctx, title="Uptime!",
+                             footer="Twilight uptime")
+        embed.add_field(name="Total time", value="**{}**".format(uptime_str))
+        embed.add_field(name="Up since", value="**{}**".format(since))
         await ctx.send(embed=embed)
 
     @command(name="license")

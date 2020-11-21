@@ -29,6 +29,7 @@ from discord.ext.commands import (
 ### ~~~ Twilight utis imports ~~~ ###
 from ..bot import Twilight  # Type hinting :D
 from .utils.embed import Embed
+from ..db import db
 
 
 class MyLittlePony(Cog):
@@ -46,6 +47,15 @@ class MyLittlePony(Cog):
         )
         embed = Embed.create(self, ctx, title=title, description=description)
         await ctx.send(embed=embed)
+
+    @command()
+    @is_owner()
+    async def episode(self, ctx: Context, number: int, title, *, description: str):
+        db.execute(
+            "INSERT INTO episodes VALUES(?, ?, ?)",
+            number, title, description
+        )
+        await ctx.send("Done.")
 
     @Cog.listener()
     async def on_ready(self):

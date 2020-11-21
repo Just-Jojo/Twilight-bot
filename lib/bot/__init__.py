@@ -3,12 +3,13 @@ from discord import Intents
 from discord.ext.commands import Bot as BotBase
 from discord import Forbidden
 from discord.ext.commands import (
-    Context, CommandNotFound, BadArgument, MissingRequiredArgument,
+    Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure
 )
 from asyncio import sleep
 import traceback
 from enum import IntEnum  # For the restart command :D
 import sys
+from datetime import datetime
 
 
 cogs = [
@@ -63,6 +64,7 @@ class Twilight(BotBase):
         self.last_exception = None
         self.license = LICENSE
         self._shutdown_level = ShutdownLevels.CRITICAL
+        self._uptime = None
         super().__init__(
             command_prefix=">", owner_ids=OWNERS,
             intents=Intents.all()
@@ -109,6 +111,8 @@ class Twilight(BotBase):
             return
         elif isinstance(exc, MissingRequiredArgument):
             return await ctx.send_help(ctx.command)
+        elif isinstance(exc, CheckFailure):  # Check failures are the worstest
+            return await ctx.send("You did not pass the required check for command `{}`".format(ctx.command))
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
         self.last_exception = "```py\n{}```".format(
             traceback.format_exception(
@@ -129,8 +133,16 @@ class Twilight(BotBase):
                 await sleep(1.5)
 
             self.ready = True
+            self._uptime = datetime.utcnow()
         else:
             print("Bot reconnected")
+        channel = self.get_channel(707431591051264121)
+        embed = discord.Embed(
+            title="Twilight Online again", description="Twilight is back online.",
+            color=discord.Color.blue()
+        )
+        embed.timestamp = datetime.utcnow()
+        await channel.send(embed=embed)
 
     async def on_message(self, message: discord.Message):
         if message.author.bot:

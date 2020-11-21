@@ -39,10 +39,9 @@ class General(Cog):
         await ctx.send("*Flips a coin and..... {}!!!*".format(random.choice(["HEADS", "TAILS"])))
 
     @command()
+    @is_owner()
     async def test(self, ctx):
-        guild: discord.Guild = ctx.guild
-        owner: discord.Member = guild.get_member(guild.owner_id)
-        await ctx.send("Owner: {}".format(owner))
+        pass
 
     @Cog.listener()
     async def on_ready(self):
