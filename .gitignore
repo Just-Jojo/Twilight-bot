@@ -2,7 +2,6 @@
 token.txt
 lib/cogs/twisettings.json
 twilight.bat
-lib/cogs/help.py
 lib/bot/blocklist.txt
 # Coming soon
 db/
