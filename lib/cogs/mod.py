@@ -42,8 +42,9 @@ class Mod(Cog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.moder = Moderation()
 
-    async def ban_kick(self, ctx: Context, user: discord.Member, kick_ban: str, reason: str = None, days: int = 0):
+    async def ban_kick(self, ctx: Context, user: discord.Member, kick_ban: str, reason: str = None, days: int = 0) -> str:
         """Ban or kick a user"""
         _reason = "Banned {} ({}). Action requested by {} ({})".format(
             user.name, user.id, ctx.author.name, ctx.author.id)
@@ -63,12 +64,16 @@ class Mod(Cog):
                     return "Banned {}".format(user)
             except discord.Forbidden:
                 return "I could not ban that member. Sorry"
+            else:
+                await self.moder.create_case(ctx, ctx.guild, "ban", user)
         else:
             try:
                 await user.kick(reason)
                 return "Kicked {} for the reason {}".format(user, reason)
             except discord.Forbidden:
                 return "I could not kick that member. Sorry"
+            else:
+                await self.moder.create_case(ctx, ctx.guild, "kick", user)
 
     @command()
     @moderator()

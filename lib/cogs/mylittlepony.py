@@ -54,7 +54,7 @@ class MyLittlePony(Cog):
     async def episode(self, ctx: Context, number: int, title, *, description: str):
         """This command doesn't work :D"""
         db.execute(
-            "INSERT INTO episodes VALUES(?, ?, ?)",
+            "INSERT INTO episodes VALUES (?, ?, ?)",
             number, title, description
         )
         await ctx.send("Done.")

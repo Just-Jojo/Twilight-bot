@@ -11,7 +11,7 @@ from enum import IntEnum  # For the restart command :D
 import sys
 from datetime import datetime
 
-
+TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 cogs = [
     "general",
     "core",
@@ -150,6 +150,7 @@ class Twilight(BotBase):
             title="Twilight Online again", description="Twilight is back online.",
             color=discord.Color.blue()
         )
+        embed.set_thumbnail(url=TWILIGHT_WAVE_PNG)
         embed.timestamp = datetime.utcnow()
         await channel.send(embed=embed)
 
