@@ -4,6 +4,7 @@ lib/cogs/twisettings.json
 twilight.bat
 lib/bot/blocklist.txt
 # Coming soon
+lib/cogs/help.py
 # Getting rid of the annoying pycache and cpy files
 *.db
 **/__pycache__

@@ -26,10 +26,13 @@ import discord
 from discord.ext.commands import (
     Context, command, is_owner, Cog
 )
+from typing import Optional
 ### ~~~ Twilight utis imports ~~~ ###
 from ..bot import Twilight  # Type hinting :D
 from .utils.embed import Embed
 from ..db import db
+
+MLP_LOGO = "https://cdn.discordapp.com/attachments/766499155669286922/779986290770182144/MLPFiM_logo.jpg"
 
 
 class MyLittlePony(Cog):
@@ -37,6 +40,22 @@ class MyLittlePony(Cog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.embed = Embed(bot)
+
+    def mlp_episode_description(
+        self, ctx: Context, num: int,
+        title: str, description: str, url: str = None
+    ):
+        if url:
+            description += "\nRead more [here]({})".format(url)
+        embed = self.embed.create(
+            ctx, title=title.format(
+                num, title),
+            description=description,
+            thumbnail=MLP_LOGO, footer="Twilight Episode search",
+            color=discord.Color.purple()
+        )
+        return embed
 
     @command()
     async def smile(self, ctx):
@@ -51,13 +70,42 @@ class MyLittlePony(Cog):
 
     @command()
     @is_owner()
-    async def episode(self, ctx: Context, number: int, title, *, description: str):
-        """This command doesn't work :D"""
+    async def builder(self, ctx: Context, number: int, title: str, *, description: str):
         db.execute(
             "INSERT INTO episodes VALUES (?, ?, ?)",
             number, title, description
         )
-        await ctx.send("Done.")
+        await ctx.send("Added episode `{}` to the db".format(title))
+
+    @command()
+    @is_owner()
+    async def dbcommit(self, ctx: Context):
+        db.commit()
+        await ctx.send("Commited changes to the database.")
+
+    @command()
+    async def episode(self, ctx: Context, episode: Optional[int]):
+        """Episode search command"""
+        if not await self.bot.is_owner(ctx.author):
+            return await ctx.send("This feature is still under development!")
+        else:
+            if episode:
+                try:
+                    title, description = db.record(
+                        "SELECT title, descrip FROM episodes WHERE numb = ?", episode)
+
+                    embed = self.mlp_episode_description(
+                        ctx, episode, title, description)
+                    await ctx.send(embed=embed)
+                    # await ctx.send(title)
+                except Exception as e:
+                    print(e)
+                    await ctx.send(
+                        (
+                            "I couldn't fetch the data for that episode,"
+                            " it might either not exist or it was entered incorrectly"
+                        )
+                    )
 
     @Cog.listener()
     async def on_ready(self):

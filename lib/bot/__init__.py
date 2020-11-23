@@ -10,6 +10,7 @@ import traceback
 from enum import IntEnum  # For the restart command :D
 import sys
 from datetime import datetime
+from ..db import db
 
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 cogs = [
@@ -17,7 +18,7 @@ cogs = [
     "core",
     "mylittlepony",
     "mod",
-    "help"
+    # "help", I need to write a better menus system first
 ]
 
 OWNERS = [544974305445019651, ]
@@ -86,12 +87,14 @@ class Twilight(BotBase):
     async def logout(self):
         await super().logout()
 
-    async def shutdown(self, *, restart: bool = False):
+    async def shutdown(self, *, restart: bool = False, commit: bool = True):
         if restart is True:
             self._shutdown_level = ShutdownLevels.RESTART
         elif restart is False:
             self._shutdown_level = ShutdownLevels.SHUTDOWN
         await self.logout()
+        if commit:
+            db.commit()
         sys.exit(self._shutdown_level)
 
     def run(self, version):

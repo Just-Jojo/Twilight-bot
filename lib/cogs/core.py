@@ -40,6 +40,7 @@ from .utils.basic_utils import (
     guild_owner, Getters, humanize_timedelta
 )
 from .utils.converter import RawUserIds
+from typing import Optional
 
 types = {
     "administrator": ["admin", "administrator", "adm"],
@@ -126,19 +127,19 @@ class Core(Cog):
 
     @command()
     @is_owner()
-    async def shutdown(self, ctx: Context):
+    async def shutdown(self, ctx: Context, commit: bool = True):
         """Shuts Twilight down"""
         await ctx.send("Shutting down Twilight")
         await asyncio.sleep(2)
-        await self.bot.shutdown(restart=False)
+        await self.bot.shutdown(restart=False, commit=commit)
 
     @command()
     @is_owner()
-    async def restart(self, ctx: Context):
+    async def restart(self, ctx: Context, commit: bool = True):
         """Attempts to restart the bot"""
         await ctx.send("Restarting...")
         await asyncio.sleep(2)
-        await self.bot.shutdown(restart=True)
+        await self.bot.shutdown(restart=True, commit=commit)
 
     @command()
     async def invite(self, ctx):

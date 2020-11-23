@@ -24,6 +24,7 @@ SOFTWARE.
 from discord import Embed as Emb
 from discord import Color
 from discord.ext import commands
+from datetime import datetime
 
 
 class Embed:
@@ -88,5 +89,6 @@ class Embed:
             data.set_image(url=image)
         if thumbnail is not None:
             data.set_thumbnail(url=thumbnail)
+        data.timestamp = datetime.utcnow()
 
         return data
