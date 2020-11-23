@@ -3,7 +3,8 @@ from discord import Intents
 from discord.ext.commands import Bot as BotBase
 from discord import Forbidden
 from discord.ext.commands import (
-    Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure, NotOwner
+    Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure, NotOwner,
+    Command
 )
 from asyncio import sleep
 import traceback
@@ -11,6 +12,7 @@ from enum import IntEnum  # For the restart command :D
 import sys
 from datetime import datetime
 from ..db import db
+from ..cogs.utils.embed import Embed
 
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 cogs = [
@@ -96,6 +98,11 @@ class Twilight(BotBase):
         if commit:
             db.commit()
         sys.exit(self._shutdown_level)
+
+    # async def send_help(self, ctx: Context, command: Command):
+    #     embed = Embed.create(
+    #         self, ctx, title=""
+    #     )
 
     def run(self, version):
         self.version = version

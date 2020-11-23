@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS episodes (
     numb integer PRIMARY KEY,
     title text NOT NULL,
-    descrip text NOT NULL
+    descrip text NOT NULL,
+    _url text NOT NULL
 );
 CREATE TABLE IF NOT EXISTS characters (
     id text PRIMARY KEY,

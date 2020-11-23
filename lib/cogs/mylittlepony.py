@@ -46,14 +46,23 @@ class MyLittlePony(Cog):
         self, ctx: Context, num: int,
         title: str, description: str, url: str = None
     ):
-        if url:
-            description += "\nRead more [here]({})".format(url)
+        description += "...\nRead more [here]({})".format(url)
         embed = self.embed.create(
             ctx, title=title.format(
                 num, title),
             description=description,
             thumbnail=MLP_LOGO, footer="Twilight Episode search",
             color=discord.Color.purple()
+        )
+        return embed
+
+    def mlp_character_description(
+        self, ctx: Context, character: str,
+        description: str, url: str
+    ):
+        embed = self.embed.create(
+            ctx, title=f"{character}'s Bio", description=description,
+            image=url, footer="Twilight Character search", color=discord.Color.purple()
         )
         return embed
 
@@ -70,12 +79,21 @@ class MyLittlePony(Cog):
 
     @command()
     @is_owner()
-    async def builder(self, ctx: Context, number: int, title: str, *, description: str):
+    async def epbuilder(self, ctx: Context, number: int, title: str, url: str, *, description: str):
         db.execute(
-            "INSERT INTO episodes VALUES (?, ?, ?)",
-            number, title, description
+            "INSERT INTO episodes VALUES (?, ?, ?, ?)",
+            number, title, description, url
         )
         await ctx.send("Added episode `{}` to the db".format(title))
+
+    @command()
+    @is_owner()
+    async def chbuilder(self, ctx: Context, character: str, avatar: str, *, description: str):
+        db.execute(
+            "INSERT INTO characters VALUES (?, ?, ?)",
+            character, description, avatar
+        )
+        await ctx.send("Added `{}` to the list of characters!".format(character))
 
     @command()
     @is_owner()
@@ -88,24 +106,51 @@ class MyLittlePony(Cog):
         """Episode search command"""
         if not await self.bot.is_owner(ctx.author):
             return await ctx.send("This feature is still under development!")
-        else:
-            if episode:
-                try:
-                    title, description = db.record(
-                        "SELECT title, descrip FROM episodes WHERE numb = ?", episode)
+        if episode:
+            try:
+                title, description, url = db.record(
+                    "SELECT title, descrip, _url FROM episodes WHERE numb = ?", episode)
 
-                    embed = self.mlp_episode_description(
-                        ctx, episode, title, description)
-                    await ctx.send(embed=embed)
-                    # await ctx.send(title)
-                except Exception as e:
-                    print(e)
-                    await ctx.send(
-                        (
-                            "I couldn't fetch the data for that episode,"
-                            " it might either not exist or it was entered incorrectly"
-                        )
+                embed = self.mlp_episode_description(
+                    ctx, episode, title, description,
+                    url
+                )
+                await ctx.send(embed=embed)
+                # await ctx.send(title)
+            except Exception as e:
+                print(e)
+                await ctx.send(
+                    (
+                        "I couldn't fetch the data for that episode,"
+                        " it might either not exist or it was entered incorrectly"
                     )
+                )
+        else:
+            await ctx.send_help(ctx.command)
+
+    @command()
+    async def character(self, ctx: Context, *, name: Optional[str]):
+        if not await self.bot.is_owner(ctx.author):
+            return await ctx.send("This feature is still under development!")
+        if name:
+            try:
+                description, url = db.record(
+                    "SELECT descrip, avatar_url FROM characters WHERE id = ?",
+                    name
+                )
+                embed = self.mlp_character_description(
+                    ctx, name, description, url)
+                await ctx.send(embed=embed)
+            except Exception as e:
+                print(e)
+                await ctx.send(
+                    (
+                        "I couldn't fetch the data for that character,"
+                        " they might either not exist in my database or the name was entered incorrectly"
+                    )
+                )
+        else:
+            await ctx.send_help(ctx.command)
 
     @Cog.listener()
     async def on_ready(self):

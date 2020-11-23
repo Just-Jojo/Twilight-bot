@@ -1,7 +1,7 @@
 # Things that shouldn't be on my repo :p
 token.txt
 lib/cogs/twisettings.json
-twilight.bat
+# twilight.bat
 lib/bot/blocklist.txt
 # Coming soon
 lib/cogs/help.py
