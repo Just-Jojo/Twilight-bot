@@ -4,6 +4,7 @@ from discord import Embed as DEmbed
 from discord.ext.commands import (Context,)
 import random
 from ...bot import twilight
+from typing import Tuple
 
 embeder = Embed(twilight)
 rps = {
@@ -13,8 +14,10 @@ rps = {
 }
 
 
-def arg_parser(arg: str):
-    """This will take an argument and return a full version"""
+def arg_parser(arg: str) -> Tuple[str, int]:
+    """This will take an argument and return a full version
+
+    Returns None if the argument doesn't match up to a choice"""
     if arg == "r":
         return "Rock", 0
     if arg == "p":
@@ -24,7 +27,7 @@ def arg_parser(arg: str):
     return None, 0  # Return 0 to make sure that it doesn't complain when a bad argument is given
 
 
-async def rock_paper_scissors(ctx: Context, choice: str):
+async def rock_paper_scissors(ctx: Context, choice: str) -> None:
     """Rock paper scissors, because life is meaningless"""
     choice, numb = arg_parser(choice[0].lower())
     if choice:

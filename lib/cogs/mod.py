@@ -123,7 +123,7 @@ class Mod(Cog):
         result = await self.unmute_member(ctx=ctx, user=user, channel=channel)
         await ctx.send(result)
 
-    async def mute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel):
+    async def mute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel) -> str:
         """Channel mute a member"""
         if ctx.guild is None:
             return "This functionality is only available in guilds!"
@@ -144,7 +144,7 @@ class Mod(Cog):
         #     await self.mod.create_case(ctx, ctx.guild, "mute", user)
         return "Muted {} in {}".format(user.name, channel.mention)
 
-    async def unmute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel):
+    async def unmute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel) -> str:
         """Channel unmute a member"""
         if ctx.guild is None:
             return "This functionality is only available in guilds!"

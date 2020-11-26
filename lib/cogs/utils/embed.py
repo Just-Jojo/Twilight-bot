@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+import discord
 from discord import Embed as Emb
 from discord import Color
 from discord.ext import commands
@@ -52,7 +53,7 @@ class Embed:
         self, ctx: commands.Context, title: str = None, description: str = None,
         color: Color = None, footer: str = None, footer_url: str = None,
         thumbnail: str = None, image: str = None
-    ):
+    ) -> discord.Embed:
         """
             Creates a Discord embed object and sets some defaults to it
 

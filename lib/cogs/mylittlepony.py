@@ -45,7 +45,8 @@ class MyLittlePony(Cog):
     def mlp_episode_description(
         self, ctx: Context, num: int,
         title: str, description: str, url: str = None
-    ):
+    ) -> discord.Embed:
+        """Generate an episode Embed from the given variables"""
         description += "...\nRead more [here]({})".format(url)
         embed = self.embed.create(
             ctx, title=title.format(
@@ -59,7 +60,8 @@ class MyLittlePony(Cog):
     def mlp_character_description(
         self, ctx: Context, character: str,
         description: str, url: str
-    ):
+    ) -> discord.Embed:
+        """Generate a character Embed from the given variables"""
         embed = self.embed.create(
             ctx, title=f"{character}'s Bio", description=description,
             image=url, footer="Twilight Character search", color=discord.Color.purple()

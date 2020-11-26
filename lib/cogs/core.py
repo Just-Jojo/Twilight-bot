@@ -239,7 +239,8 @@ class Core(Cog):
         )
         await self.announce_to_guilds(embed)
 
-    async def announce_to_guilds(self, message: discord.Embed):
+    async def announce_to_guilds(self, message: discord.Embed) -> None:
+        """Send a message out to every guild that Twilight is in"""
         channels = Getters.get_all_announce()
         for channel in channels:
             if channel is not None:

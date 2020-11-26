@@ -67,7 +67,7 @@ def guild_owner():
 
 def humanize_timedelta(
     *, timedelta: Optional[datetime.timedelta] = None, seconds: Optional[SupportsInt] = None
-):  # I didn't steal this from red, how silly that would have been :p
+) -> str:  # I didn't steal this from red, how silly that would have been :p
     try:
         obj = seconds if seconds is not None else timedelta.total_seconds()
     except AttributeError:
@@ -103,7 +103,7 @@ class Moderation:
         These keys will be assigned `None` or `null` until the server owner sets the channels and roles.
     """
 
-    def setup(self, guild: discord.Guild):
+    def setup(self, guild: discord.Guild) -> None:
         """Set up a Guild with the default settings"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
@@ -124,7 +124,7 @@ class Moderation:
             json.dump(twiset, f, indent=4)
         print("Added {} ({}) to Twilight's settings".format(guild.name, guild.id))
 
-    def teardown(self, guild: discord.Guild):
+    def teardown(self, guild: discord.Guild) -> None:
         """Remove a Guild from Twilight's settings"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
@@ -136,9 +136,8 @@ class Moderation:
 
         del twiset[str(guild.id)]
         print("Deleted Twilight's data for {} ({})".format(guild.name, guild.id))
-        return
 
-    def add_role(self, guild: discord.Guild, role_type: str, role: discord.Role):
+    def add_role(self, guild: discord.Guild, role_type: str, role: discord.Role) -> str:
         """Set up the Mod or Admin role"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
@@ -158,7 +157,7 @@ class Moderation:
             json.dump(twiset, f, indent=4)
         return "Added {} as the {} role".format(role, role_type)
 
-    def remove_role(self, guild: discord.Guild, role_type: str):
+    def remove_role(self, guild: discord.Guild, role_type: str) -> str:
         """Remove a Mod or Admin role"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
@@ -179,7 +178,7 @@ class Moderation:
 
     # For removal, there shouldn't be a channel,
     # so requiring a channel is kinda dumb
-    def announcement_set(self, remove: bool, guild: discord.Guild, channel: discord.TextChannel = None):
+    def announcement_set(self, remove: bool, guild: discord.Guild, channel: discord.TextChannel = None) -> str:
         """Set a Guild's announcement channel"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
@@ -204,7 +203,7 @@ class Moderation:
             guild.name, guild.id))
         return "Removed your guild's announcement channel"
 
-    def modlog_set(self, channel: discord.TextChannel, guild: discord.Guild):
+    def modlog_set(self, channel: discord.TextChannel, guild: discord.Guild) -> str:
         """Set up a Guild's modlog channel"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
@@ -218,7 +217,7 @@ class Moderation:
             json.dump(twiset, f, indent=4)
         return "Set {} as your modlog channel".format(channel.mention)
 
-    def modlog_remove(self, guild: discord.Guild):
+    def modlog_remove(self, guild: discord.Guild) -> str:
         """Remove a Guild's modlog channel"""
         with open(TWISETTINGS_PATH, "r") as f:
             twiset: dict = json.load(f)
