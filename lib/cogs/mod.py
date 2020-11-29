@@ -25,7 +25,7 @@ SOFTWARE.
 import discord
 from discord.ext.commands import (
     command, Context, check, Cog,
-    guild_only
+    guild_only, is_owner
 )
 from typing import Optional
 
@@ -140,8 +140,8 @@ class Mod(Cog):
             await channel.set_permissions(user, send_messages=False)
         except discord.Forbidden:
             return "I could not mute this user."
-        # else:
-        #     await self.mod.create_case(ctx, ctx.guild, "mute", user)
+        else:
+            await self.moder.create_case(ctx, ctx.guild, "mute", user)
         return "Muted {} in {}".format(user.name, channel.mention)
 
     async def unmute_member(self, ctx: Context, user: discord.Member, channel: discord.TextChannel) -> str:
@@ -161,9 +161,14 @@ class Mod(Cog):
             await channel.set_permissions(user, send_messages=True)
         except discord.Forbidden:
             return "I couldn't unmute the user."
+        else:
+            await self.moder.create_case(self, ctx=ctx, guild=ctx.guild, action="unmute", user=user)
         return "Unmuted that user"
-        # else:
-        #     await Moderation.create_case(self, ctx=ctx, guild=ctx.guild, action="unmute", user=user)
+
+    # @command()
+    # @is_owner()
+    # async def test(self, ctx: Context):
+    #     await self.moder.create_case(ctx, ctx.guild, "Test", ctx.author)
 
     @Cog.listener()
     async def on_ready(self):

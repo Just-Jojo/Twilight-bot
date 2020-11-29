@@ -79,6 +79,22 @@ class Core(Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send_help(ctx.command)
 
+    @_set.command()
+    async def modlog(self, ctx: Context, channel: discord.TextChannel = None):
+        """Set a modlog channel"""
+        if not channel:
+            if Getters.get_modlog(ctx.guild) is None:
+                msg = await ctx.send("Would you like to remove the Modlog channel")
+                response = await ctx.bot.wait_for('message', check=lambda m: m.id == ctx.author.id)
+                if response.content.lower() in ("yes", "y"):
+                    message = Moderation.modlog_remove(self, ctx.guild)
+                else:
+                    message = "Canceled"
+                await msg.edit(content=message)
+        else:
+            message = Moderation.modlog_set(self, channel, ctx.guild)
+            await ctx.send(content=message)
+
     @_set.command(name="add")
     async def _add(self, ctx: Context, role_type: str, role: discord.Role):
         """Add a role

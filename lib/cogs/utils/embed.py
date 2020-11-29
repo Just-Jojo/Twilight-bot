@@ -52,7 +52,7 @@ class Embed:
     def create(
         self, ctx: commands.Context, title: str = None, description: str = None,
         color: Color = None, footer: str = None, footer_url: str = None,
-        thumbnail: str = None, image: str = None
+        thumbnail: str = None, image: str = None, author: str = None, author_url: str = None
     ) -> discord.Embed:
         """
             Creates a Discord embed object and sets some defaults to it
@@ -69,27 +69,83 @@ class Embed:
             thumbnail: str
             image: str
             ~~~
+            Returns: discord.Embed
         """
         data = Emb()
-        if title is not None:
+        if title:
             data.title = title
-        if description is not None:
+        if description:
             data.description = description
 
-        if color is None:
+        if not color:
             color = ctx.author.color
         data.color = color
 
-        if footer is None:
+        if not footer:
             footer = "Twilight bot Embed"
-        if footer_url is None:
+        if not footer_url:
             footer_url = ctx.bot.user.avatar_url
         data.set_footer(text=footer, icon_url=footer_url)
 
-        if image is not None:
+        if image:
             data.set_image(url=image)
-        if thumbnail is not None:
+        if thumbnail:
             data.set_thumbnail(url=thumbnail)
         data.timestamp = datetime.utcnow()
+        if not author_url:
+            author_url = ctx.author.avatar_url
+        if not author:
+            author = ctx.author.display_name
+        data.set_author(name=author, icon_url=author_url)
+
+        return data
+
+    def create_from_dict(self, ctx: commands.Context, **kwargs) -> discord.Embed:
+        """
+        Creates a Discord embed from a dictionary
+
+        ~~~
+        :title: str
+        :description: str
+        :color: Optional[discord.Color]
+        :image: str
+        :thumbnail: str
+        ~~~
+        Returns: discord.Embed
+        """
+        data = Emb()
+        data.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        try:
+            data.title = kwargs["title"]
+        except KeyError:
+            pass
+        try:
+            data.description = kwargs["description"]
+        except KeyError:
+            pass
+        try:
+            color = kwargs["color"]
+        except KeyError:
+            color = ctx.author.color
+        data.color = color
+
+        try:
+            footer = kwargs["footer"]
+        except KeyError:
+            footer = "Twilight Embed maker"
+        try:
+            footer_url = kwargs["footer_url"]
+        except KeyError:
+            footer_url = ctx.me.avatar_url
+        data.set_footer(text=footer, icon_url=footer_url)
+
+        try:
+            data.set_image(url=kwargs["image"])
+        except KeyError:
+            pass
+        try:
+            data.set_thumbnail(url=kwargs["thumbnail"])
+        except KeyError:
+            pass
 
         return data

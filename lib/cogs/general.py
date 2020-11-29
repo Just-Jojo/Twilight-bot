@@ -18,6 +18,7 @@ class General(Cog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.embed = Embed(bot)
 
     @command()
     async def say(self, ctx: Context, channel: Optional[discord.TextChannel], *, message):
@@ -49,12 +50,6 @@ class General(Cog):
     async def rockpaperscissors(self, ctx: Context, choice: str):
         """Play a game of rock paper scissors with Twilight"""
         await rock_paper_scissors(ctx, choice)
-
-    @command()
-    @is_owner()
-    async def test(self, ctx: Context):
-        """This is my testing command :D"""
-        await ctx.send(ctx.command.help)
 
     @Cog.listener()
     async def on_ready(self):
