@@ -5,7 +5,15 @@ IF %ERRORLEVEL% NEQ 0 (
     CLS
     ECHO Restarting Twilight...
     GOTO TWILY
-) ELSE (
+) ELSE IF %ERRORLEVEL% == 1 (
+    ECHO There is an issue. Please read the traceback!
+    SET /P read = "> "
+    IF "%read%" == "y" (
+        GOTO TWILY
+    ) ELSE (
+        ECHO Okay!
+    )
+)  ELSE (
     CLS
     GOTO RESTART
 )

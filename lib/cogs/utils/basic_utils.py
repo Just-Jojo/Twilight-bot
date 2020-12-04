@@ -28,42 +28,9 @@ from discord.ext.commands import (
 import json
 from .embed import Embed
 import datetime
-from typing import Optional, SupportsInt
+from typing import *
 
 TWISETTINGS_PATH = "./lib/cogs/twisettings.json"
-
-# class MessagePredicates:
-#     def __init__(self, )
-
-#     @classmethod
-#     def same_context(cls,
-#         ctx: Optional[Context] = None,
-#         channel: Optional[discord.TextChannel] = None,
-#         user: Optional[discord.User] = None
-#     ):
-#         if ctx is not None:
-#             channel = channel or ctx.channel
-#             user = user or ctx.author
-#         return cls(
-#             lambda self, m: (user is None or user.id == m.author.id)
-#             and (channel is None or channel.id == m.channel.id)
-#         )
-
-#     @classmethod
-#     def yes_no(
-#         cls,
-#         ctx: Optional[Context] = None,
-#         channel: Optional[discord.TextChannel] = None,
-#         user: Optional[discord.User] = None
-#     ):
-#         same_context = cls.same_context(ctx, channel, user)
-
-#         def predicate(self, m: discord.Message):
-#             if not same_context(m):
-#                 return False
-#             content = m.content.lower()
-#             if content in ("yes", "y"):
-#                 return True
 
 
 def moderator():

@@ -26,7 +26,7 @@ import discord
 from discord.ext.commands import (
     Context, command, is_owner, Cog
 )
-from typing import Optional
+from typing import *
 ### ~~~ Twilight utis imports ~~~ ###
 from ..bot import Twilight  # Type hinting :D
 from .utils.embed import Embed

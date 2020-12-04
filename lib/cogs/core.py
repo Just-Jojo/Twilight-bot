@@ -40,7 +40,7 @@ from .utils.basic_utils import (
     guild_owner, Getters, humanize_timedelta
 )
 from .utils.converter import RawUserIds
-from typing import Optional
+from typing import *
 
 types = {
     "administrator": ["admin", "administrator", "adm"],

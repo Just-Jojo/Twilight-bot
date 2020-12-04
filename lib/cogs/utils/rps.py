@@ -4,7 +4,7 @@ from discord import Embed as DEmbed
 from discord.ext.commands import (Context,)
 import random
 from ...bot import twilight
-from typing import Tuple
+from typing import *
 
 embeder = Embed(twilight)
 rps = {

@@ -6,6 +6,7 @@ from discord.ext.commands import (
     Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure, NotOwner,
     Command
 )
+from typing import *
 from asyncio import sleep
 import traceback
 from enum import IntEnum  # For the restart command :D
@@ -98,11 +99,6 @@ class Twilight(BotBase):
         if commit:
             db.commit()
         sys.exit(self._shutdown_level)
-
-    # async def send_help(self, ctx: Context, command: Command):
-    #     embed = Embed.create(
-    #         self, ctx, title=""
-    #     )
 
     def run(self, version):
         self.version = version
