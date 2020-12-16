@@ -1,3 +1,3 @@
 from .bot import Twilight
 
-twilight = Twilight()
+twilight = Twilight("None")

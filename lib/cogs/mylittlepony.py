@@ -40,7 +40,7 @@ class MyLittlePony(Cog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
-        self.embed = Embed(bot)
+        self.embed = Embed()
 
     def mlp_episode_description(
         self, ctx: Context, num: int,

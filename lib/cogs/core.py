@@ -35,10 +35,7 @@ from datetime import datetime
 ### ~~~ Local imports ~~~ ###
 from ..bot import Twilight  # Type hinting
 from .utils.embed import Embed
-from .utils.basic_utils import (
-    moderator, administrator, Moderation,
-    guild_owner, Getters, humanize_timedelta
-)
+from .utils.basic_utils import *
 from .utils.converter import RawUserIds
 from typing import *
 
@@ -50,7 +47,7 @@ information = r"""
     Twilight is a Discord bot written in Python by Jojo#7791.
     Twilight is designed mostly for MLP features but also has moderation tools.
     
-                            \~\~\~\~\~\~
+    \~\~\~\~\~\~
     
     To invite Twilight to your server, use `>invite` and click on the link.
     You can find the [support](https://discord.gg/JmCFyq7) server
@@ -138,6 +135,8 @@ class Core(Cog):
     @is_owner()
     async def _reload(self, ctx: Context, cog: str):
         """Reload a cog"""
+        if cog == "dev":
+            cog = "dev_commands"
         result = self.bot.reload_extension(cog)
         await ctx.send(result)
 

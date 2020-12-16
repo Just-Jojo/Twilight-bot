@@ -57,6 +57,8 @@ def administrator():
         return True
     return check(inner)
 
+def tick(message: discord.Message):
+    message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
 
 def guild_owner():
     """Guild owner check in the discord.py library when?"""
@@ -95,6 +97,10 @@ def humanize_timedelta(
 
     return ", ".join(strings)
 
+
+def box(text: str, lang: str = "") -> str:
+    ret = "```{}\n{}```".format(lang, text)
+    return ret
 
 class Moderation:
     """

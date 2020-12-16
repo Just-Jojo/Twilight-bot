@@ -4,7 +4,7 @@ from discord.ext.commands import Bot as BotBase
 from discord import Forbidden
 from discord.ext.commands import (
     Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure, NotOwner,
-    Command
+    Command, errors
 )
 from typing import *
 from asyncio import sleep
@@ -16,12 +16,14 @@ from ..db import db
 from ..cogs.utils.embed import Embed
 
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
+TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
 cogs = [
     "general",
     "core",
     "mylittlepony",
     "mod",
-    # "help", I need to write a better menus system first
+    "help",  # I need to write a better menus system first
+    "dev_commands",
 ]
 
 OWNERS = [544974305445019651, ]
@@ -69,13 +71,14 @@ class Twilight(BotBase):
         Mostly, this allows me to have more control over different events and such
     """
 
-    def __init__(self):
+    def __init__(self, version: str):
         self.ready = False
         self.cogs_ready = Ready()
         self.last_exception = None
         self.license = LICENSE
         self._shutdown_level = ShutdownLevels.CRITICAL
         self._uptime = None
+        self.version = version
         super().__init__(
             command_prefix=">", owner_ids=OWNERS,
             intents=Intents.all()
@@ -83,8 +86,13 @@ class Twilight(BotBase):
 
     def setup(self):
         for cog in cogs:
-            self.load_extension("lib.cogs.{}".format(cog))
-            print("{} loaded".format(cog))
+            try:
+                self.load_extension("lib.cogs.{}".format(cog))
+            except errors.ExtensionFailed as e:
+                print(f"Failed to load {cog}")
+                print(e)
+            else:
+                print("{} loaded".format(cog))
         print("Cogs loaded")
 
     async def logout(self):
@@ -100,16 +108,14 @@ class Twilight(BotBase):
             db.commit()
         sys.exit(self._shutdown_level)
 
-    def run(self, version):
-        self.version = version
-
+    def run(self):
         print("Waking up Twilight")
         self.setup()
 
         with open("./lib/bot/token.txt", "r") as token:
             self.TOKEN = token.read()
 
-        print("Giving Twilight coffee")
+        print(f"Giving Twilight coffee. Running version {self.version}")
         super().run(self.TOKEN, reconnect=True)
 
     async def process_commands(self, message):
@@ -130,9 +136,9 @@ class Twilight(BotBase):
             return await ctx.send("You did not pass the required check for command `{}`".format(ctx.command))
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
         self.last_exception = "```py\n{}```".format(
-            traceback.format_exception(
+            "".join(traceback.format_exception(
                 type(exc), exc, exc.__traceback__
-            )
+            ))
         )
         if hasattr(exc, "original"):
             if isinstance(exc, Forbidden):

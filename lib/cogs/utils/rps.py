@@ -3,10 +3,9 @@ from .embed import Embed
 from discord import Embed as DEmbed
 from discord.ext.commands import (Context,)
 import random
-from ...bot import twilight
 from typing import *
 
-embeder = Embed(twilight)
+embeder = Embed()
 rps = {
     "rock": ["Rock. We tied!", "Paper. I win!", "Scissors. You win!"],
     "paper": ["Rock. I win!", "Paper. We tied!", "Scissors. I win!"],

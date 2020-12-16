@@ -4,12 +4,15 @@
 
 # Thanks for the insperation :)
 
-from sqlite3 import connect
+from sqlite3 import connect, OperationalError
 from os.path import isfile
 
 DB_PATH = "./db/database.db"
 BUILDER_PATH = "./db/builder.sql"
-conc = connect(DB_PATH)
+try:
+    conc = connect(DB_PATH)
+except OperationalError:
+    conc = connect("./db/database.db")
 cur = conc.cursor()
 
 

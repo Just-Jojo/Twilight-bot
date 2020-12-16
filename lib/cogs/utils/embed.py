@@ -27,6 +27,8 @@ from discord import Color
 from discord.ext import commands
 from datetime import datetime
 
+TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
+
 
 class Embed:
     """
@@ -45,9 +47,6 @@ class Embed:
         image: str
         ~~~
     """
-
-    def __init__(self, bot):
-        self.bot = bot
 
     def create(
         self, ctx: commands.Context, title: str = None, description: str = None,
@@ -100,7 +99,7 @@ class Embed:
 
         return data
 
-    def create_from_dict(self, ctx: commands.Context, **kwargs) -> discord.Embed:
+    def create_from_dict(self, ctx: commands.Context = None, **kwargs) -> discord.Embed:
         """
         Creates a Discord embed from a dictionary
 
@@ -110,11 +109,25 @@ class Embed:
         :color: Optional[discord.Color]
         :image: str
         :thumbnail: str
+        :footer: str
+        :footer_url: str
         ~~~
         Returns: discord.Embed
         """
         data = Emb()
-        data.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
+        if ctx:
+            data.set_author(name=ctx.author.name,
+                            icon_url=ctx.author.avatar_url)
+        else:
+            try:
+                author = kwargs["author"]
+            except KeyError:
+                author = "Twilight bot"
+            try:
+                author_url = kwargs["author_url"]
+            except KeyError:
+                author_url = TWILIGHT_PFP
+            data.set_author(name=author, icon_url=author_url)
         try:
             data.title = kwargs["title"]
         except KeyError:
@@ -126,7 +139,10 @@ class Embed:
         try:
             color = kwargs["color"]
         except KeyError:
-            color = ctx.author.color
+            if ctx:
+                color = ctx.author.color
+            else:
+                color = discord.Color.purple()
         data.color = color
 
         try:
@@ -136,7 +152,7 @@ class Embed:
         try:
             footer_url = kwargs["footer_url"]
         except KeyError:
-            footer_url = ctx.me.avatar_url
+            footer_url = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.png?size=1024"
         data.set_footer(text=footer, icon_url=footer_url)
 
         try:

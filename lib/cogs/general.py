@@ -19,7 +19,7 @@ class General(Cog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
-        self.embed = Embed(bot)
+        self.embed = Embed()
 
     @command()
     async def say(self, ctx: Context, channel: Optional[discord.TextChannel], *, message):
