@@ -85,6 +85,19 @@ class DevCommands(Cog):
         """Error the bot"""
         raise Exception("Used command `error`")
 
+    @command()
+    @is_owner()
+    async def findcog(self, ctx, command: str):
+        """Find a cog based off of a command"""
+        com: Command = self.bot.get_command(command)
+        if not com:
+            await ctx.send("That command doesn't seem to exist")
+            return
+        embed = Embed.create(self, ctx)
+        embed.add_field(name="Command", value=com.name)
+        embed.add_field(name="Cog", value=com.cog_name, inline=False)
+        await ctx.send(embed=embed)
+
     @Cog.listener()
     async def on_ready(self):
         if not self.bot.ready:

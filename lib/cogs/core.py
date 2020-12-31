@@ -57,16 +57,12 @@ information = r"""
 class Core(Cog):
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.embed = Embed(self.bot)
 
     @command()
     async def ping(self, ctx):
         """Pong."""
         await ctx.send("Pong.")
-
-    # @command()
-    # @is_owner()
-    # async def sudo(self, ctx: Context, user: discord.Member, *, command):
-    #     pass
 
     @group(name="set")
     @guild_owner()
@@ -178,9 +174,18 @@ class Core(Cog):
         """Sends the latest traceback error"""
         if self.bot.last_exception == None:
             return await ctx.send("No exceptions have occured yet!")
-        if len(self.bot.last_exception) > 1990:
-            return await ctx.send("I can't send the traceback as it's over 2000 characters long")
-        await ctx.send(self.bot.last_exception)
+        # if len(self.bot.last_exception) > 1990:
+        #     return await ctx.send("I can't send the traceback as it's over 2000 characters long")
+        # await ctx.send(self.bot.last_exception)
+        if len(self.bot.last_exception) > 2000:
+            for i in (traceback := self.bot.last_exception.split("\n")):
+                embed = self.embed.create(
+                    ctx, title="Traceback Error", description=box(i, "py"))
+                await ctx.send(embed=embed)
+            return
+        embed = self.embed.create(
+            ctx, title="Traceback Error", description=box(self.bot.last_exception, "py"))
+        await ctx.send(embed=embed)
 
     @command()
     async def info(self, ctx: Context):
@@ -252,7 +257,8 @@ class Core(Cog):
             description=announcement, thumbnail=ctx.bot.avatar_url,
             color=discord.Color.purple(), footer="Twilight bot updates by Jojo#7791"
         )
-        await self.announce_to_guilds(embed)
+        async with ctx.typing():
+            await self.announce_to_guilds(embed)
 
     async def announce_to_guilds(self, message: discord.Embed) -> None:
         """Send a message out to every guild that Twilight is in"""

@@ -24,7 +24,9 @@ class General(Cog):
     @command()
     async def say(self, ctx: Context, channel: Optional[discord.TextChannel], *, message):
         """Have the bot repeat you"""
-        await ctx.send(message)
+        # await ctx.send(message)
+        channel = channel or ctx.channel
+        await channel.send(message)
 
     @command()
     async def roll(self, ctx: Context, amount: int = 6):
@@ -52,12 +54,12 @@ class General(Cog):
         """Play a game of rock paper scissors with Twilight"""
         await rock_paper_scissors(ctx, choice)
 
-    @command()
-    @is_owner()
-    async def test(self, ctx: Context):
-        check = MessagePredicate.yes_or_no(ctx)
-        response = await self.bot.wait_for("message", check=check)
-        await ctx.send(content=f"{response.content}, {check.result}")
+    # @command()
+    # @is_owner()
+    # async def test(self, ctx: Context):
+    #     check = MessagePredicate.yes_or_no(ctx)
+    #     response = await self.bot.wait_for("message", check=check)
+    #     await ctx.send(content=f"{response.content}, {check.result}")
 
     @Cog.listener()
     async def on_ready(self):

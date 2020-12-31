@@ -1,11 +1,8 @@
 # Things that shouldn't be on my repo :p
-token.txt
-lib/cogs/twisettings.json
+*.txt
+*.json
 .vscode/
 *.db
-
-# twilight.bat
-lib/bot/blocklist.txt
 
 # Coming soon
 lib/cogs/help.py
