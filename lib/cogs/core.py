@@ -57,7 +57,7 @@ information = r"""
 class Core(Cog):
     def __init__(self, bot: Twilight):
         self.bot = bot
-        self.embed = Embed(self.bot)
+        self.embed = Embed()
 
     @command()
     async def ping(self, ctx):
@@ -141,8 +141,7 @@ class Core(Cog):
     async def shutdown(self, ctx: Context, commit: bool = True):
         """Shuts Twilight down"""
         await ctx.send("Shutting down Twilight")
-        await asyncio.sleep(2)
-        await self.bot.shutdown(restart=False, commit=commit)
+        await self.bot.shutdown(commit=commit)
 
     @command()
     @is_owner()
@@ -150,7 +149,7 @@ class Core(Cog):
         """Attempts to restart the bot"""
         await ctx.send("Restarting...")
         await asyncio.sleep(2)
-        await self.bot.shutdown(restart=True, commit=commit)
+        await self.bot.restart(commit=commit)
 
     @command()
     async def invite(self, ctx):
@@ -180,11 +179,11 @@ class Core(Cog):
         if len(self.bot.last_exception) > 2000:
             for i in (traceback := self.bot.last_exception.split("\n")):
                 embed = self.embed.create(
-                    ctx, title="Traceback Error", description=box(i, "py"))
+                    ctx, title="Traceback Error", description=i)
                 await ctx.send(embed=embed)
             return
         embed = self.embed.create(
-            ctx, title="Traceback Error", description=box(self.bot.last_exception, "py"))
+            ctx, title="Traceback Error", description=self.bot.last_exception)
         await ctx.send(embed=embed)
 
     @command()
@@ -280,6 +279,29 @@ class Core(Cog):
         embed.set_thumbnail(url=guild.icon_url)
         channel: discord.TextChannel = self.bot.get_channel(707431591051264121)
         await channel.send(embed=embed)
+
+    @command()
+    @is_owner()
+    async def load(self, ctx: Context, cog: str):
+        self.bot.load_extension(cog)
+        await ctx.send(content=f"Loaded `{cog}`")
+
+    @command()
+    @is_owner()
+    async def unload(self, ctx: Context, cog: str):
+        if cog.lower() == "core":
+            await ctx.send(content="Mate... what are you doing?")
+            return
+        self.bot.unload_extension(cog)
+        await ctx.send(content=f"Unloaded `{cog}`")
+
+    @command()
+    @is_owner()
+    async def cogs(self, ctx: Context):
+        cogs = self.bot.grab_cogs()
+        loaded = ", ".join([x for x in cogs.keys() if cogs[x] == True])
+        unloaded = ", ".join([x for x in cogs.keys() if cogs[x] == False])
+        await ctx.send(content=f"Loaded cogs:\n{box(loaded)}\nUnloaded cogs:\n{box(unloaded)}")
 
     @Cog.listener()
     async def on_guild_leave(self, guild: discord.Guild):

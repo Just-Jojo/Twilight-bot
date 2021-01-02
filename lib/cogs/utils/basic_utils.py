@@ -29,8 +29,7 @@ import json
 from .embed import Embed
 import datetime
 from typing import *
-
-TWISETTINGS_PATH = "./lib/cogs/twisettings.json"
+from ...secrets import SETTINGS_JSON
 
 
 def moderator():
@@ -57,8 +56,10 @@ def administrator():
         return True
     return check(inner)
 
+
 def tick(message: discord.Message):
     message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+
 
 def guild_owner():
     """Guild owner check in the discord.py library when?"""
@@ -102,6 +103,7 @@ def box(text: str, lang: str = "") -> str:
     ret = "```{}\n{}```".format(lang, text)
     return ret
 
+
 class Moderation:
     """
         This class allows me to set up some default values for guilds on Twilight joining them.
@@ -111,7 +113,7 @@ class Moderation:
 
     def setup(self, guild: discord.Guild) -> None:
         """Set up a Guild with the default settings"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
 
         if str(guild.id) in twiset.keys():
@@ -126,13 +128,13 @@ class Moderation:
             "announce_channel": None,
             "modlog": None
         }
-        with open(TWISETTINGS_PATH, "w") as f:
+        with open(SETTINGS_JSON, "w") as f:
             json.dump(twiset, f, indent=4)
         print("Added {} ({}) to Twilight's settings".format(guild.name, guild.id))
 
     def teardown(self, guild: discord.Guild) -> None:
         """Remove a Guild from Twilight's settings"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
 
         if str(guild.id) not in twiset.keys():
@@ -145,7 +147,7 @@ class Moderation:
 
     def add_role(self, guild: discord.Guild, role_type: str, role: discord.Role) -> str:
         """Set up the Mod or Admin role"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
             self.setup(guild)
@@ -159,13 +161,13 @@ class Moderation:
         if twiset[str(guild.id)][role_type] == role.id:
             return "This role is already the {} role!".format(role_type)
         twiset[str(guild.id)][role_type] = role.id
-        with open(TWISETTINGS_PATH, "w") as f:
+        with open(SETTINGS_JSON, "w") as f:
             json.dump(twiset, f, indent=4)
         return "Added {} as the {} role".format(role, role_type)
 
     def remove_role(self, guild: discord.Guild, role_type: str) -> str:
         """Remove a Mod or Admin role"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
             self.setup(guild)
@@ -178,7 +180,7 @@ class Moderation:
             return "Your guild wasn't in my database. So there is no {} role to remove!".format(role_type)
 
         twiset[str(guild.id)][role_type] = None
-        with open(TWISETTINGS_PATH, "w") as f:
+        with open(SETTINGS_JSON, "w") as f:
             json.dump(twiset, f, indent=4)
         return "Removed the {} role".format(role_type)
 
@@ -186,7 +188,7 @@ class Moderation:
     # so requiring a channel is kinda dumb
     def announcement_set(self, remove: bool, guild: discord.Guild, channel: discord.TextChannel = None) -> str:
         """Set a Guild's announcement channel"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
             self.setup(guild)
@@ -194,7 +196,7 @@ class Moderation:
 
         if remove == False:
             twiset[str(guild.id)]["announce_channel"] = channel.id
-            with open(TWISETTINGS_PATH, "w") as f:
+            with open(SETTINGS_JSON, "w") as f:
                 json.dump(twiset, f, indent=4)
             print("Added the announcement channel for {} ({})".format(
                 guild.name, guild.id))
@@ -203,7 +205,7 @@ class Moderation:
         if twiset[str(guild.id)]["announce_channel"] is None:
             print("{} was just set up so I cancled the removal of the channel (since there wasn't one in the first place)".format(guild.name))
         twiset[str(guild.id)]["announe_channel"] = None
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             json.dump(twiset, f, indent=4)
         print("Removed the announcement channel for {} ({})".format(
             guild.name, guild.id))
@@ -211,7 +213,7 @@ class Moderation:
 
     def modlog_set(self, channel: discord.TextChannel, guild: discord.Guild) -> str:
         """Set up a Guild's modlog channel"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
             self.setup(guild)
@@ -219,13 +221,13 @@ class Moderation:
                 guild.name))
 
         twiset[str(guild.id)]["modlog"] = channel.id
-        with open(TWISETTINGS_PATH, "w") as f:
+        with open(SETTINGS_JSON, "w") as f:
             json.dump(twiset, f, indent=4)
         return "Set {} as your modlog channel".format(channel.mention)
 
     def modlog_remove(self, guild: discord.Guild) -> str:
         """Remove a Guild's modlog channel"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
             self.setup(guild)
@@ -237,7 +239,7 @@ class Moderation:
             return "Your guild wasn't in my database! Since it wasn't the modlog channel wasn't set so there isn't need to fret!"
 
         twiset[str(guild.id)]["modlog"] = None
-        with open(TWISETTINGS_PATH, "w") as f:
+        with open(SETTINGS_JSON, "w") as f:
             json.dump(twiset, f, indent=4)
         return "Reset your guild's modlog channel"
 
@@ -262,27 +264,27 @@ class Getters:
     @classmethod
     def get_mod_role(cls, guild: discord.Guild):
         """Return a Guild's Mod role id"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
         return twiset[str(guild.id)]["moderator"]
 
     @classmethod
     def get_admin_role(cls, guild: discord.Guild):
         """Retrun a Guild's Admin role id"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
         return twiset[str(guild.id)]["administrator"]
 
     @classmethod
     def get_modlog(cls, guild: discord.Guild):
         """Return a Guild's modlog channel id"""
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
         return twiset[str(guild.id)]["modlog"]
 
     @classmethod
     def get_all_announce(cls):
-        with open(TWISETTINGS_PATH, "r") as f:
+        with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
         for guild in twiset.keys():
             yield twiset[guild]["announce_channel"]

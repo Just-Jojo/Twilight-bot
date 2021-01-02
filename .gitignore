@@ -1,11 +1,13 @@
 # Things that shouldn't be on my repo :p
 *.txt
 *.json
-.vscode/
 *.db
+*.bat
+secrets.py
 
-# Coming soon
-lib/cogs/help.py
+# VSCode and other
+.vscode/
+.venv
 
 # Getting rid of the annoying pycache and cpy files
 **/__pycache__
