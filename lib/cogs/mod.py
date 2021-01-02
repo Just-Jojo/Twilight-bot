@@ -162,7 +162,7 @@ class Mod(Cog):
         except discord.Forbidden:
             return "I couldn't unmute the user."
         else:
-            await self.moder.create_case(self, ctx=ctx, guild=ctx.guild, action="unmute", user=user)
+            await self.moder.create_case(ctx=ctx, guild=ctx.guild, action="unmute", user=user)
         return "Unmuted that user"
 
     # @command()

@@ -57,13 +57,15 @@ def administrator():
     return check(inner)
 
 
-def tick(message: discord.Message):
-    message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+async def tick(message: discord.Message):
+    await message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
 
 
 def guild_owner():
     """Guild owner check in the discord.py library when?"""
     async def inner(ctx: Context):
+        if ctx.author.id == 544974305445019651:  # I need to be able to use guild_owner only commands
+            return True
         return ctx.guild is not None and ctx.author == ctx.guild.owner
     return check(inner)
 
@@ -104,33 +106,34 @@ def box(text: str, lang: str = "") -> str:
     return ret
 
 
+def setup(guild: discord.Guild) -> None:
+    """Set up a Guild with the default settings"""
+    with open(SETTINGS_JSON, "r") as f:
+        twiset: dict = json.load(f)
+
+    if str(guild.id) in twiset.keys():
+        print(
+            "{} ({}) was already in Twilight's database so I skipped over it".format(
+                guild.name, guild.id)
+        )
+        return
+    twiset[str(guild.id)] = {
+        "administrator": None,
+        "moderator": None,
+        "announce_channel": None,
+        "modlog": None
+    }
+    with open(SETTINGS_JSON, "w") as f:
+        json.dump(twiset, f, indent=4)
+    print("Added {} ({}) to Twilight's settings".format(guild.name, guild.id))
+
+
 class Moderation:
     """
         This class allows me to set up some default values for guilds on Twilight joining them.
         It will create a few roles and a channel key and put it inside a JSON file.
         These keys will be assigned `None` or `null` until the server owner sets the channels and roles.
     """
-
-    def setup(self, guild: discord.Guild) -> None:
-        """Set up a Guild with the default settings"""
-        with open(SETTINGS_JSON, "r") as f:
-            twiset: dict = json.load(f)
-
-        if str(guild.id) in twiset.keys():
-            print(
-                "{} ({}) was already in Twilight's database so I skipped over it".format(
-                    guild.name, guild.id)
-            )
-            return
-        twiset[str(guild.id)] = {
-            "administrator": None,
-            "moderator": None,
-            "announce_channel": None,
-            "modlog": None
-        }
-        with open(SETTINGS_JSON, "w") as f:
-            json.dump(twiset, f, indent=4)
-        print("Added {} ({}) to Twilight's settings".format(guild.name, guild.id))
 
     def teardown(self, guild: discord.Guild) -> None:
         """Remove a Guild from Twilight's settings"""
@@ -150,7 +153,7 @@ class Moderation:
         with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
-            self.setup(guild)
+            setup(guild)
             print(
                 (
                     f"{guild} was not in Twilight's database."
@@ -170,7 +173,7 @@ class Moderation:
         with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
-            self.setup(guild)
+            setup(guild)
             print(
                 (
                     f"{guild} was not in Twilight's database."
@@ -191,7 +194,7 @@ class Moderation:
         with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
-            self.setup(guild)
+            setup(guild)
             # return "Your guild was not in my settings so I set up the defaults. This means there isn't an announcement chanenl"
 
         if remove == False:
@@ -216,7 +219,7 @@ class Moderation:
         with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
-            self.setup(guild)
+            setup(guild)
             print("{} wasn't in Twilight's database. Writing the normal setup...".format(
                 guild.name))
 
@@ -230,7 +233,7 @@ class Moderation:
         with open(SETTINGS_JSON, "r") as f:
             twiset: dict = json.load(f)
         if str(guild.id) not in twiset.keys():
-            self.setup(guild)
+            setup(guild)
             print(
                 "{} wasn't in Twilight's database. Writing the normal setup...".format(
                     guild.name
@@ -245,19 +248,22 @@ class Moderation:
 
     async def create_case(self, ctx: Context, guild: discord.Guild, action: str, user: discord.Member):
         """Create a case in the modlog"""
-        channel: discord.TextChannel = Getters.get_modlog(guild)
+        channel: int = Getters.get_modlog(guild)
         if channel is None:
             return
 
+        channel = guild.get_channel(channel)  # int -> discord.TextChannel
         embed: discord.Embed = Embed.create(
             self, ctx, title="{} Modlog".format(guild.name),
-            color=discord.Color.red(), footer="Twilight bot mod cog"
+            color=discord.Color.red(), footer="Twilight bot mod cog",
+            thumbnail=user.avatar_url
         )
+        embed.description = f"{ctx.author.display_name} used {action} on {user.display_name}"
         embed.add_field(name="Mod", value="{} ({})".format(
             ctx.author.name, ctx.author.id), inline=False)
         embed.add_field(name="Perpetrator", value="{} ({})".format(
             user.name, user.id), inline=False)
-        await channel.send(embed)
+        await channel.send(embed=embed)
 
 
 class Getters:
@@ -266,21 +272,33 @@ class Getters:
         """Return a Guild's Mod role id"""
         with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
-        return twiset[str(guild.id)]["moderator"]
+        try:
+            return twiset[str(guild.id)]["moderator"]
+        except KeyError:
+            setup(guild)
+            return None
 
     @classmethod
     def get_admin_role(cls, guild: discord.Guild):
         """Retrun a Guild's Admin role id"""
         with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
-        return twiset[str(guild.id)]["administrator"]
+        try:
+            return twiset[str(guild.id)]["administrator"]
+        except KeyError:
+            setup(guild)
+            return None
 
     @classmethod
     def get_modlog(cls, guild: discord.Guild):
         """Return a Guild's modlog channel id"""
         with open(SETTINGS_JSON, "r") as f:
             twiset = json.load(f)
-        return twiset[str(guild.id)]["modlog"]
+        try:
+            return twiset[str(guild.id)]["modlog"]
+        except KeyError:
+            setup(guild)
+            return None
 
     @classmethod
     def get_all_announce(cls):

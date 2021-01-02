@@ -4,7 +4,7 @@ from discord.ext.commands import Bot as BotBase
 from discord import Forbidden
 from discord.ext.commands import (
     Context, CommandNotFound, BadArgument, MissingRequiredArgument, CheckFailure, NotOwner,
-    Command, errors
+    Command, errors, ExtensionNotLoaded
 )
 from typing import *
 from asyncio import sleep
@@ -179,7 +179,9 @@ class Twilight(BotBase):
             return  # Pesky bots
         await self.process_commands(message)
 
-    def reload_extension(self, extension: str):
+    def reload_extension(self, extension: str, bypass_core: bool = None):
+        if bypass_core:
+            return super().reload_extension("lib.cogs.core")
         extension = extension.lower()
         cogs = self.grab_cogs()
         if extension not in cogs.keys():
@@ -187,10 +189,12 @@ class Twilight(BotBase):
         if extension == "core":
             return "I can't reload/unload `core` as it would break Twilight"
         else:
-            super().reload_extension("lib.cogs.{}".format(extension))
+            super().reload_extension(f"lib.cogs.{extension}")
             return "Reloaded `{}`".format(extension)
 
-    def load_extension(self, cog):
+    def load_extension(self, cog: str):
+        if cog.startswith("lib."):
+            return super().load_extension(cog)
         cogs = grab_cogs()
         if cog in cogs.keys():
             cogs[cog] = True
@@ -199,7 +203,9 @@ class Twilight(BotBase):
             pass
         return super().load_extension(f"lib.cogs.{cog}")
 
-    def unload_extension(self, cog):
+    def unload_extension(self, cog: str):
+        if cog.startswith("lib."):  # This is for `reload_extension`
+            return super().unload_extension(cog)
         cogs = grab_cogs()
         if cog in cogs.keys():
             cogs[cog] = False

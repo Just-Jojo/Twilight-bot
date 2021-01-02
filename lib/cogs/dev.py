@@ -8,12 +8,15 @@ import re
 import ast
 import inspect
 from ..bot import Twilight
+from . import mixin
 
 START_CODE_BLOCK_RE = re.compile(
     r"^((```py)(?=\s)|(```))")  # this is Red's. I don't understand regex lol
 
 
-class DevCommands(Cog):
+class DevCommands(mixin.BaseCog):
+    """Commands for Jojo mostly debugging Twilight."""
+
     def __init__(self, bot: Twilight):
         self.bot = bot
 
@@ -97,6 +100,16 @@ class DevCommands(Cog):
         embed.add_field(name="Command", value=com.name)
         embed.add_field(name="Cog", value=com.cog_name, inline=False)
         await ctx.send(embed=embed)
+
+    @command()
+    @is_owner()
+    async def reloadcore(self, ctx: Context, confirm: bool = False):
+        """Reload the core cog. Very dangerous"""
+        if not confirm:
+            await ctx.send(content="Please confirm that you want to reload core using `>reloadcore True`")
+            return
+        self.bot.reload_extension("x", True)
+        await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
 
     @Cog.listener()
     async def on_ready(self):

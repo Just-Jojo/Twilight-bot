@@ -12,9 +12,10 @@ from .utils.embed import Embed
 from .utils.basic_utils import administrator, moderator
 from .utils.rps import rock_paper_scissors
 from .utils.predicates import MessagePredicate
+from . import mixin
 
 
-class General(Cog):
+class General(mixin.BaseCog):
     """General commands"""
 
     def __init__(self, bot: Twilight):
@@ -53,13 +54,6 @@ class General(Cog):
     async def rockpaperscissors(self, ctx: Context, choice: str):
         """Play a game of rock paper scissors with Twilight"""
         await rock_paper_scissors(ctx, choice)
-
-    # @command()
-    # @is_owner()
-    # async def test(self, ctx: Context):
-    #     check = MessagePredicate.yes_or_no(ctx)
-    #     response = await self.bot.wait_for("message", check=check)
-    #     await ctx.send(content=f"{response.content}, {check.result}")
 
     @Cog.listener()
     async def on_ready(self):

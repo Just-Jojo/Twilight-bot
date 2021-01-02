@@ -38,6 +38,8 @@ from .utils.embed import Embed
 from .utils.basic_utils import *
 from .utils.converter import RawUserIds
 from typing import *
+from . import mixin
+from tabulate import tabulate
 
 types = {
     "administrator": ["admin", "administrator", "adm"],
@@ -54,9 +56,14 @@ information = r"""
 """
 
 
-class Core(Cog):
+class Core(mixin.BaseCog):
+    """
+    Core commands Cog. This include `ping` and moderation settings.
+    """
+
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.mod = Moderation()
         self.embed = Embed()
 
     @command()
@@ -80,12 +87,12 @@ class Core(Cog):
                 msg = await ctx.send("Would you like to remove the Modlog channel")
                 response = await ctx.bot.wait_for('message', check=lambda m: m.id == ctx.author.id)
                 if response.content.lower() in ("yes", "y"):
-                    message = Moderation.modlog_remove(self, ctx.guild)
+                    message = self.mod.modlog_remove(ctx.guild)
                 else:
                     message = "Canceled"
                 await msg.edit(content=message)
         else:
-            message = Moderation.modlog_set(self, channel, ctx.guild)
+            message = self.mod.modlog_set(channel, ctx.guild)
             await ctx.send(content=message)
 
     @_set.command(name="add")
@@ -104,7 +111,7 @@ class Core(Cog):
             )
         role_type = "administrator" if role_type in types["administrator"]\
             else "moderator"
-        result = Moderation.add_role(self, ctx.guild, role_type, role)
+        result = self.mod.add_role(ctx.guild, role_type, role)
         await ctx.send(content=result)
 
     @_set.command()
@@ -124,15 +131,13 @@ class Core(Cog):
             )
         role_type = "administrator" if role_type in types["administrator"]\
             else "moderator"
-        result = Moderation.remove_role(self, ctx.guild, role_type)
+        result = self.mod.remove_role(ctx.guild, role_type)
         await ctx.send(content=result)
 
     @command(name="reload", aliases=["cu", "update"])
     @is_owner()
     async def _reload(self, ctx: Context, cog: str):
         """Reload a cog"""
-        if cog == "dev":
-            cog = "dev_commands"
         result = self.bot.reload_extension(cog)
         await ctx.send(result)
 
@@ -173,15 +178,18 @@ class Core(Cog):
         """Sends the latest traceback error"""
         if self.bot.last_exception == None:
             return await ctx.send("No exceptions have occured yet!")
-        # if len(self.bot.last_exception) > 1990:
-        #     return await ctx.send("I can't send the traceback as it's over 2000 characters long")
-        # await ctx.send(self.bot.last_exception)
         if len(self.bot.last_exception) > 2000:
-            for i in (traceback := self.bot.last_exception.split("\n")):
-                embed = self.embed.create(
-                    ctx, title="Traceback Error", description=i)
+            sending = []
+            x = ""
+            for i in self.bot.last_exception:
+                if len(x + i) > 2000:
+                    sending.append(x)
+                    x = ""
+                else:
+                    x += f" {i}"
+            for content in sending:
+                embed = self.embed.create(ctx, "Traceback Error", content)
                 await ctx.send(embed=embed)
-            return
         embed = self.embed.create(
             ctx, title="Traceback Error", description=self.bot.last_exception)
         await ctx.send(embed=embed)
@@ -212,8 +220,8 @@ class Core(Cog):
         uptime_str = humanize_timedelta(
             timedelta=uptime) or "Less than one second"
         # await ctx.send("Been up for: **{}** (since {} UTC)".format(uptime_str, since))
-        embed = Embed.create(self, ctx, title="Uptime!",
-                             footer="Twilight uptime")
+        embed = self.embed.create(ctx, title="Uptime!",
+                                  footer="Twilight uptime")
         embed.add_field(name="Total time", value="**{}**".format(uptime_str))
         embed.add_field(name="Up since", value="**{}**".format(since))
         await ctx.send(embed=embed)
@@ -238,13 +246,13 @@ class Core(Cog):
     @announceset.command()
     async def add(self, ctx: Context, channel: discord.TextChannel):
         """Add a channel as the announcement channel"""
-        result = Moderation.announcement_set(self, False, ctx.guild, channel)
+        result = self.mod.announcement_set(False, ctx.guild, channel)
         await ctx.send(content=result)
 
     @announceset.command()
     async def _remove(self, ctx: Context):
         """Remove the announcement channel"""
-        result = Moderation.announcement_set(self, True, ctx.guild)
+        result = self.mod.announcement_set(True, ctx.guild)
         await ctx.send(content=result)
 
     @command()
@@ -269,7 +277,7 @@ class Core(Cog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
-        Moderation.setup(self, guild)
+        self.mod.setup(guild)
         embed_basic = {
             "title": "Twilight has joined {}!".format(guild.name),
             "color": 0x11C5E5
@@ -299,13 +307,21 @@ class Core(Cog):
     @is_owner()
     async def cogs(self, ctx: Context):
         cogs = self.bot.grab_cogs()
-        loaded = ", ".join([x for x in cogs.keys() if cogs[x] == True])
-        unloaded = ", ".join([x for x in cogs.keys() if cogs[x] == False])
-        await ctx.send(content=f"Loaded cogs:\n{box(loaded)}\nUnloaded cogs:\n{box(unloaded)}")
+        embed = self.embed.create(ctx, title="Cogs")
+        cogs_list = []
+        for key, value in cogs.items():
+            _list = []
+            _list.append(key)
+            _list.append(value)
+            # Not the prettiest thing ever but it'll work...
+            cogs_list.append(_list)
+        embed.description = box(
+            tabulate(cogs_list, ("Cog Name", "Loaded")), "md")
+        await ctx.send(embed=embed)
 
     @Cog.listener()
     async def on_guild_leave(self, guild: discord.Guild):
-        Moderation.teardown(self, guild)
+        self.mod.teardown(guild)
 
     @Cog.listener()
     async def on_ready(self):
