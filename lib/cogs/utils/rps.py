@@ -1,7 +1,7 @@
 # Why do I do this to myself?
 from .embed import Embed
 from discord import Embed as DEmbed
-from discord.ext.commands import (Context,)
+from discord.ext.commands import Context
 import random
 from typing import *
 
