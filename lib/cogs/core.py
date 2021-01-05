@@ -179,17 +179,7 @@ class Core(mixin.BaseCog):
         if self.bot.last_exception == None:
             return await ctx.send("No exceptions have occured yet!")
         if len(self.bot.last_exception) > 2000:
-            sending = []
-            x = ""
-            for i in self.bot.last_exception:
-                if len(x + i) > 2000:
-                    sending.append(x)
-                    x = ""
-                else:
-                    x += f" {i}"
-            for content in sending:
-                embed = self.embed.create(ctx, "Traceback Error", content)
-                await ctx.send(embed=embed)
+            await ctx.send("Check your console for the logs!")
         embed = self.embed.create(
             ctx, title="Traceback Error", description=self.bot.last_exception)
         await ctx.send(embed=embed)
@@ -267,6 +257,66 @@ class Core(mixin.BaseCog):
         async with ctx.typing():
             await self.announce_to_guilds(embed)
 
+    @group()
+    @is_owner()
+    async def blocklist(self, ctx: Context):
+        """Base command for the blocklist settings"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @blocklist.group()
+    async def guild(self, ctx: Context):
+        """Base guild related blocklist"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @guild.command(name="list")
+    async def __list(self, ctx: Context):
+        """List the blocklisted guilds"""
+        await ctx.author.send(self.bot.guild_blocklist)
+
+    @guild.command(name="add")
+    async def _add(self, ctx: Context, guild_id: int):
+        """Add a guild to the blocklist via id"""
+        guild = self.bot.fetch_guild(guild_id)
+        await guild.leave()
+        self.bot.guild_blocklist.append(guild_id)
+        self.bot.save_blocklist()
+        await ctx.send("Added that guild to the blocklist")
+
+    @guild.command(name="remove", aliases=["del", ])
+    async def _remove(self, ctx: Context, guild_id: int):
+        """Remove a guild from the blocklist via id"""
+        self.bot.guild_blocklist.pop(guild_id)
+        self.bot.save_blocklist()
+        await ctx.send("Removed that guild from the blocklist")
+
+    @blocklist.command(name="list")
+    async def _list(self, ctx: Context):
+        """List the members in the blocklist"""
+        await ctx.author.send(self.bot.blocklist)  # Don't want it to be public
+        await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+
+    @blocklist.command()
+    async def add(self, ctx: Context, member: Union[discord.Member, int]):
+        """Add a user to the blocklist"""
+        if isinstance(member, int):  # If it's an int we just want to append it
+            self.bot.blocklist.append(member)
+        else:
+            self.bot.blocklist.append(member.id)
+        self.bot.save_blocklist()  # save it from the command incase it doesn't work
+        await ctx.send(f"Added that user to the blocklist")
+
+    @blocklist.command()
+    async def remove(self, ctx: Context, member: Union[discord.Member, int]):
+        """Remove a user from the blocklist"""
+        if isinstance(member, int):  # Same thing
+            self.bot.blocklist.pop(member)
+        else:
+            self.bot.blocklist.pop(member.id)
+        self.bot.save_blocklist()  # save it from the command incase it doesn't work
+        await ctx.send("Removed that user from the blocklist")
+
     async def announce_to_guilds(self, message: discord.Embed) -> None:
         """Send a message out to every guild that Twilight is in"""
         channels = Getters.get_all_announce()
@@ -277,6 +327,8 @@ class Core(mixin.BaseCog):
 
     @Cog.listener()
     async def on_guild_join(self, guild: discord.Guild):
+        if guild.id in self.bot.guild_blocklist:
+            await guild.leave()
         self.mod.setup(guild)
         embed_basic = {
             "title": "Twilight has joined {}!".format(guild.name),

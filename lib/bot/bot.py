@@ -14,7 +14,7 @@ import sys
 from datetime import datetime
 from ..db import db
 from ..cogs.utils.embed import Embed
-from ..secrets import TOKEN, COGS_PATH
+from ..secrets import TOKEN, COGS_PATH, BLOCKLIST_PATH
 import json
 
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
@@ -84,6 +84,14 @@ class Twilight(BotBase):
         self._shutdown_level = ShutdownLevels.CRITICAL
         self._uptime = None
         self.version = version
+        try:
+            with open("./lib/bot/blocklist.json") as blocked:
+                blocked = json.load(blocked)
+                self.blocklist = blocked["users"]
+                self.guild_blocklist = blocked["guilds"]
+        except FileNotFoundError:
+            with open(BLOCKLIST_PATH) as blocked:
+                self.blocklist, self.blocked_guilds = json.load(blocked)
         super().__init__(
             command_prefix=">", owner_ids=OWNERS,
             intents=Intents.all()
@@ -104,15 +112,25 @@ class Twilight(BotBase):
                 print("{} loaded".format(cog))
         print("Cogs loaded")
 
-    async def logout(self):
-        await super().logout()
+    def save_blocklist(self):
+        with open(BLOCKLIST_PATH) as blocked:
+            block = json.load(blocked)
+        block["users"] = self.blocklist
+        block["guilds"] = self.guild_blocklist
+        with open(BLOCKLIST_PATH, "w") as block:
+            json.dump(blocked, block, indent=4)
+        print("Saved the blocklist")
 
     async def shutdown(self, commit: bool = True):
+        await self.logout()
+        self.save_blocklist()
         if commit:
             db.commit()
         sys.exit(0)
 
     async def restart(self, commit: bool = True):
+        await self.logout()
+        self.save_blocklist()
         if commit:
             db.commit()
         sys.exit(4)
@@ -177,6 +195,8 @@ class Twilight(BotBase):
     async def on_message(self, message: discord.Message):
         if message.author.bot:
             return  # Pesky bots
+        if message.author.id in self.blocklist:
+            return  # Blocked people shouldn't be able to use commands
         await self.process_commands(message)
 
     def reload_extension(self, extension: str, bypass_core: bool = None):

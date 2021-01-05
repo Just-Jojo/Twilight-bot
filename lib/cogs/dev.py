@@ -9,6 +9,7 @@ import ast
 import inspect
 from ..bot import Twilight
 from . import mixin
+from ..secrets import LONG_EXCEPTION_MESSAGE
 
 START_CODE_BLOCK_RE = re.compile(
     r"^((```py)(?=\s)|(```))")  # this is Red's. I don't understand regex lol
@@ -84,9 +85,12 @@ class DevCommands(mixin.BaseCog):
 
     @command()
     @is_owner()
-    async def error(self, ctx: Context):
+    async def error(self, ctx: Context, _long: bool = False):
         """Error the bot"""
-        raise Exception("Used command `error`")
+        if not _long:
+            raise Exception("Used command `error`")
+        else:
+            raise Exception(LONG_EXCEPTION_MESSAGE)
 
     @command()
     @is_owner()

@@ -7,12 +7,13 @@
 from sqlite3 import connect, OperationalError
 from os.path import isfile
 
-DB_PATH = "./db/database.db"
 BUILDER_PATH = "./db/builder.sql"
 try:
+    DB_PATH = "./db/database.db"
     conc = connect(DB_PATH)
 except OperationalError:
-    conc = connect("./db/database.db")
+    from ..secrets import DB_BUILD_PATH
+    conc = connect(DB_BUILD_PATH)
 cur = conc.cursor()
 
 
