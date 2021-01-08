@@ -10,7 +10,7 @@ def fraction(number: float):
 def decimal(fraction: str):
   """
   Convert a fraction to a decimal.
-  Must be in the format `int/int`.
+  Must be in the format `int/int` or `float/float`.
   """
   f = fraction
   l, r = f.split('/')
