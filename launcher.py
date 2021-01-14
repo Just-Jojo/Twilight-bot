@@ -1,8 +1,7 @@
-from lib.bot import twilight
+from bot import Twilight
 from time import sleep
 
-version = "1.2.0"  # I'm *going* to forget to update this LOL
+twilight = Twilight("0.1.5")  # I'm *going* to forget to update this LOL
 
-twilight.version = version
 twilight.run()
 sleep(5)

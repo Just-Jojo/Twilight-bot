@@ -3,7 +3,7 @@
 *.json
 *.db
 *.bat
-secrets.py
+twi_secrets.py
 
 # VSCode and other
 .vscode/
