@@ -11,7 +11,7 @@ A Discord bot created by Jojo#7791, Twilight is a functional (suuuure) Discord b
 
 ### Support
 
-For support, please either DM Jojo on Discord (username is Jojo#7791, just shoot me a friend requst and say you're here for Twilight) or join [Vanguards](https://discord.gg/JmCFyq7) and go to `support-jojo-cogs`
+For support, please either DM Jojo on Discord (username is Jojo#7791, just shoot me a friend requst and say you're here for Twilight) or join [the support server](https://discord.gg/JmCFyq7) and go to `support-jojocogs`
 
 
 #### Thanks for checking out Twilight!
