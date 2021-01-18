@@ -9,6 +9,7 @@ import ast
 import inspect
 from bot import Twilight
 from cogs.mixin import BaseCog
+from twi_secrets import LONG_TRACEBACK
 
 START_CODE_BLOCK_RE = re.compile(
     r"^((```py)(?=\s)|(```))")  # this is Red's. I don't understand regex lol
@@ -82,8 +83,10 @@ class DevCommands(BaseCog):
         tick(ctx.message)
 
     @command()
-    async def error(self, ctx: Context):
+    async def error(self, ctx: Context, _long: bool = False):
         """Error the bot"""
+        if _long:
+            raise Exception(LONG_TRACEBACK)
         raise Exception("Used command `error`")
 
     @command()

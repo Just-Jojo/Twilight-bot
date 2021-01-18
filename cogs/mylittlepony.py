@@ -29,12 +29,13 @@ from discord.ext.commands import (
 from typing import *
 ### ~~~ Twilight utis imports ~~~ ###
 from bot import Twilight  # Type hinting :D
-from utils import Embed
+from utils import Embed, char_embed
+from .mixin import BaseCog
 
 MLP_LOGO = "https://cdn.discordapp.com/attachments/766499155669286922/779986290770182144/MLPFiM_logo.jpg"
 
 
-class MyLittlePony(Cog):
+class MyLittlePony(BaseCog):
     """The Main MLP cog"""
 
     def __init__(self, bot: Twilight):
@@ -85,7 +86,10 @@ class MyLittlePony(Cog):
     @command()
     async def character(self, ctx: Context, *, name: Optional[str]):
         """Look for a character"""
-        await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
+        if ctx.author.id != 544974305445019651:
+            return await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
+        embed = char_embed(name)
+        await ctx.send(embed=embed)
 
 
 def setup(bot: Twilight):

@@ -34,7 +34,7 @@ from platform import python_version as pver
 from datetime import datetime
 ### ~~~ Local imports ~~~ ###
 from bot import Twilight  # Type hinting
-from utils import Embed, humanize_timedelta, box, admin, teardown
+from utils import Embed, humanize_timedelta, box, admin, teardown, TwilightEmbedMenu
 from typing import *
 from cogs.mixin import BaseCog
 from tabulate import tabulate
@@ -46,9 +46,9 @@ types = {
 information = r"""
     Twilight is a Discord bot written in Python by Jojo#7791.
     Twilight is designed mostly for MLP features but also has moderation tools.
-    
+
     \~\~\~\~\~\~
-    
+
     To invite Twilight to your server, use `>invite` and click on the link.
     You can find the [support](https://discord.gg/JmCFyq7) server
 """
@@ -147,15 +147,14 @@ class Core(BaseCog):
     async def shutdown(self, ctx: Context):
         """Shuts Twilight down"""
         await ctx.send("Shutting down Twilight")
-        await self.bot.shutdown()
+        await self.bot.stop(0)
 
     @command()
     @is_owner()
     async def restart(self, ctx: Context):
         """Attempts to restart the bot"""
         await ctx.send("Restarting...")
-        await asyncio.sleep(2)
-        await self.bot.restart()
+        await self.bot.stop(4)
 
     @command()
     async def invite(self, ctx):
@@ -180,10 +179,31 @@ class Core(BaseCog):
         if self.bot.last_exception == None:
             return await ctx.send("No exceptions have occured yet!")
         if len(self.bot.last_exception) > 2000:
-            await ctx.send("Check your console for the logs!")
-        embed = self.embed.create(
-            ctx, title="Traceback Error", description=self.bot.last_exception)
-        await ctx.send(embed=embed)
+            embeds = []
+            trace = self.long_traceback()
+            for line in trace:
+                embed = Embed.create(
+                    ctx, title="Traceback Error", description=line)
+                embeds.append(embed)
+            menu = TwilightEmbedMenu(embeds)
+            await menu.start(ctx=ctx, channel=ctx.channel)
+        else:
+            embed = Embed.create(
+                ctx, title="Traceback Error", description=self.bot.last_exception)
+            await ctx.send(embed=embed)
+
+    def long_traceback(self):
+        traceback = self.bot.last_exception.split("\n")
+        returning = []
+        ret = ""
+        for line in traceback:
+            if len(ret + f"\n{line}") > 2000:
+                returning.append(box(ret, "py"))
+                ret = ""
+            ret += f"\n{line}"
+        if ret:  # Just in case it didn't get added
+            returning.append(box(ret, "py"))
+        return returning
 
     @command()
     async def info(self, ctx: Context):
@@ -211,8 +231,8 @@ class Core(BaseCog):
         uptime_str = humanize_timedelta(
             timedelta=uptime) or "Less than one second"
         # await ctx.send("Been up for: **{}** (since {} UTC)".format(uptime_str, since))
-        embed = self.embed.create(ctx, title="Uptime!",
-                                  footer="Twilight uptime")
+        embed = Embed.create(ctx, title="Uptime!",
+                             footer="Twilight uptime")
         embed.add_field(name="Total time", value="**{}**".format(uptime_str))
         embed.add_field(name="Up since", value="**{}**".format(since))
         await ctx.send(embed=embed)

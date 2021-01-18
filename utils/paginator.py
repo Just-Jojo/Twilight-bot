@@ -1,86 +1,86 @@
-# Behold, Perry the Platypus, my Paginator!
-# pylint:disable=unused-variables
+"""Changed the plans for making the menu system.
+Gonna be working with discord.ext.menus instead
+"""
 import discord
-from discord.ext.commands import *
-from typing import *
-from .errors import *
-import asyncio
-from contextlib import suppress  # This is handy
+from discord.ext import menus
+import typing
 
 
-async def menu(
-    ctx: Context,
-    pages: List[discord.Embed],
-    controls: dict,
-    message: discord.Message = None,
-    page: int = 0,
-    timeout: float = 30.0
-):
-    """You see, Perry the Platypus, when I was young my family lived far from the newspaper stand..."""
-    for key, value in controls.items():
-        coro = value
+class TwilightEmbedMenu(menus.Menu):
+    """Base menu for Twilight things"""
 
-    current_page = pages[page]
-    if not message:
-        await ctx.send(embed=current_page)
-    else:
-        try:
-            await message.edit(embed=current_page)
-        except discord.NotFound:
-            return
-    pass
+    def __init__(self, pages: typing.List[discord.Embed], timeout: float = 30.0):
+        self.pages = pages
+        self.current_page = self.pages[0]
+        self.index = 0
+        super().__init__(timeout=timeout, delete_message_after=False,
+                         clear_reactions_after=True)  # Don't delete the message
 
+    async def send_initial_message(self, ctx, channel):
+        return await channel.send(embed=self.current_page)
 
-async def next_page(
-    ctx: Context,
-    pages: List[discord.Embed],
-    message: discord.Message,
-    controls: dict,
-    page: int,
-    timeout: float,
-    emoji: str
-) -> None:
-    """I was the one they sent out to get a newspaper every morning..."""
-    perms = message.channel.permissions_for(ctx.me)
-    if perms.manage_messages:
-        with suppress(discord.NotFound):
-            await message.remove_reaction(emoji, ctx.author)
-    if page == len(pages) - 1:
-        page = 0
-    else:
-        page += 1
-    return await menu(ctx, pages, controls, message, page, timeout)
+    @menus.button("\N{LEFTWARDS BLACK ARROW}")
+    async def on_left(self, payload: discord.RawReactionActionEvent):
+        self.index_parser(False)
+        self.current_page = self.pages[self.index]
+        return await self.message.edit(embed=self.current_page)
 
+    @menus.button("\N{CROSS MARK}")
+    async def on_x(self, payload: discord.RawReactionActionEvent):
+        self.stop()
+        await self.message.delete()
 
-async def previous_page(
-    ctx: Context,
-    pages: List[discord.Embed],
-    message: discord.Message,
-    controls: dict,
-    page: int,
-    timeout: float,
-    emoji: str
-):
-    """All of the kids would laugh as I walked up to the newspaper stand to buy a paper..."""
-    perms = message.channel.permissions_for(ctx.me)
-    if perms.manage_messages:
-        with suppress(discord.NotFound):
-            await message.remove_reaction(emoji, ctx.author)
-    if page == 0:
-        page = len(pages) - 1
-    else:
-        page -= 1
-    return await menu(ctx, pages, controls, message, page, timeout)
+    @menus.button("\N{BLACK RIGHTWARDS ARROW}")
+    async def on_right(self, payload: discord.RawReactionActionEvent):
+        self.index_parser(True)
+        self.current_page = self.pages[self.index]
+        return await self.message.edit(embed=self.current_page)
+
+    def index_parser(self, forwards: bool):
+        """Handy tool for the Indexing of embeds"""
+        pages_len = len(self.pages) - 1
+        if forwards:
+            self.index += 1
+            if self.index > pages_len:
+                self.index = 0
+        else:
+            self.index -= 1
+            if self.index < 0:
+                self.index = pages_len
 
 
-async def close_menu(
-    ctx: Context,
-    pages: List[discord.Embed],
-    message: discord.Message,
-    page: int,
-    timeout: float,
-    emoji: str
-):
-    """Now I have built... the Paginator! When I fire it, every newspaper in the tristate area will be under my control!"""
-    with suppress(discord.NotFound):
-        await message.delete()
+class TwilightStringMenu(menus.Menu):
+    """A menu system for regular messages"""
+
+    def __init__(self, pages: typing.List[str], timeout: float = 30.0):
+        self.pages = pages
+        self.current_page = self.pages[0]
+        self.index = 0
+        super().__init__(timeout=timeout, delete_message_after=False, clear_reactions_after=True)
+
+    def index_parser(self, forwards: bool):
+        pages_len = len(self.pages) - 1
+        if forwards:
+            self.index += 1
+            if self.index > pages_len:
+                self.index = 0
+        else:
+            self.index -= 1
+            if self.index < 0:
+                self.index = pages_len
+
+    @menus.button("\N{LEFTWARDS BLACK ARROW}")
+    async def on_left(self, payload: discord.RawReactionActionEvent):
+        self.index_parser(False)
+        self.current_page = self.pages[self.index]
+        return await self.message.edit(content=self.current_page)
+
+    @menus.button("\N{CROSS MARK}")
+    async def on_x(self, payload: discord.RawReactionActionEvent):
+        self.stop()
+
+    @menus.button("\N{BLACK RIGHTWARDS ARROW}")
+    async def on_right(self, payload: discord.RawReactionActionEvent):
+        self.index_parser(True)
+        self.current_page = self.pages[self.index]
+        return await self.message.edit(content=self.current_page)

@@ -6,8 +6,9 @@ from .basic_utils import (
 from .embed import Embed
 from .converter import (RawUserIds,)
 from .errors import (TwilightException, BadPages)
-from .paginator import (menu, close_menu, next_page,
-                        previous_page)  # Gonna add more here
+# Gonna add more here
+from .paginator import (TwilightEmbedMenu, TwilightStringMenu)
 from .rps import (rock_paper_scissors as rps_game)
 from .predicates import (MessagePredicate,)  # Need to work on reactions
 from .math import fraction, decimal
+from .character_parser import char_embed

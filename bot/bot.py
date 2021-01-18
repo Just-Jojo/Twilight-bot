@@ -99,6 +99,7 @@ class Twilight(BotBase):
         self.license = LICENSE
         self._uptime = None
         self.version = version
+        self.exit_code = 1
         with open(blocklist_path) as fp:
             self.blocklist = json.load(fp)
         super().__init__(
@@ -132,15 +133,11 @@ class Twilight(BotBase):
             json.dump(blocklist, fp, indent=4)
         print("Saved the blocklist")
 
-    async def shutdown(self):
+    async def stop(self, exit_code: int = 0):
+        """Stop the bot"""
         await self.logout()
-        self.save_blocklist()
-        sys.exit(0)
-
-    async def restart(self):
-        await self.logout()
-        self.save_blocklist()
-        sys.exit(4)
+        print("Logging out of Twilight")
+        self.exit_code = exit_code
 
     def run(self):
         print("Waking up Twilight")
@@ -161,10 +158,9 @@ class Twilight(BotBase):
         elif isinstance(exc, CheckFailure):  # Check failures are the worstest
             return await ctx.send("You did not pass the required check for command `{}`".format(ctx.command))
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
-        self.last_exception = "```py\n{}```".format(
-            "".join(traceback.format_exception(
-                type(exc), exc, exc.__traceback__
-            ))
+        self.last_exception = "".join(traceback.format_exception(
+            type(exc), exc, exc.__traceback__
+        )
         )
         if hasattr(exc, "original"):
             if isinstance(exc, Forbidden):
