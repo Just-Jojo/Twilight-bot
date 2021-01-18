@@ -36,6 +36,12 @@ if path.exists("./cogs/settingstings.json"):
 else:
     from twi_secrets import TWI_SETTINGS_PATH as json_path
 
+__all__ = ["moderator", "administrator", "tick", "box", "humanize_timedelta",
+           "setup", "teardown", "role_setup", "announce_set", "modlog_add"]
+__version__ = "0.1.0"
+# Also whoever wrote the humanize_timedelta, I didn't make that
+__author__ = ["Jojo#7791", ]
+
 
 def moderator():
     """The check to see if the user is a mod"""

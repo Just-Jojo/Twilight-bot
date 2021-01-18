@@ -1,3 +1,8 @@
+__all__ = ["fraction", "decimal"]
+__version__ = "0.0.1"
+__author__ = ["kreusada", ]
+
+
 def fraction(number: float) -> str:
     """
     Convert an integer/float to a fraction.

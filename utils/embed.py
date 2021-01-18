@@ -26,9 +26,12 @@ from discord import Embed as Emb
 from discord import Color
 from discord.ext import commands
 from datetime import datetime
+import aiohttp
 
 TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
 __all__ = ["Embed", ]
+__version__ = "0.0.1"
+__author__ = ["Jojo#7791", ]
 
 
 class Embed:

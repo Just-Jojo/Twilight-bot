@@ -26,6 +26,10 @@ import re
 import wikia
 import discord
 
+__all__ = ["char_embed", ]
+__version__ = "0.0.1"
+__author__ = ["Jojo#7791", ]
+
 
 def parse_numbers(string: str) -> str:
     r"""Parse a decimal
