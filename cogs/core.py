@@ -48,8 +48,7 @@ information = r"""
 
 
 class Core(BaseCog):
-    """
-    Core commands Cog. This include `ping` and moderation settings.
+    """Core commands
     """
 
     def __init__(self, bot: Twilight):

@@ -11,7 +11,7 @@ from .mixin import BaseCog
 
 
 class General(BaseCog):
-    """General commands"""
+    """General, fun commands"""
 
     def __init__(self, bot: Twilight):
         self.bot = bot

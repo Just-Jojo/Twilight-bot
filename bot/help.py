@@ -54,7 +54,7 @@ async def send_cog_help(
         return await send_help(ctx)
     try:
         can = await cog.cog_check(ctx)
-    except ValueError:
+    except TypeError:
         can = cog.cog_check(ctx)
     if can is False:
         return await send_help(ctx)
@@ -77,9 +77,9 @@ async def send_cog_help(
 
     paged = await pagify_commands(coms)
     if hasattr(cog, "__version__"):
-        description = f"Cog {cog.qualified_name}. Version {cog.__version__}"
+        description = f"**__{cog.qualified_name}__** Version {cog.__version__}\n\n{cog.description}"
     else:
-        description = f"Cog {cog.qualified_name}."
+        description = f"**__{cog.qualified_name}__**\n\n{cog.description}"
     if len(paged) > 1:
         embeds = []
         for page in paged:
@@ -150,7 +150,7 @@ async def send_help(
         cog: commands.Cog = bot.get_cog(cog)
         try:
             can = await cog.cog_check(ctx)
-        except ValueError:
+        except TypeError:
             can = cog.cog_check(ctx)
         if can is False:  # Can't run
             pass
@@ -174,7 +174,7 @@ async def send_help(
             paged = await pagify_commands(coms)
             for page in paged:
                 embed = Embed.create(
-                    ctx, title="Twilight Help Menu", description=f"{cog.qualified_name}.",
+                    ctx, title="Twilight Help Menu", description=f"**__{cog.qualified_name}__**\n\n{cog.description}",
                     footer="Twilight Bot Help!")
                 embed.add_field(name="Commands", value=page)
                 cogs.append(embed)

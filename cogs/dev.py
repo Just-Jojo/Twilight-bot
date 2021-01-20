@@ -18,6 +18,7 @@ START_CODE_BLOCK_RE = re.compile(
 
 class DevCommands(BaseCog):
     """Commands for Jojo mostly debugging Twilight."""
+    __version__ = "0.1.2"
 
     def __init__(self, bot: Twilight):
         self.bot = bot
@@ -55,7 +56,7 @@ class DevCommands(BaseCog):
         return re.sub(re.escape(token), "[EXPUNGED]", input_, re.I)
 
     @commands.command(name="reload", aliases=["cu", "update"])
-    async def _reload(self, ctx, cog: str):
+    async def twilight_cog_reload(self, ctx, cog: str):
         """Reload a cog"""
         cog = cog.lower()
         cogs = self.bot.grab_cogs()
@@ -139,9 +140,9 @@ class DevCommands(BaseCog):
         await tick(ctx.message)
 
     @commands.command()
-    async def error(self, ctx, _long: bool = False):
+    async def error(self, ctx, long_trace: bool = False):
         """Error the bot"""
-        if _long:
+        if long_trace:
             raise Exception(LONG_TRACEBACK)
         raise Exception("Used command `error`")
 
@@ -259,12 +260,14 @@ class DevCommands(BaseCog):
 
     @commands.command()
     async def load(self, ctx, cog: str):
+        """Load a cog"""
         self.bot.load_extension(cog)
         await ctx.send(content=f"Loaded `{cog}`")
 
     @commands.command()
     async def unload(self, ctx, cog: str):
-        if cog.lower() == "core":
+        """Unload a cog"""
+        if cog.lower() == "dev":
             await ctx.send(content="Mate... what are you doing?")
             return
         self.bot.unload_extension(cog)
@@ -272,6 +275,7 @@ class DevCommands(BaseCog):
 
     @commands.command()
     async def cogs(self, ctx):
+        """List the cogs and their loaded state"""
         cogs = self.bot.grab_cogs()
         embed = Embed.create(ctx, title="Cogs")
         cogs_list = []
@@ -287,6 +291,7 @@ class DevCommands(BaseCog):
 
     @commands.command()
     async def test(self, ctx):
+        """Testing command"""
         result = await ReactionPred("Is this a test?").prompt(ctx, channel=ctx.channel)
         if result is True:
             await ctx.send("Yeah!")

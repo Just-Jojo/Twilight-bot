@@ -35,7 +35,10 @@ MLP_LOGO = "https://cdn.discordapp.com/attachments/766499155669286922/7799862907
 
 
 class MyLittlePony(BaseCog):
-    """The Main MLP cog"""
+    """My Little Pony Cog
+
+    The heart of Twilight
+    """
 
     def __init__(self, bot: Twilight):
         self.bot = bot
