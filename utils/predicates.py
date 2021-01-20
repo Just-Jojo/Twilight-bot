@@ -28,7 +28,7 @@ class ReactionPred(menus.Menu):
         if isinstance(self.msg, discord.Embed):
             return await channel.send(embed=self.msg)
         else:
-            return await channel.send(content=msg)
+            return await channel.send(content=self.msg)
 
     async def prompt(self, ctx: commands.Context, channel: typing.Optional[discord.TextChannel] = None):
         """Starts the prompt for the Predicate

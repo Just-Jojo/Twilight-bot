@@ -177,7 +177,7 @@ class Twilight(BotBase):
             json.dump(blocklist, fp, indent=4)
         print("Saved the blocklist")
 
-    async def stop(self, exit_code: int = 0):
+    async def async_stop(self, exit_code: int = 0):
         """|coro|
 
         Close the bot's connections and logs out
@@ -197,7 +197,7 @@ class Twilight(BotBase):
         print("Logging out of Twilight")
         self.exit_code = exit_code
 
-    def close(self, exit_code: int = 0):
+    def stop(self, exit_code: int = 0):
         """A non-async way to close the bot
 
         Parameters
@@ -302,8 +302,6 @@ class Twilight(BotBase):
             return super().load_extension(cog)  # So load it here
         cogs = grab_cogs()
         if cog in cogs.keys():
-            if cogs[cog] is True:
-                return f"{cog} is already loaded!"
             cogs[cog] = True
             write_cogs(cogs)
             return super().load_extension(f"cogs.{cog}")
@@ -334,8 +332,6 @@ class Twilight(BotBase):
             return super().unload_extension(cog)
         cogs = grab_cogs()
         if cog in cogs.keys():
-            if cogs[cog] is False:
-                return f"{cog} is already unloaded!"
             cogs[cog] = False
             write_cogs(cogs)
             return super().unload_extension(f"cogs.{cog}")

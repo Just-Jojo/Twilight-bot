@@ -11,7 +11,7 @@ def main():
         twilight.run()
     except KeyboardInterrupt:
         print("Exiting Twilight!")
-        twilight.close()
+        twilight.stop()
     finally:
         exit_code = twilight.exit_code
         sys.exit(exit_code)
