@@ -36,15 +36,20 @@ if path.exists("./cogs/settingstings.json"):
 else:
     from twi_secrets import TWI_SETTINGS_PATH as json_path
 
-__all__ = ["moderator", "administrator", "tick", "box", "humanize_timedelta",
-           "setup", "teardown", "role_setup", "announce_set", "modlog_add"]
 __version__ = "0.1.0"
 # Also whoever wrote the humanize_timedelta, I didn't make that
 __author__ = ["Jojo#7791", ]
 
 
 def moderator():
-    """The check to see if the user is a mod"""
+    """A decorator that checks if a user has a moderator role
+
+    Returns
+    -------
+    bool
+        If the user is a mod, admin, or the bot owner this will return True, allowing them to use the command
+        Otherwise it will return False, raising a check failure
+    """
     async def inner(ctx: Context):
         if ctx.guild is None:
             return False  # Can't use mod commands in dms
@@ -52,6 +57,10 @@ def moderator():
             return True
         settings = get_guild_settings(ctx.guild)  # Grab the settings...
         mod = settings.get("mod")  # The role id...
+        admin = settings.get("admin")
+        if admin:
+            if ctx.guild.get_role(admin) in ctx.author.roles:
+                return True
         if mod:
             # And grab the role to see if the author has it
             return ctx.guild.get_role(mod) in ctx.author.roles
@@ -61,7 +70,14 @@ def moderator():
 
 
 def administrator():
-    """The check to see if the user is an admin"""
+    """A decorator that checks if a user has an administrator role
+
+    Returns
+    -------
+    bool
+        If the user has an adminstrator role this will return True, allowing them to use that command
+        Otherwise it will return False, raising a check failure
+    """
     async def inner(ctx: Context):
         if ctx.guild is None:
             return False
@@ -76,13 +92,94 @@ def administrator():
     return check(inner)
 
 
+async def is_mod(ctx: Context, user: discord.Member):
+    """|coro|
+
+    A function testing whether a user has a Mod role
+
+    Parameters
+    ----------
+    ctx: :class:`Context`
+        Context of the check
+    user: Optional[:class:`discord.Member`]
+        The user to run the check on
+        Defaults to the Context's author
+
+    Returns
+    -------
+    bool
+        If the user is a mod, admin, or bot owner it will return True
+        Otherwise it will return False
+    """
+    if ctx.guild is None:
+        return False
+    if await ctx.bot.is_owner(user):
+        return True
+    settings = get_guild_settings(ctx.guild)
+    mod = settings.get("mod")
+    admin = settings.get("admin")
+    if admin:
+        if ctx.guild.get_role(admin) in user.roles:
+            return True
+    if mod:
+        return ctx.guild.get_role(mod) in user.roles
+    return False
+
+
+async def is_admin(ctx: Context, user: Optional[discord.Member] = None):
+    """|coro|
+
+    A function testing whether a user has an Admin role
+
+    Parameters
+    ----------
+    ctx: :class:`Context`
+        Context of the check
+    user: Optional[:class:`discord.Member`]
+        The user to check
+        Defaults to the Context's author
+
+    Returns
+    -------
+    bool
+        If the user is an Admin it will return True
+        Otherwise it will return False
+    """
+    if user is None:
+        user = ctx.author
+    if ctx.guild is None:
+        return False
+    if await ctx.bot.is_owner(ctx.author):
+        return True
+    settings = get_guild_settings(ctx.guild)
+    admin = settings.get("admin")
+    if admin:
+        return ctx.guild.get_role(admin) in ctx.author.roles
+    return False
+
+
 async def tick(message: discord.Message):
-    """Add a checkmark to a message"""
+    """Add a checkmark to a message
+
+    Parameters
+    ----------
+    message: :class:`discord.Message`
+        The message to add the reaction to
+    """
     await message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
 
 
 def guild_owner():
-    """Guild owner check in the discord.py library when?"""
+    """A guild owner check
+
+    Returns whether or not the author is a guild or bot owner
+
+    Returns
+    -------
+    bool
+        If the user owns the guild or the bot this will return True
+        Otherwise it will return False, raising a check failure
+    """
     async def inner(ctx: Context):
         if ctx.author.id == 544974305445019651:  # I need to be able to use guild_owner only commands
             return True
@@ -122,12 +219,28 @@ def humanize_timedelta(
 
 
 def box(text: str, lang: str = "") -> str:
+    """Put content in a code block
+
+    Parameters
+    ----------
+    text: :class:`str`
+        The text to place in the code block
+    lang: :class:`str`
+        The language for the block
+        Defaults to an empty string
+    """
     ret = "```{}\n{}```".format(lang, text)
     return ret
 
 
-def setup(guild: discord.Guild) -> None:
-    """Set up a Guild with the default settings"""
+def guild_setup(guild: discord.Guild) -> None:
+    r"""Set up a Guild with the default settings
+
+    Parameters
+    ----------
+    guild: :class:`discord.Guild`
+        The guild object to setup
+    """
     with open(json_path, "r") as fp:
         settings: dict = json.load(fp)
 
@@ -147,47 +260,93 @@ def setup(guild: discord.Guild) -> None:
 
 
 def get_settings() -> dict:
-    """Grab the entire settings dict"""
+    """Grab the entire settings dict
+
+    Returns
+    -------
+    dict
+        The settings dictionary
+    """
     with open(json_path) as fp:
         return json.load(fp)
 
 
 def write_settings(settings: dict):
-    """Write the settings to a JSON file"""
+    """Write the settings dict to a JSON file
+
+    Parameters
+    ----------
+    settings: :class:`dict`
+        The settings dictionary
+    """
     with open(json_path, "w") as fp:
         json.dump(settings, fp, indent=4)
 
 
 def get_guild_settings(guild: discord.Guild) -> dict:
-    """Get the settings for a guild"""
+    """Get the settings dict for a guild
+
+    Parameters
+    ----------
+    guild: :class:`discord.Guild`
+        The guild object to grab the settings for
+
+    Returns
+    -------
+    dict
+        The dictionary settings for the guild
+    """
     guild_id = str(guild.id)
     with open(json_path) as fp:
         settings = json.load(fp)
     if guild_id not in settings.keys():
-        setup(guild)
+        guild_setup(guild)
     return settings[guild_id]
 
 
 def teardown(guild: discord.Guild):
-    """Remove a guild from Twilight's settings"""
+    """Remove a guild from Twilight's settings
+
+    This should only be called when leaving a guild
+
+    Parameters
+    ----------
+    guild: :class:`discord.Guild`
+        The guild to remove data from
+        In the case that the guild wasn't in Twilight's database
+    """
     guild_id = str(guild.id)
-    with open(json_path) as fp:
-        settings = json.load(fp)
-    if guild_id not in settings.keys():  # This will *only* happen if the setup fails to trigger or a Twily was in a guild before this was implemented
+    settings = get_settings()
+    if guild_id not in settings.keys():
+        # This will *only* happen if the setup fails to trigger or a Twily was in a guild before this was implemented
         print(
             f"{guild.name} was not in Twilight's database so I did not remove any data")
         return
     del settings[guild_id]
     print(f"Removed data for {guild.name}")
-    with open(json_path, "w") as fp:
-        json.dump(settings, fp, indent=4)
+    write_settings(settings=settings)
 
 
 def role_setup(role_type: bool, guild: discord.Guild, role: int) -> str:
     """Set an admin/mod role for a guild
 
-    guild:discord.Guild: Guild to add
-    role_type:bool: True = Mod False = Admin"""
+    Parameters
+    ----------
+    role_type: :class:`bool`
+        The type of role to setup
+
+        If it is True the type will be "mod"
+        If it is False the type will be "admin"
+    guild: :class:`discord.Guild`
+        The guild to set the role for
+    role: :class:`int`
+        The id of the role being setup
+
+    Returns
+    -------
+    str
+        The message confirming that the setup was sucessful
+    """
     if role_type:
         rtype = "mod"
     else:
@@ -195,209 +354,49 @@ def role_setup(role_type: bool, guild: discord.Guild, role: int) -> str:
     # Don't worry about KeyErrors here as the grabber will setup a guild not in the database
     settings = get_guild_settings(guild)
     settings[rtype].append(role)
-    with open(json_path) as fp:
-        _set = json.load(fp)
-    _set[str(guild.id)] = settings
-    with open(json_path, "w") as fp:
-        json.dump(_set, fp, indent=4)
+    base_settings = get_settings()
+    base_settings[str(guild.id)] = settings
+    write_settings(settings=base_settings)
     return f"Added that role as a/an {rtype} role"
 
 
 def announce_set(guild: discord.Guild, channel: int) -> str:
     """Set an announcement channel for a guild
 
-    guild:discord.Guild: the guild getting setup
-    channel:int: the channel id for it
+    Parameters
+    ----------
+    guild: :class:`discord.Guild`
+        The guild to set the announcement channel for
+    channel: :class:`int`
+        The channel id to setup
+
+    Returns
+    -------
+    str
+        The confirmation message
     """
     settings = get_guild_settings(guild)
     settings["announce_channel"] = channel
-    with open(json_path) as fp:
-        _set = json.load(fp)
-    _set[str(guild.id)] = settings
-    with open(json_path, "w") as fp:
-        json.dump(_set, fp, indent=4)
+    base_settings = get_settings()
+    base_settings[str(guild.id)] = settings
+    write_settings(settings=base_settings)
     return "Set that channel as an announcement channel. You will now be notified of changes/features from Twilight via that channel"
 
 
 def modlog_add(guild: discord.Guild, channel: int) -> str:
-    """Add a channel as the modlog channel"""
+    """Add a channel as the modlog channel
+
+    Parameters
+    ----------
+    guild: :class:`discord.Guild`
+        The guild to set the modlog channel
+    channel: :class:`int`
+        The channel id for the channel
+
+    """
     guild_settings = get_guild_settings(guild)
     guild_settings["modlog"] = channel
-# class Moderation:
-#     """
-#         This class allows me to set up some default values for guilds on Twilight joining them.
-#         It will create a few roles and a channel key and put it inside a JSON file.
-#         These keys will be assigned `None` or `null` until the server owner sets the channels and roles.
-#     """
-
-#     def teardown(self, guild: discord.Guild) -> None:
-#         """Remove a Guild from Twilight's settings"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings: dict = json.load(f)
-
-#         if str(guild.id) not in settings.keys():
-#             print("{} was not in Twilight's database so I did not remove any data".format(
-#                 guild.name))
-#             return
-
-#         del settings[str(guild.id)]
-#         print("Deleted Twilight's data for {} ({})".format(guild.name, guild.id))
-
-#     def add_role(self, guild: discord.Guild, role_type: str, role: discord.Role) -> str:
-#         """Set up the Mod or Admin role"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings: dict = json.load(f)
-#         if str(guild.id) not in settings.keys():
-#             setup(guild)
-#             print(
-#                 (
-#                     f"{guild} was not in Twilight's database."
-#                     "Running the defualt setup..."
-#                 )
-#             )
-
-#         if settings[str(guild.id)][role_type] == role.id:
-#             return "This role is already the {} role!".format(role_type)
-#         settings[str(guild.id)][role_type] = role.id
-#         with open(SETTINGS_JSON, "w") as f:
-#             json.dump(settings, f, indent=4)
-#         return "Added {} as the {} role".format(role, role_type)
-
-#     def remove_role(self, guild: discord.Guild, role_type: str) -> str:
-#         """Remove a Mod or Admin role"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings: dict = json.load(f)
-#         if str(guild.id) not in settings.keys():
-#             setup(guild)
-#             print(
-#                 (
-#                     f"{guild} was not in Twilight's database."
-#                     "Running the defualt setup..."
-#                 )
-#             )
-#             return "Your guild wasn't in my database. So there is no {} role to remove!".format(role_type)
-
-#         settings[str(guild.id)][role_type] = None
-#         with open(SETTINGS_JSON, "w") as f:
-#             json.dump(settings, f, indent=4)
-#         return "Removed the {} role".format(role_type)
-
-#     # For removal, there shouldn't be a channel,
-#     # so requiring a channel is kinda dumb
-#     def announcement_set(self, remove: bool, guild: discord.Guild, channel: discord.TextChannel = None) -> str:
-#         """Set a Guild's announcement channel"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings: dict = json.load(f)
-#         if str(guild.id) not in settings.keys():
-#             setup(guild)
-#             # return "Your guild was not in my settings so I set up the defaults. This means there isn't an announcement chanenl"
-
-#         if remove == False:
-#             settings[str(guild.id)]["announce_channel"] = channel.id
-#             with open(SETTINGS_JSON, "w") as f:
-#                 json.dump(settings, f, indent=4)
-#             print("Added the announcement channel for {} ({})".format(
-#                 guild.name, guild.id))
-#             return "{} was set up as your guild's announcement channel!".format(channel.mention)
-
-#         if settings[str(guild.id)]["announce_channel"] is None:
-#             print("{} was just set up so I cancled the removal of the channel (since there wasn't one in the first place)".format(guild.name))
-#         settings[str(guild.id)]["announe_channel"] = None
-#         with open(SETTINGS_JSON, "r") as f:
-#             json.dump(settings, f, indent=4)
-#         print("Removed the announcement channel for {} ({})".format(
-#             guild.name, guild.id))
-#         return "Removed your guild's announcement channel"
-
-#     def modlog_set(self, channel: discord.TextChannel, guild: discord.Guild) -> str:
-#         """Set up a Guild's modlog channel"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings: dict = json.load(f)
-#         if str(guild.id) not in settings.keys():
-#             setup(guild)
-#             print("{} wasn't in Twilight's database. Writing the normal setup...".format(
-#                 guild.name))
-
-#         settings[str(guild.id)]["modlog"] = channel.id
-#         with open(SETTINGS_JSON, "w") as f:
-#             json.dump(settings, f, indent=4)
-#         return "Set {} as your modlog channel".format(channel.mention)
-
-#     def modlog_remove(self, guild: discord.Guild) -> str:
-#         """Remove a Guild's modlog channel"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings: dict = json.load(f)
-#         if str(guild.id) not in settings.keys():
-#             setup(guild)
-#             print(
-#                 "{} wasn't in Twilight's database. Writing the normal setup...".format(
-#                     guild.name
-#                 )
-#             )
-#             return "Your guild wasn't in my database! Since it wasn't the modlog channel wasn't set so there isn't need to fret!"
-
-#         settings[str(guild.id)]["modlog"] = None
-#         with open(SETTINGS_JSON, "w") as f:
-#             json.dump(settings, f, indent=4)
-#         return "Reset your guild's modlog channel"
-
-#     async def create_case(self, ctx: Context, guild: discord.Guild, action: str, user: discord.Member):
-#         """Create a case in the modlog"""
-#         channel: int = Getters.get_modlog(guild)
-#         if channel is None:
-#             return
-
-#         channel = guild.get_channel(channel)  # int -> discord.TextChannel
-#         embed: discord.Embed = Embed.create(
-#             self, ctx, title="{} Modlog".format(guild.name),
-#             color=discord.Color.red(), footer="Twilight bot mod cog",
-#             thumbnail=user.avatar_url
-#         )
-#         embed.description = f"{ctx.author.display_name} used {action} on {user.display_name}"
-#         embed.add_field(name="Mod", value="{} ({})".format(
-#             ctx.author.name, ctx.author.id), inline=False)
-#         embed.add_field(name="Perpetrator", value="{} ({})".format(
-#             user.name, user.id), inline=False)
-#         await channel.send(embed=embed)
-
-
-# class Getters:
-#     @classmethod
-#     def get_mod_role(cls, guild: discord.Guild):
-#         """Return a Guild's Mod role id"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings = json.load(f)
-#         try:
-#             return settings[str(guild.id)]["moderator"]
-#         except KeyError:
-#             setup(guild)
-#             return None
-
-#     @classmethod
-#     def get_admin_role(cls, guild: discord.Guild):
-#         """Retrun a Guild's Admin role id"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings = json.load(f)
-#         try:
-#             return settings[str(guild.id)]["administrator"]
-#         except KeyError:
-#             setup(guild)
-#             return None
-
-#     @classmethod
-#     def get_modlog(cls, guild: discord.Guild):
-#         """Return a Guild's modlog channel id"""
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings = json.load(f)
-#         try:
-#             return settings[str(guild.id)]["modlog"]
-#         except KeyError:
-#             setup(guild)
-#             return None
-
-#     @classmethod
-#     def get_all_announce(cls):
-#         with open(SETTINGS_JSON, "r") as f:
-#             settings = json.load(f)
-#         for guild in settings.keys():
-#             yield settings[guild]["announce_channel"]
+    settings = get_settings()
+    settings[str(guild.id)] = guild_settings
+    write_settings(settings=settings)
+    return "Set that channel as the modlog channel. Moderation actions will now be logged there"

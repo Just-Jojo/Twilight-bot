@@ -23,77 +23,250 @@ SOFTWARE."""
 import discord
 from discord.ext import commands
 import typing
+from utils import Embed, TwilightEmbedMenu
+from asyncio import iscoroutine as iscoro
 
 
-def maybe_cog(bot: "Twilight", cog: str) -> typing.Union[commands.Cog, commands.Command, None]:
-    """Check if a string is a cog or command"""
-    maybe = bot.get_cog(cog)
-    if maybe:
-        return maybe
-    maybe = bot.get_command(cog)
-    if maybe:
-        return maybe
-    return None
+async def send_cog_help(
+    ctx: commands.Context,
+    cog: typing.Union[commands.Cog, str],
+) -> discord.Message:
+    """Help for a cog. `cog` can either be a :class:`Cog` or :class:`str`
 
+    If the cog is a string it will find the cog using `ctx.bot`
 
-def cog_parser(bot: "Twilight", cog: commands.Cog) -> discord.Embed:
-    """Parse a cog's commands and return in a neat embed"""
-    embed = discord.Embed(title=f"{cog.qualified_name} Help")
-    embed.set_author(name="Twilight Help System", icon_url=bot.user.avatar_url)
+    Parameters
+    ----------
+    ctx: :class:`Context`
+        Context of the help command
+    cog: Union[:class:`Cog`, :class:`str`]
+        The cog to get help for. If it is a str it will be searched for using `ctx.bot.get_cog`
+
+    Returns
+    -------
+    :class:`discord.Message`
+        The help message
+    """
+    bot = ctx.bot
+    if isinstance(cog, str):
+        cog = bot.get_cog(cog)
+    if cog is None:
+        return await send_help(ctx)
+    try:
+        can = await cog.cog_check(ctx)
+    except ValueError:
+        can = cog.cog_check(ctx)
+    if can is False:
+        return await send_help(ctx)
+    # If the author can't run commands don't display them
+
     coms = []
     for command in cog.walk_commands():
-        if command.help is not None:
-            coms.append(
-                f"**{command.qualified_name}:** {command.help[:30] if len(command.help) > 30 else command.help}...")
+        if await command.can_run(ctx) is True:
+            if len(command.parents) > 0:
+                pass
+            else:
+                if command.help is None:
+                    coms.append(f"**{command.name}**")
+                else:
+                    if len(command.help) > 30:
+                        coms.append(
+                            f"**{command.name}:** {command.help[:30]}...")
+                    else:
+                        coms.append(f"**{command.name}:** {command.help}")
+
+    paged = await pagify_commands(coms)
+    if hasattr(cog, "__version__"):
+        description = f"Cog {cog.qualified_name}. Version {cog.__version__}"
+    else:
+        description = f"Cog {cog.qualified_name}."
+    if len(paged) > 1:
+        embeds = []
+        for page in paged:
+            embed = Embed.create(
+                ctx, title="Twilight Help Menu", description=description)
+            embed.add_field(name="Commands", value=page)
+            embeds.append(embed)
+        menu = TwilightEmbedMenu(embeds)
+        return await menu.start(ctx=ctx, channel=ctx.channel)
+    else:
+        embed = Embed.create(
+            ctx, title="Twilight Help Menu", description=description,
+            footer="Twilight Bot Help!")
+        embed.add_field(name="Commands", value=paged[0])
+        return await ctx.send(embed=embed)
+
+
+async def pagify_commands(coms: typing.List[str]) -> typing.List[str]:
+    """Takes a list of command names and returns a pagified list
+
+    It will return a page of 15 commands
+
+    Parameters
+    ----------
+    coms: List[:class:`str`]
+        The list of commands to iterate over
+
+    Returns
+    -------
+    :class:`list`
+        A list of pagified commands
+    """
+    ret = []
+    combine = ""
+    for i, command in enumerate(coms):
+        i += 1
+        combine += f"\n{command}"
+        if i % 15 == 0:
+            ret.append(combine)
+            combine = ""
+    if combine:
+        ret.append(combine)
+    return ret
+
+
+async def send_help(
+    ctx: commands.Context
+) -> discord.Message:
+    """The base help system
+
+    This will iterate over each and every cog and command the bot has
+
+    It uses a custom `discord.ext.menus` Menu to provide pagination
+
+    Parameters
+    ----------
+    ctx: :class:`Context`
+        Context of the message
+
+    Returns
+    -------
+    :class:`discord.Message`
+        The help message
+    """
+    bot = ctx.bot
+    cogs: typing.List[discord.Embed] = []
+    for cog in bot.cogs:
+        cog: commands.Cog = bot.get_cog(cog)
+        try:
+            can = await cog.cog_check(ctx)
+        except ValueError:
+            can = cog.cog_check(ctx)
+        if can is False:  # Can't run
+            pass
         else:
-            coms.append(f"**{command.qualified_name}**")
-    embed.description = "\n".join(coms)
-    embed.set_footer(text="Use `>help` for help!")
-    return embed
+            coms = []
+            for command in cog.walk_commands():
+                can = await command.can_run(ctx)
+                if can is True:
+                    if len(command.parents) > 0:
+                        pass
+                    else:
+                        if command.help is None:
+                            coms.append(f"**{command.name}**")
+                        else:
+                            if len(command.help) > 30:
+                                coms.append(
+                                    f"**{command.name}:** {command.help[:30]}...")
+                            else:
+                                coms.append(
+                                    f"**{command.name}:** {command.help}")
+            paged = await pagify_commands(coms)
+            for page in paged:
+                embed = Embed.create(
+                    ctx, title="Twilight Help Menu", description=f"{cog.qualified_name}.",
+                    footer="Twilight Bot Help!")
+                embed.add_field(name="Commands", value=page)
+                cogs.append(embed)
+
+    if len(cogs) > 1:
+        menu = TwilightEmbedMenu(cogs)
+        return await menu.start(ctx=ctx, channel=ctx.channel)
+    else:
+        return await ctx.send(embed=cogs[0])
 
 
-def command_parser(bot: "Twilight", command: commands.Command) -> discord.Embed:
-    """Parse a command's parameters and help and return it in a neat embed"""
-    embed = discord.Embed()
-    embed.set_author(name="Twilight Help System", icon_url=bot.user.avatar_url)
+async def send_command_help(
+    ctx: commands.Context,
+    command: typing.Union[str, commands.Command]
+) -> discord.Message:
+    """Send help for a command
+
+    This command can either be a Command or a str
+
+    If the command's type is a str it will fetch that command using `ctx.bot`
+
+    Parameters
+    ----------
+    ctx: :class:`Context`
+        The context of the help command
+    command: Union[:class:`str`, :class:`Command`]
+        The command to get help for. If it is a string it will fetch that command from the bot
+
+    Returns
+    -------
+    :class:`discord.Message`
+        The help message
+    """
+    bot = ctx.bot
+    if isinstance(command, str):
+        command: commands.Command = bot.get_command(command)
+
+    can = await command.can_run(ctx)
+    if can is False:
+        return  # Shouldn't happen but okay
+    full_command = ""
+    if len(command.parents) > 0:
+        full_command = command.full_parent_name
+    else:
+        full_command = command.name
     params = []
     for key, value in command.clean_params.items():
         if "None" in str(value):
             params.append(f"[{key}]")
         else:
             params.append(f"<{key}>")
-    com_description = f"`>{command.name} {' '.join(params)}`" if len(
-        params) > 0 else f"`>{command.name}`"
-    embed.description = f"{com_description}\n\n**{command.help}**" if command.help is not None else com_description
-    embed.set_footer(text="Use `>help`")
-    return embed
-
-
-async def send_help(ctx: commands.Context, bot: "Twilight"):
-    embed = discord.Embed(title="Twilight Main Help")
-    embed.set_author(name="Twilight Help System", icon_url=bot.user.avatar_url)
-    for cog in bot.cogs.items():
-        embed.add_field(name=cog[0], value=", ".join(
-            [f"`{x}`" for x in cog[1].walk_commands()]), inline=False)
+    full_command += " " + " ".join(params)
+    desc = command.help if command.help is not None else ""
+    embed = Embed.create(
+        ctx, author="Twilight Help System", author_url=bot.user.avatar_url, title=f"`Syntax {ctx.prefix}{full_command}`",
+        description=desc, footer="Twilight Bot Help!"
+    )
     await ctx.send(embed=embed)
 
 
-async def send_help_for(ctx: commands.Context, thing: str):
-    """Send help for a thing"""
-    bot = ctx.bot
+async def send_help_for(
+    ctx: commands.Context,
+    thing: str = None
+) -> discord.Message:
+    """Send help for an object
+
+    If the object is none it will send the normal help menu
+
+    If the object is a command it will send help for the command
+    If the object is a cog it will send help for the cog
+
+    Paramaters
+    ----------
+    ctx: :class:`Context`
+        The context to send the message for
+    thing: :class:`str`
+        The thing to send help
+
+    """
     if thing is None:
-        return await send_help(ctx, bot)
-    parsed = maybe_cog(bot, thing)
-    if not parsed:
-        return await send_help(ctx, bot)
-    if isinstance(parsed, commands.Cog):
-        embed = cog_parser(bot, parsed)
-    else:
-        embed = command_parser(bot, parsed)
-    await ctx.send(embed=embed)
+        return await send_help(ctx)
+    bot = ctx.bot
+    maybe_cog = bot.get_cog(thing)
+    if maybe_cog:
+        return await send_cog_help(ctx=ctx, cog=maybe_cog)
+    maybe_com = bot.get_command(thing)
+    if maybe_com:
+        return await send_command_help(ctx, command=maybe_com)
+    return await send_help(ctx)
 
 
-@commands.command()
-async def help(ctx, *, thing: str = None):
-    """Help for all!"""
-    await send_help_for(ctx, thing)
+@commands.command(name="help")
+async def twilight_help(ctx, *, thing_to_find: str = None):
+    """Twilight's help command!"""
+    await send_help_for(ctx, thing=thing_to_find)

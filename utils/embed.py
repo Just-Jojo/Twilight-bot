@@ -35,57 +35,73 @@ __author__ = ["Jojo#7791", ]
 
 
 class Embed:
-    """
-        Creates a Discord embed object and sets some defaults to it
-
-        Arguments:
-        ~~~
-        title: str
-        description: str
-        color: discord.Color
-        author: str
-        author_url: str
-        footer: str
-        footer_url: str
-        thumbnail: str
-        image: str
-        ~~~
-    """
+    """Creates a discord Embed object"""
     @classmethod
     def create(
         cls, ctx: commands.Context, title: str = None, description: str = None,
         color: Color = None, footer: str = None, footer_url: str = None,
         thumbnail: str = None, image: str = None, author: str = None, author_url: str = None
     ) -> discord.Embed:
-        """
-            Creates a Discord embed object and sets some defaults to it
+        """Creates a Twilight embed
 
-            Arguments:
-            ~~~
-            title: str
-            description: str
-            color: discord.Color
-            author: str
-            author_url: str
-            footer: str
-            footer_url: str
-            thumbnail: str
-            image: str
-            ~~~
-            Returns: discord.Embed
+        Parameters
+        ----------
+        ctx: :class:`Context`
+            Context used for getting the bot, guild, and author for different settings
+        title: Optional[:class:`str`]
+            The title for the Embed
+            If None it won't be set
+        description: Optional[:class:`str`]
+            The description for the embed
+            If its length is greater than 2048 (the max character limit for embed descriptions) it will be shortened
+            If None it won't be set
+        color: Optional[:class:`Color`]
+            The color of the Embed
+            If None it will default to the author's color if there is a guild or purple
+        footer: Optional[:class:`str`]
+            Text for the Embed's footer
+            If its length is greater than 2048 it will be shortened
+        footer_url: Optional[:class:`str`]
+            A url for the footer's icon
+            If None it will default to the bot's avatar
+        thumbnail: Optional[:class:`str`]
+            A url for the Embed's thumbail
+            If None the Embed's thumbnail wont' be set
+        image: Optional[:class:`str`]
+            A url for the Embed's image
+            If None the Embed's image won't be set
+        author: Optional[:class:`str`]
+            The text to set the author for the Embed
+            If None it will default to the Context's author's name
+        author_url: Optional[:class:`str`]
+            The url for the author icon
+            If None it will default to the Context's author's avatar
+
+        Returns
+        -------
+        discord.Embed
+            A Embed object
         """
         data = Emb()
         if title:
             data.title = title
         if description:
-            data.description = description
+            if len(description) < 2048:
+                data.description = description
+            else:
+                data.description = description[:2044] + "..."
 
         if not color:
-            color = ctx.author.color
+            if ctx.guild is None:
+                color = discord.Colour.purple()
+            else:
+                color = ctx.author.color
         data.color = color
 
         if not footer:
             footer = "Twilight bot Embed"
+        elif len(footer) > 2048:  # Embed footers are huge!
+            footer = footer[:2044] + "..."
         if not footer_url:
             footer_url = ctx.bot.user.avatar_url
         data.set_footer(text=footer, icon_url=footer_url)
@@ -105,19 +121,45 @@ class Embed:
 
     @classmethod
     def create_from_dict(cls, ctx: commands.Context = None, **kwargs) -> discord.Embed:
-        """
-        Creates a Discord embed from a dictionary
+        """Creates a Twilight embed from keyward arguments
 
-        ~~~
-        :title: str
-        :description: str
-        :color: Optional[discord.Color]
-        :image: str
-        :thumbnail: str
-        :footer: str
-        :footer_url: str
-        ~~~
-        Returns: discord.Embed
+        Keyword Arguments
+        ----------
+        ctx: Optional[:class:`Context`]
+            Context used for getting the bot, guild, and author for different settings
+        title: Optional[:class:`str`]
+            The title for the Embed
+            If None it won't be set
+        description: Optional[:class:`str`]
+            The description for the embed
+            If its length is greater than 2048 (the max character limit for embed descriptions) it will be shortened
+            If None it won't be set
+        color: Optional[:class:`Color`]
+            The color of the Embed
+            If None it will default to the author's color if there is a guild or purple
+        footer: Optional[:class:`str`]
+            Text for the Embed's footer
+            If its length is greater than 2048 it will be shortened
+        footer_url: Optional[:class:`str`]
+            A url for the footer's icon
+            If None it will default to the bot's avatar
+        thumbnail: Optional[:class:`str`]
+            A url for the Embed's thumbail
+            If None the Embed's thumbnail wont' be set
+        image: Optional[:class:`str`]
+            A url for the Embed's image
+            If None the Embed's image won't be set
+        author: Optional[:class:`str`]
+            The text to set the author for the Embed
+            If None it will default to the Context's author's name
+        author_url: Optional[:class:`str`]
+            The url for the author icon
+            If None it will default to the Context's author's avatar
+
+        Returns
+        -------
+        discord.Embed
+            A Embed object
         """
         data = Emb()
         if ctx:

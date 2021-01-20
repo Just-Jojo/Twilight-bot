@@ -2,7 +2,18 @@ from discord.ext.commands import Cog
 
 
 class BaseCog(Cog):
-    """Base Cog Mixin to remind me to have `on_ready()`"""
+    """Base Cog Mixin
+
+    This inherits from :class:`Cog` so passing that in won't matter
+
+    Methods
+    -------
+    on_ready
+        The actual reason I made this
+        This will print that the cog is online when the bot is ready
+
+        If overwriting is required for something, call super().on_ready()
+    """
 
     def __init__(self, bot):
         self.bot = bot

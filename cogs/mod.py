@@ -168,3 +168,4 @@ class Mod(Cog):
 
 def setup(bot: Twilight):
     bot.add_cog(Mod(bot))
+# TODO Rewrite a lot of the things in here

@@ -23,14 +23,13 @@ SOFTWARE.
 """
 ### ~~~ Basic Discord and other utils imports ~~~ ###
 import discord
-from discord.ext.commands import (
-    Context, command, is_owner, Cog
-)
+from discord.ext import commands
 from typing import *
 ### ~~~ Twilight utis imports ~~~ ###
 from bot import Twilight  # Type hinting :D
 from utils import Embed, char_embed
 from .mixin import BaseCog
+from wikia import WikiaError
 
 MLP_LOGO = "https://cdn.discordapp.com/attachments/766499155669286922/779986290770182144/MLPFiM_logo.jpg"
 
@@ -42,14 +41,14 @@ class MyLittlePony(BaseCog):
         self.bot = bot
 
     def mlp_episode_description(
-        self, ctx: Context, num: int,
+        self, ctx: commands.Context, episode_num: int,
         title: str, description: str, url: str = None
-    ) -> discord.Embed:
+    ) -> discord.Embed:  # TODO Remove this in favour of webscraping
         """Generate an episode Embed from the given variables"""
         description += "...\nRead more [here]({})".format(url)
         embed = Embed.create(
             ctx, title=title.format(
-                num, title),
+                episode_num, title),
             description=description,
             thumbnail=MLP_LOGO, footer="Twilight Episode search",
             color=discord.Color.purple()
@@ -57,9 +56,9 @@ class MyLittlePony(BaseCog):
         return embed
 
     def mlp_character_description(
-        self, ctx: Context, character: str,
+        self, ctx: commands.Context, character: str,
         description: str, url: str
-    ) -> discord.Embed:
+    ) -> discord.Embed:  # TODO Remove this in favour of webscraping
         """Generate a character Embed from the given variables"""
         embed = Embed.create(
             ctx, title=f"{character}'s Bio", description=description,
@@ -67,28 +66,34 @@ class MyLittlePony(BaseCog):
         )
         return embed
 
-    @command()
+    @commands.command()
     async def smile(self, ctx):
         """Smile song!"""
         title = "From My Little Pony: Friendship is Magic, Season 2, Episode 18, the Smile song!",
-        description = (
-            "Pinkie Pie loves to make ponies smile, so she had to sing about it."
-            " This song is very upbeat and happy :D\n[Smile!](https://www.youtube.com/watch?v=lQKaAlMNvm8&ab_channel=MyLittlePonyOfficial)"
-        )
+        description = "Pinkie Pie loves to make ponies smile, so she had to sing about it. This song is very upbeat and happy :D\n[Smile!](https://www.youtube.com/watch?v=lQKaAlMNvm8&ab_channel=MyLittlePonyOfficial)"
+
         embed = Embed.create(ctx, title=title, description=description)
         await ctx.send(embed=embed)
 
-    @command()
-    async def episode(self, ctx: Context, episode: Optional[int]):
+    @commands.command()
+    async def episode(self, ctx, episode: Optional[int]):
         """Episode search command"""
         await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
 
-    @command()
-    async def character(self, ctx: Context, *, name: Optional[str]):
+    @commands.command()
+    async def character(self, ctx, *, name: Optional[str]):
         """Look for a character"""
         if ctx.author.id != 544974305445019651:
             return await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
-        embed = char_embed(name)
+        words = []
+        for word in name.split():
+            words.append(word.capitalize())
+        name = "_".join(words)
+        # print(name)
+        try:
+            embed = char_embed(name)
+        except WikiaError:  # Couldn't find the character
+            return await ctx.send("I could not find that character!")
         await ctx.send(embed=embed)
 
 

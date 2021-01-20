@@ -2,7 +2,7 @@
 Gonna be working with discord.ext.menus instead
 """
 import discord
-from discord.ext import menus
+from discord.ext import menus, commands
 import typing
 
 __all__ = ["TwilightEmbedMenu", "TwilightStringMenu", "TwilightBaseMenu"]
@@ -99,7 +99,7 @@ class TwilightBaseMenu(menus.Menu):
         self.current_page = self.pages[0]
         super().__init__(timeout=timeout, delete_message_after=False, clear_reactions_after=True)
 
-    async def send_initial_message(self, ctx: commands.Context, channel: discord.Channel):
+    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel):
         if isinstance(self.current_page, discord.Embed):
             return await channel.send(embed=self.current_page)
         else:

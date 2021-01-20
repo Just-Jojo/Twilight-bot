@@ -1,8 +1,7 @@
-#pylint: disable=unused-variables
 import discord
 from discord.ext import commands
 from discord.ext.commands import *
-from utils import box, tick, Embed
+from utils import box, tick, Embed, TwilightEmbedMenu
 import asyncio
 import re
 import ast
@@ -10,6 +9,8 @@ import inspect
 from bot import Twilight
 from cogs.mixin import BaseCog
 from twi_secrets import LONG_TRACEBACK
+from typing import *
+from tabulate import tabulate
 
 START_CODE_BLOCK_RE = re.compile(
     r"^((```py)(?=\s)|(```))")  # this is Red's. I don't understand regex lol
@@ -53,6 +54,61 @@ class DevCommands(BaseCog):
         token = ctx.bot.http.token
         return re.sub(re.escape(token), "[EXPUNGED]", input_, re.I)
 
+    @command(name="reload", aliases=["cu", "update"])
+    async def _reload(self, ctx: Context, cog: str):
+        """Reload a cog"""
+        cog = cog.lower()
+        cogs = self.bot.grab_cogs()
+        if cog not in cogs.keys():
+            await ctx.send(f"I don't have a cog named `{cog}`")
+            return  # Return here to not break it
+        self.bot.reload_extension(cog)
+        await ctx.send(f"Reloaded `{cog}`")
+
+    @command()
+    async def shutdown(self, ctx: Context):
+        """Shuts Twilight down"""
+        await ctx.send("Shutting down Twilight")
+        await self.bot.stop(0)
+
+    @command()
+    async def restart(self, ctx: Context):
+        """Attempts to restart the bot"""
+        await ctx.send("Restarting...")
+        await self.bot.stop(4)
+
+    @command()
+    async def trace(self, ctx):
+        """Sends the latest traceback error"""
+        if self.bot.last_exception == None:
+            return await ctx.send("No exceptions have occured yet!")
+        if len(self.bot.last_exception) > 2000:
+            embeds = []
+            trace = self.long_traceback()
+            for line in trace:
+                embed = Embed.create(
+                    ctx, title="Traceback Error", description=line)
+                embeds.append(embed)
+            menu = TwilightEmbedMenu(embeds)
+            await menu.start(ctx=ctx, channel=ctx.channel)
+        else:
+            embed = Embed.create(
+                ctx, title="Traceback Error", description=box(self.bot.last_exception, "py"))
+            await ctx.send(embed=embed)
+
+    def long_traceback(self):
+        traceback = self.bot.last_exception.split("\n")
+        returning = []
+        ret = ""
+        for line in traceback:
+            if len(ret + f"\n{line}") > 2000:
+                returning.append(box(ret, "py"))
+                ret = ""
+            ret += f"\n{line}"
+        if ret:  # Just in case it didn't get added
+            returning.append(box(ret, "py"))
+        return returning
+
     @command()
     async def debug(self, ctx: Context, *, code: str):
         """Debug Python code"""
@@ -80,7 +136,7 @@ class DevCommands(BaseCog):
 
         result = self.sanitize_output(ctx, str(result))
         await ctx.send(box(result, lang="py"))
-        tick(ctx.message)
+        await tick(ctx.message)
 
     @command()
     async def error(self, ctx: Context, _long: bool = False):
@@ -89,14 +145,145 @@ class DevCommands(BaseCog):
             raise Exception(LONG_TRACEBACK)
         raise Exception("Used command `error`")
 
+    @group()
+    async def blocklist(self, ctx: Context):
+        """Base command for the blocklist settings"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @blocklist.group()
+    async def guild(self, ctx: Context):
+        """Base guild related blocklist"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @guild.command(name="list")
+    async def guild_list(self, ctx: Context):
+        """List the blocklisted guilds"""
+        if len(self.bot.blocklist["guilds"]) < 1:
+            return await ctx.send("There aren't any guilds in the blocklist!")
+        paged = self.guild_paginate()
+        embeds = []
+        for page in paged:
+            embed = Embed.create(
+                ctx, title="Blocklisted guilds", description=box(page))
+            embeds.append(embed)
+        if len(embeds) == 1:
+            return await ctx.send(embed=embeds[0])
+        menu = TwilightEmbedMenu(embeds)
+        await menu.start(ctx=ctx, channel=ctx.channel)
+
+    def guild_paginate(self):
+        """Paginate the guild blocklist"""
+        blocked = self.bot.blocklist["guilds"]
+        ret = []
+        string = ""
+        for guild in blocked:
+            if len(string + f"\n{guild}") > 1800:
+                ret.append(string)
+                string = ""
+            string += f"\n{guild}"
+        if string:
+            ret.append(string)
+        return ret
+
+    @guild.command(name="add")
+    async def guild_add(self, ctx: Context, guild_id: int):
+        """Add a guild to the blocklist via id"""
+        try:
+            guild = await self.bot.fetch_guild(guild_id)
+            await guild.leave()
+        except:
+            pass
+        self.bot.guild_blocklist.append(guild_id)
+        self.bot.save_blocklist()
+        await ctx.send("Added that guild to the blocklist")
+
+    @guild.command(name="remove", aliases=["del", ])
+    async def member_remove(self, ctx: Context, guild_id: int):
+        """Remove a guild from the blocklist via id"""
+        self.bot.guild_blocklist.pop(self.bot.guild_blocklist.index(guild_id))
+        self.bot.save_blocklist()
+        await ctx.send("Removed that guild from the blocklist")
+
+    @blocklist.command(name="list")
+    async def member_list(self, ctx: Context):
+        """List the members in the blocklist"""
+        if len(self.bot.blocklist["users"]) < 1:
+            return await ctx.send("There aren't any members in the blocklist yet!")
+        paged = self.paginate_blocked()
+        embeds = []
+        for page in paged:
+            embed = Embed.create(
+                ctx, title="Blocklisted members", description=box(paged))
+            embeds.append(embed)
+        if len(embeds) == 1:
+            return await ctx.send(embed=embeds[0])
+        menu = TwilightEmbedMenu(embeds)
+        await menu.start(ctx=ctx, channel=ctx.channel)
+
+    def paginate_blocked(self):
+        """Paginate blocklisted members"""
+        user_block = self.bot.blocklist["users"]
+        ret = []
+        string = ""
+        for users in user_block:
+            if len(string + f"\n{users}") > 1800:
+                ret.append(string)
+                string = ""
+            string += f"\n{users}"
+        if ret:
+            ret.append(string)
+        return ret
+
+    @blocklist.command()
+    async def add(self, ctx: Context, member: Union[discord.Member, int]):
+        """Add a user to the blocklist"""
+        if isinstance(member, discord.Member):  # If the user isn't an int get the id
+            member = member.id
+        if member in self.bot.blocklist["users"]:
+            return await ctx.send("That user is already in the blocklist!")
+        self.bot.blocklist["users"].append(member)
+        self.bot.save_blocklist()  # save it from the command incase it doesn't work
+        await ctx.send(f"Added that user to the blocklist")
+
+    @blocklist.command()
+    async def remove(self, ctx: Context, member: Union[discord.Member, int]):
+        """Remove a user from the blocklist"""
+        if isinstance(member, int):  # Same thing
+            self.bot.blocklist.pop(member)
+        else:
+            self.bot.blocklist.pop(member.id)
+        self.bot.save_blocklist()  # save it from the command incase it doesn't work
+        await ctx.send("Removed that user from the blocklist")
+
     @command()
-    async def reloadcore(self, ctx: Context, confirm: bool = False):
-        """Reload the core cog. Very dangerous"""
-        if not confirm:
-            await ctx.send(content="Please confirm that you want to reload core using `>reloadcore True`")
+    async def load(self, ctx: Context, cog: str):
+        self.bot.load_extension(cog)
+        await ctx.send(content=f"Loaded `{cog}`")
+
+    @command()
+    async def unload(self, ctx: Context, cog: str):
+        if cog.lower() == "core":
+            await ctx.send(content="Mate... what are you doing?")
             return
-        self.bot.reload_extension("x", True)
-        await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+        self.bot.unload_extension(cog)
+        await ctx.send(content=f"Unloaded `{cog}`")
+
+    @command()
+    async def cogs(self, ctx: Context):
+        cogs = self.bot.grab_cogs()
+        embed = Embed.create(ctx, title="Cogs")
+        cogs_list = []
+        for key, value in cogs.items():
+            _list = []
+            _list.append(key)
+            _list.append(value)
+            # Not the prettiest thing ever but it'll work...
+            cogs_list.append(_list)
+        embed.description = box(
+            tabulate(cogs_list, ("Cog Name", "Loaded")), "md")
+        await ctx.send(embed=embed)
 
     async def cog_check(self, ctx):
         return ctx.author.id == 544974305445019651
