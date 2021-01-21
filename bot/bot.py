@@ -123,7 +123,7 @@ class Twilight(BotBase):
         key `users` contains the blocklisted user ids
         key `guilds` contains the blocklisted guild ids
     """
-    __version__ = "0.1.7"
+    __version__ = "0.1.8"
     __author__ = "Jojo#7791"
 
     def __init__(self):
