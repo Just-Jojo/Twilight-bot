@@ -10,13 +10,8 @@ import typing
 
 import discord
 from discord import Forbidden, Intents
-from discord.ext import tasks
-from discord.ext.commands import BadArgument
+from discord.ext import tasks, commands
 from discord.ext.commands import Bot as BotBase
-from discord.ext.commands import (CheckFailure, Command, CommandNotFound,
-                                  Context, ExtensionNotFound,
-                                  ExtensionNotLoaded, MissingRequiredArgument,
-                                  NotOwner, errors)
 from twi_secrets import TOKEN, TWI_SETTINGS_PATH
 from utils import get_settings
 from .help import twilight_help, send_help_for
@@ -35,7 +30,7 @@ else:
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
 OWNERS = [544974305445019651, ]
-IGNORE_EXECEPTIONS = (CommandNotFound, BadArgument)
+IGNORE_EXECEPTIONS = (commands.CommandNotFound, commands.BadArgument)
 LICENSE = """MIT License
 
 Copyright (c) 2020 Jojo#7711
@@ -155,11 +150,11 @@ class Twilight(BotBase):
         for cog in loaded:
             try:
                 self.load_extension(cog)
-            except errors.ExtensionFailed as e:
+            except commands.ExtensionFailed as e:
                 print(f"Failed to load {cog}")
                 print(e)
                 cogs[cog] = False
-            except errors.ExtensionNotFound as e:
+            except commands.ExtensionNotFound as e:
                 print(f"Could not find {cog}")
             else:
                 print("{} loaded".format(cog))
@@ -229,11 +224,16 @@ class Twilight(BotBase):
     async def on_command_error(self, ctx, exc: Exception):
         if any([isinstance(exc, error) for error in IGNORE_EXECEPTIONS]):
             return
-        elif isinstance(exc, MissingRequiredArgument):
+        elif isinstance(exc, commands.MissingRequiredArgument):
             return await send_help_for(ctx=ctx, thing=ctx.command.qualified_name)
-        elif isinstance(exc, NotOwner):
+        elif isinstance(exc, commands.NotOwner):
             return  # Don't need to do anything for owner only
-        elif isinstance(exc, CheckFailure):  # Check failures are the worstest
+        elif isinstance(exc, commands.ConversionError):
+            if exc.args:
+                return await ctx.send(exc.args[0])
+            else:
+                return await send_help_for(ctx, ctx.command)
+        elif isinstance(exc, commands.CheckFailure):  # Check failures are the worstest
             return await ctx.send("You did not pass the required check for command `{}`".format(ctx.command))
         await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
         self.last_exception = "".join(traceback.format_exception(
@@ -273,7 +273,7 @@ class Twilight(BotBase):
         # Checking of the cog should be in the actual command
         try:
             return super().reload_extension(f"cogs.{extension}")
-        except ExtensionNotLoaded:
+        except commands.ExtensionNotLoaded:
             # If it's not loaded we just want to load it
             self.load_extension(extension)
             return super().reload_extension(f"cogs.{extension}")
@@ -306,7 +306,7 @@ class Twilight(BotBase):
             write_cogs(cogs)
             return super().load_extension(f"cogs.{cog}")
         else:
-            raise ExtensionNotFound(f"No cog named {cog}")
+            raise commands.ExtensionNotFound(f"No cog named {cog}")
 
     def unload_extension(self, cog: str):
         """A modified version of :func:`discord.unload_extension`
@@ -336,7 +336,7 @@ class Twilight(BotBase):
             write_cogs(cogs)
             return super().unload_extension(f"cogs.{cog}")
         else:
-            raise ExtensionNotFound(f"No cog named  {cog}")
+            raise commands.ExtensionNotFound(f"No cog named  {cog}")
 
     @tasks.loop(hours=4)  # This *should* be called every 4 hours
     async def save_database(self):
