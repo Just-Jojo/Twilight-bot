@@ -1,3 +1,26 @@
+"""
+MIT License
+
+Copyright (c) 2020 Jojo#7711
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 import asyncio
 import json
 import os
@@ -26,6 +49,12 @@ else:
     from twi_secrets import BLOCKLIST_PATH as blocklist_path
 
 
+@commands.command()
+async def ping(ctx):
+    """Pong."""
+    await ctx.message.reply("Pong.", mention_author=False)
+
+
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
 OWNERS = [544974305445019651, ]
@@ -51,6 +80,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
+
+
+async def dev_check(ctx: commands.Context):
+    """Lock commands to the dev only"""
+    bot = ctx.bot
+    return await bot.is_owner(ctx.author)
 
 
 def grab_cogs() -> dict:
@@ -121,6 +156,7 @@ class Twilight(BotBase):
     __author__ = "Jojo#7791"
 
     def __init__(self):
+        self.TOKEN = TOKEN
         self.last_exception = None
         self.grab_cogs = grab_cogs
         self.license = LICENSE
@@ -136,6 +172,7 @@ class Twilight(BotBase):
                 everyone=False, users=True, roles=False, replied_user=True)
         )
         self.add_command(twilight_help)
+        self.add_command(ping)
 
     def setup(self):
         """Setup Twilight's cogs
@@ -209,15 +246,16 @@ class Twilight(BotBase):
         """
         asyncio.create_task(self.stop(exit_code=exit_code))
 
-    def run(self):
+    def run(self, no_cogs: bool = False, dev: bool = False):
         """Run Twilight
 
         This doesn't take parameters as it does all the work itself
         """
         print("Waking up Twilight")
-        self.setup()
-
-        self.TOKEN = TOKEN
+        if no_cogs is False:
+            self.setup()
+        if dev is True:
+            self.add_check(dev_check)
 
         print(f"Giving Twilight coffee. Running version {self.__version__}")
         super().run(self.TOKEN, reconnect=True)

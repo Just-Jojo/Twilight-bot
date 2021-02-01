@@ -18,8 +18,8 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE."""
-
+SOFTWARE.
+"""
 import typing
 from asyncio import iscoroutine as iscoro
 
@@ -179,7 +179,11 @@ async def send_help(
                     footer="Twilight Bot Help!")
                 embed.add_field(name="Commands", value=page)
                 cogs.append(embed)
-
+    cust_coms = Embed.create(
+        ctx=ctx, title="Twilight Help Menu", description="**__Other commands__**")
+    cust_coms.add_field(
+        name="Commands", value="**Ping:** Pong.\n**Help:** Shows this message")
+    cogs.append(cust_coms)
     if len(cogs) > 1:
         menu = TwilightEmbedMenu(cogs, index_pages=True)
         return await menu.start(ctx=ctx, channel=ctx.channel)
