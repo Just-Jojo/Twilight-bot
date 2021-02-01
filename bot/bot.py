@@ -5,11 +5,9 @@ import random
 import sys
 import traceback
 from datetime import datetime
-from enum import IntEnum  # For the restart command :D
 import typing
 
 import discord
-from discord import Forbidden, Intents
 from discord.ext import tasks, commands
 from discord.ext.commands import Bot as BotBase
 from twi_secrets import TOKEN, TWI_SETTINGS_PATH
@@ -129,12 +127,14 @@ class Twilight(BotBase):
         self.exit_code = 1
         with open(blocklist_path) as fp:
             self.blocklist: Dict[str, list] = json.load(fp)
+        intents = discord.Intents.default()
+        intents.members = True
         super().__init__(
             command_prefix=grab_prefix, help_command=None, owner_ids=OWNERS,
-            intents=Intents.all(), allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False, replied_user=True)
+            intents=intents, allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=True, roles=False, replied_user=True)
         )
         self.add_command(twilight_help)
-        self.save_database.start()
 
     def setup(self):
         """Setup Twilight's cogs
@@ -241,7 +241,7 @@ class Twilight(BotBase):
         )
         )
         if hasattr(exc, "original"):
-            if isinstance(exc, Forbidden):
+            if isinstance(exc, discord.Forbidden):
                 await ctx.send("Discord has forbidden me to do that")
             else:
                 raise exc.original
@@ -337,14 +337,3 @@ class Twilight(BotBase):
             return super().unload_extension(f"cogs.{cog}")
         else:
             raise commands.ExtensionNotFound(f"No cog named  {cog}")
-
-    @tasks.loop(hours=4)  # This *should* be called every 4 hours
-    async def save_database(self):
-        """Save the database in case I fuck up"""
-        current_settings = get_settings()
-        from twi_secrets import TEMP_DATABASE
-        file_ext = random.randint(10000000, 5000000000)
-        full_path = os.path.join(TEMP_DATABASE, f"db_backup.{file_ext}.json")
-        with open(full_path, "w+") as fp:
-            json.dump(current_settings, fp, indent=4)
-        print("Saved to database")

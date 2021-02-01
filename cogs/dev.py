@@ -1,19 +1,24 @@
-import discord
-from discord.ext import commands
-from discord.ext import commands
-from utils import box, tick, Embed, TwilightEmbedMenu, ReactionPred, TwilightMenu, TwilightPages
-import asyncio
-import re
 import ast
+import asyncio
 import inspect
+import json
+import os
+import random
+import re
+import typing
+
+import discord
 from bot import Twilight
-from cogs.mixin import BaseCog
-from twi_secrets import LONG_TRACEBACK
-from typing import *
+from discord.ext import commands, tasks
 from tabulate import tabulate
+from twi_secrets import LONG_TRACEBACK
+from utils import (Embed, ReactionPred, TwilightEmbedMenu, TwilightMenu,
+                   TwilightPages, box, get_settings, tick)
+
+from cogs.mixin import BaseCog
 
 START_CODE_BLOCK_RE = re.compile(
-    r"^((```py)(?=\s)|(```))")  # this is Red's. I don't understand regex lol
+    r"^((```py)(?=\s)|(```))")
 
 
 class DevCommands(BaseCog):
@@ -22,6 +27,7 @@ class DevCommands(BaseCog):
 
     def __init__(self, bot: Twilight):
         self.bot = bot
+        self.save_database.start()
 
     @staticmethod
     def cleanup_code(content):
@@ -238,7 +244,7 @@ class DevCommands(BaseCog):
         return ret
 
     @blocklist.command()
-    async def add(self, ctx, member: Union[discord.Member, int]):
+    async def add(self, ctx, member: typing.Union[discord.Member, int]):
         """Add a user to the blocklist"""
         if isinstance(member, discord.Member):  # If the user isn't an int get the id
             member = member.id
@@ -249,7 +255,7 @@ class DevCommands(BaseCog):
         await ctx.send(f"Added that user to the blocklist")
 
     @blocklist.command()
-    async def remove(self, ctx, member: Union[discord.Member, int]):
+    async def remove(self, ctx, member: typing.Union[discord.Member, int]):
         """Remove a user from the blocklist"""
         if isinstance(member, int):  # Same thing
             self.bot.blocklist.pop(member)
@@ -299,6 +305,17 @@ class DevCommands(BaseCog):
 
     async def cog_check(self, ctx):
         return ctx.author.id == 544974305445019651
+
+    @tasks.loop(hours=4)  # This *should* be called every 4 hours
+    async def save_database(self):
+        """Save the database in case I fuck up"""
+        current_settings = get_settings()
+        from twi_secrets import TEMP_DATABASE
+        file_ext = random.randint(10000000, 5000000000)
+        full_path = os.path.join(TEMP_DATABASE, f"db_backup.{file_ext}.json")
+        with open(full_path, "w+") as fp:
+            json.dump(current_settings, fp, indent=4)
+        print("Saved to database")
 
 
 def setup(bot: Twilight):
