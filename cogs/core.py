@@ -55,11 +55,6 @@ class Core(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def ping(self, ctx):
-        """Pong."""
-        await ctx.message.reply("Pong.", mention_author=False)
-
-    @commands.command()
     async def invite(self, ctx):
         """Invite the bot to your server"""
         description = (
@@ -88,7 +83,7 @@ class Core(BaseCog):
             name="<:twilight:734586922910875750>", value="Version: `{}`".format(self.bot.__version__)
         )
         embed.add_field(
-            name="<:python:760888220228780063>", value="Version: `{}`".format(pver())
+            name="<:python:805910216460992612>", value="Version: `{}`".format(pver())
         )
         embed.add_field(name="Info", value=information, inline=False)
         await ctx.send(embed=embed)

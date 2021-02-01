@@ -10,6 +10,6 @@ from .converter import (RawUserIds,)
 from .paginator import (
     TwilightEmbedMenu, TwilightStringMenu, TwilightMenu, TwilightPages)
 from .rps import (rock_paper_scissors as rps_game)
-from .predicates import ReactionPred
+from .predicates import *
 from .math import fraction, decimal
 from .character_parser import char_embed

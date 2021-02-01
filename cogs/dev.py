@@ -13,7 +13,7 @@ from discord.ext import commands, tasks
 from tabulate import tabulate
 from twi_secrets import LONG_TRACEBACK
 from utils import (Embed, ReactionPred, TwilightEmbedMenu, TwilightMenu,
-                   TwilightPages, box, get_settings, tick)
+                   TwilightPages, box, get_settings, tick, message_pred)
 
 from cogs.mixin import BaseCog
 
@@ -301,10 +301,10 @@ class DevCommands(BaseCog):
     @commands.command()
     async def test(self, ctx):
         """Testing command"""
-        text = LONG_TRACEBACK.split("\n")
-        pages = TwilightPages(data=text, use_embeds=True)
-        menu = TwilightMenu(source=pages)
-        await menu.start(ctx=ctx, channel=ctx.channel)
+        try:
+            raise Exception
+        except:
+            await ctx.send("Trace?")
 
     async def cog_check(self, ctx):
         return ctx.author.id == 544974305445019651
