@@ -1,9 +1,10 @@
 """Changed the plans for making the menu system.
 Gonna be working with discord.ext.menus instead
 """
-import discord
-from discord.ext import menus, commands
 import typing
+
+import discord
+from discord.ext import commands, menus
 
 __all__ = ["TwilightEmbedMenu", "TwilightStringMenu", "TwilightBaseMenu"]
 __version__ = "0.0.1"

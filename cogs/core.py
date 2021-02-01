@@ -21,19 +21,20 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-### ~~~ Basic Discord and other utilities imports ~~~ ###
-import discord
-from discord import __version__ as dpyversion
-from discord.ext import commands
-from discord.ext import commands
 import asyncio
 import json
-from platform import python_version as pver
 from datetime import datetime
-### ~~~ Local imports ~~~ ###
-from bot import Twilight  # Type hinting
-from utils import Embed, humanize_timedelta, box, admin, teardown, TwilightEmbedMenu, guild_setup
+from platform import python_version as pver
 from typing import *
+
+
+import discord
+from bot import Twilight  # Type hinting
+from discord import __version__ as dpyversion
+from discord.ext import commands
+from utils import (Embed, TwilightEmbedMenu, admin, box, guild_setup,
+                   humanize_timedelta, teardown)
+
 from cogs.mixin import BaseCog
 
 information = r"""

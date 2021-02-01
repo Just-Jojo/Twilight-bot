@@ -1,10 +1,13 @@
+from typing import List, Union
+
 import discord
-from discord.ext import commands
-from .mixin import BaseCog
-from utils import is_admin, get_settings, write_settings, guild_setup, get_guild_settings
-from bot import help, grab_prefix
+from bot import grab_prefix, help
 from bot.help import send_help_for
-from typing import Union, List
+from discord.ext import commands
+from utils import (get_guild_settings, get_settings, guild_setup, is_admin,
+                   write_settings)
+
+from .mixin import BaseCog
 
 
 class Admin(BaseCog):

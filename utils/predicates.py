@@ -1,8 +1,9 @@
 # Gonna have this since I'd like a message and reaction predicate :D
 
-import discord
-from discord.ext import menus, commands
 import typing
+
+import discord
+from discord.ext import commands, menus
 
 __all__ = ["ReactionPred", ]
 __author__ = "Jojo#7791"

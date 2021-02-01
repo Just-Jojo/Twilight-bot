@@ -23,9 +23,10 @@ SOFTWARE.
 """
 
 import re
-import wikia
-import discord
+
 import aiohttp
+import discord
+import wikia
 from twi_secrets import MLP_FIM_LOGO
 
 __all__ = ["char_embed", ]

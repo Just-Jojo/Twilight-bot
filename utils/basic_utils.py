@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-import discord
-from discord.ext.commands import (
-    Context, check
-)
-import json
-from .embed import Embed
 import datetime
-from typing import *
+import json
 from os import path
+from typing import *
+
+import discord
+from discord.ext.commands import Context, check
+
+from .embed import Embed
 
 if path.exists("./cogs/settingstings.json"):
     json_path = "./cogs/settingstings.json"

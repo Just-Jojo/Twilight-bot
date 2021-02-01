@@ -20,11 +20,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
 
+import typing
+from asyncio import iscoroutine as iscoro
+
 import discord
 from discord.ext import commands
-import typing
 from utils import Embed, TwilightEmbedMenu
-from asyncio import iscoroutine as iscoro
 
 
 async def send_cog_help(

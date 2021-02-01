@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-### ~~~ Basic Discord and other utils imports ~~~ ###
+import typing
+
 import discord
-from discord.ext import commands
-from typing import *
-### ~~~ Twilight utis imports ~~~ ###
 from bot import Twilight  # Type hinting :D
+from discord.ext import commands
 from utils import Embed, char_embed
-from .mixin import BaseCog
 from wikia import WikiaError
+
+from .mixin import BaseCog
 
 MLP_LOGO = "https://cdn.discordapp.com/attachments/766499155669286922/779986290770182144/MLPFiM_logo.jpg"
 
@@ -79,12 +79,12 @@ class MyLittlePony(BaseCog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def episode(self, ctx, episode: Optional[int]):
+    async def episode(self, ctx, episode: typing.Optional[int]):
         """Episode search command"""
         await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
 
     @commands.command()
-    async def character(self, ctx, *, name: Optional[str]):
+    async def character(self, ctx, *, name: typing.Optional[str]):
         """Look for a character"""
         if ctx.author.id != 544974305445019651:
             return await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")

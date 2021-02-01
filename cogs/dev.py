@@ -29,6 +29,9 @@ class DevCommands(BaseCog):
         self.bot = bot
         self.save_database.start()
 
+    def cog_unload(self):
+        self.save_database.cancel()
+
     @staticmethod
     def cleanup_code(content):
         if content.startswith("```") and content.endswith("```"):

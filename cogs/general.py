@@ -1,12 +1,13 @@
 ### ~~~ General Discord and other utils imports ~~~ ###
-import discord
-from discord.ext import commands
 import asyncio
 import random
-from typing import *
-### ~~~ Twilight bot utils imports ~~~ ###
+import typing
+
+import discord
 from bot import Twilight  # Type hinting
-from utils import admin, mod, Embed, rps_game
+from discord.ext import commands
+from utils import Embed, admin, mod, rps_game
+
 from .mixin import BaseCog
 
 
@@ -17,7 +18,7 @@ class General(BaseCog):
         self.bot = bot
 
     @commands.command()
-    async def say(self, ctx, channel: Optional[discord.TextChannel], *, message):
+    async def say(self, ctx, channel: typing.Optional[discord.TextChannel], *, message):
         """Have the bot repeat you"""
         # await ctx.send(message)
         channel = channel or ctx.channel
