@@ -12,3 +12,5 @@ twi_secrets.py
 # Getting rid of the annoying pycache and cpy files
 **/__pycache__
 *.pyc
+# tmp for if vs code doesn't delete temp files
+**/*.tmp
