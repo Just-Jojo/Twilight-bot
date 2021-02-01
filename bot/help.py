@@ -180,7 +180,7 @@ async def send_help(
                 cogs.append(embed)
 
     if len(cogs) > 1:
-        menu = TwilightEmbedMenu(cogs)
+        menu = TwilightEmbedMenu(cogs, index_pages=True)
         return await menu.start(ctx=ctx, channel=ctx.channel)
     else:
         return await ctx.send(embed=cogs[0])
