@@ -11,11 +11,12 @@ __author__ = ["Jojo#7791"]
 
 
 class MenuMixin:
-    pages: typing.Union[typing.list[discord.Embed],
-                        typing.List[discord.Embed, str]]
-    current_page: discord.Embed
+    pages: typing.Union[typing.List[discord.Embed],
+                        typing.List[str]]
+    current_page: typing.Union[discord.Embed, str]
     index: int
     message: discord.Message
+    index_pages: bool
 
     def index_parser(self, forwards: bool):
         """Calculate the proper index for the next page
@@ -39,6 +40,12 @@ class MenuMixin:
             if self.index < 0:
                 self.index = page_len
         self.current_page = self.pages[self.index]
+        if self.index_pages:
+            if isinstance(self.current_page, discord.Embed):
+                self.current_page.set_footer(
+                    text=f"Page {self.index + 1}/{len(self.pages)}")
+            else:
+                self.current_page += f"\n{self.index + 1}/{len(self.pages)}"
 
     async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel = None):
         if ctx.guild is None or channel is None:
@@ -98,10 +105,13 @@ class TwilightEmbedMenu(MenuMixin, menus.Menu):
         The actual message the menu works on
     """
 
-    def __init__(self, pages: typing.List[discord.Embed], timeout: float = 30.0):
+    def __init__(self, pages: typing.List[discord.Embed], timeout: float = 30.0, index_pages: bool = False):
         self.pages = pages
         self.current_page = self.pages[0]
         self.index = 0
+        self.index_pages = index_pages
+        if self.index_pages:
+            self.current_page.set_footer(text=f"Page 1/{len(self.pages)}")
         super().__init__(timeout=timeout, delete_message_after=False,
                          clear_reactions_after=True)  # Don't delete the message
 
@@ -116,6 +126,7 @@ class TwilightEmbedMenu(MenuMixin, menus.Menu):
     @menus.button("\N{CROSS MARK}")
     async def on_x(self, payload: discord.RawReactionActionEvent):
         self.stop()
+        await self.message.delete()
 
     @menus.button("\N{BLACK RIGHTWARDS ARROW}")
     async def on_right(self, payload: discord.RawReactionActionEvent):
@@ -139,10 +150,13 @@ class TwilightStringMenu(MenuMixin, menus.Menu):
         The message that gets sent on :func:`send_initial_message`
     """
 
-    def __init__(self, pages: typing.List[str], timeout: float = 30.0):
+    def __init__(self, pages: typing.List[str], timeout: float = 30.0, index_pages: bool = False):
         self.pages = pages
         self.current_page = self.pages[0]
         self.index = 0
+        self.index_pages = index_pages
+        if self.index_pages:
+            self.current_page += f"\nPage 1/{len(self.pages)}"
         super().__init__(timeout=timeout, delete_message_after=False, clear_reactions_after=True)
 
     @menus.button("\N{LEFTWARDS BLACK ARROW}")
@@ -173,14 +187,23 @@ class TwilightBaseMenu(MenuMixin, menus.Menu):
         It can be either :class:`str` or :class:`Embed`
     index: :class:`int`
         The index of current_page in pages
+    index_pages: :class:`bool`
+        Whether or not the current page's index should be displayed
+        If True a page will be edited to say "Page ?/?"
     message: :class:`Message`
         The actual message being used for the menu system
     """
 
-    def __init__(self, pages: typing.List[typing.Union[str, discord.Embed]], timeout: float = 30.0):
+    def __init__(self, pages: typing.List[typing.Union[str, discord.Embed]], timeout: float = 30.0, index_pages: bool = False):
         self.pages = pages
         self.index = 0
         self.current_page = self.pages[0]
+        self.index_pages = index_pages
+        if self.index_pages:
+            if isinstance(self.current_page, discord.Embed):
+                self.current_page.set_footer(text=f"Page 1/{len(self.pages)}")
+            else:
+                self.current_page += f"\nPage 1/{len(self.pages)}"
         super().__init__(timeout=timeout, delete_message_after=False, clear_reactions_after=True)
 
     @menus.button("\N{LEFTWARDS BLACK ARROW}")
@@ -196,3 +219,84 @@ class TwilightBaseMenu(MenuMixin, menus.Menu):
     async def on_right(self, payload: discord.RawReactionActionEvent):
         self.index_parser(forwards=True)
         await self.send_messages()
+
+
+class TwilightPages(menus.ListPageSource):
+    def __init__(self, data: list, use_embeds: bool, per_page: int = 15):
+        self.use_embeds = use_embeds
+        super().__init__(entries=data, per_page=per_page)
+
+    def format_page(self, menu: "TwilightMenu", page) -> typing.Union[discord.Embed, str]:
+        if self.use_embeds:
+            ret = discord.Embed(title="Twilight Menu",
+                                description=page, colour=discord.Colour.purple())
+            ret.set_footer(
+                text=f"Page {menu.current_page + 1}/{self.get_max_pages()}", icon_url=menu.bot.user.avatar_url)
+        else:
+            ret = page
+        return ret
+
+
+class TwilightMenu(menus.MenuPages, inherit_buttons=False):
+    def __init__(
+        self, source: menus.PageSource,
+        page_start: int = 0,
+        clear_reactions_after: bool = True,
+        delete_message_after: bool = False,
+        timeout: int = 30,
+        message: discord.Message = None
+    ):
+        super().__init__(
+            source=source, clear_reactions_after=clear_reactions_after,
+            delete_message_after=delete_message_after, timeout=timeout,
+            message=message
+        )
+        self.page_start = page_start
+
+    async def send_initial_message(self, ctx, channel):
+        self.current_page = self.page_start
+        page = await self._source.get_page(self.page_start)
+        kwargs = await self._get_kwargs_from_page(page)
+        return await channel.send(**kwargs)
+
+    async def show_check_page(self, page_number: int):
+        max_pages = self._source.get_max_pages()
+        try:
+            if max_pages is None or max_pages > page_number >= 0:
+                await self.show_page(page_number)
+            elif page_number >= max_pages:
+                await self.show_page(0)
+            elif page_number < 0:
+                await self.show_page(max_pages - 1)
+        except IndexError:
+            pass
+
+    def _skip_double_triangle_buttons(self):
+        return super()._skip_double_triangle_buttons()
+
+    def _skip_single_arrows(self):
+        max_pages = self._source.get_max_pages()
+        if max_pages is None:
+            return True
+        return max_pages == 1
+
+    @menus.button("\N{BLACK RIGHTWARDS ARROW}", position=menus.Last(0), skip_if=_skip_single_arrows)
+    async def on_right(self, payload):
+        await self.show_checked_page(self.current_page + 1)
+
+    @menus.button("\N{LEFTWARDS BLACK ARROW}", position=menus.First(1), skip_if=_skip_single_arrows)
+    async def on_left(self, payload):
+        await self.show_checked_page(self.current_page - 1)
+
+    @menus.button("\N{BLACK LEFT-POINTING DOUBLE TRIANGLE}", position=menus.First(0), skip_if=_skip_double_triangle_buttons)
+    async def on_far_left(self, payload):
+        await self.show_checked_page(self.current_page - 5)
+
+    @menus.button("\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE}", position=menus.Last(1), skip_if=_skip_double_triangle_buttons)
+    async def on_far_right(self, payload):
+        await self.show_checked_page(self.current_page + 5)
+
+    @menus.button("\N{CROSS MARK}")
+    async def on_close(self, payload):
+        self.stop()
+        await self.message.delete()

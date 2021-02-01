@@ -7,7 +7,8 @@ from .basic_utils import (
 from .embed import Embed
 from .converter import (RawUserIds,)
 # Gonna add more here
-from .paginator import (TwilightEmbedMenu, TwilightStringMenu)
+from .paginator import (
+    TwilightEmbedMenu, TwilightStringMenu, TwilightMenu, TwilightPages)
 from .rps import (rock_paper_scissors as rps_game)
 from .predicates import ReactionPred
 from .math import fraction, decimal
