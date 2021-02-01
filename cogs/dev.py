@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.ext import commands
-from utils import box, tick, Embed, TwilightEmbedMenu, ReactionPred
+from utils import box, tick, Embed, TwilightEmbedMenu, ReactionPred, TwilightMenu, TwilightPages
 import asyncio
 import re
 import ast
@@ -292,11 +292,10 @@ class DevCommands(BaseCog):
     @commands.command()
     async def test(self, ctx):
         """Testing command"""
-        result = await ReactionPred("Is this a test?").prompt(ctx, channel=ctx.channel)
-        if result is True:
-            await ctx.send("Yeah!")
-        else:
-            await ctx.send("Aw")
+        text = LONG_TRACEBACK.split("\n")
+        pages = TwilightPages(data=text, use_embeds=True)
+        menu = TwilightMenu(source=pages)
+        await menu.start(ctx=ctx, channel=ctx.channel)
 
     async def cog_check(self, ctx):
         return ctx.author.id == 544974305445019651
