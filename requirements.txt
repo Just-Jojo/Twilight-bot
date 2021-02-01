@@ -1,3 +1,4 @@
 git+https://github.com/Rapptz/discord.py@master
 git+https://github.com/Rapptz/discord-ext-menus@84caae8038d0d
 tabulate
+click
