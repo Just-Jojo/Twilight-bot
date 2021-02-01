@@ -27,7 +27,6 @@ from datetime import datetime
 from platform import python_version as pver
 from typing import *
 
-
 import discord
 from bot import Twilight  # Type hinting
 from discord import __version__ as dpyversion
