@@ -8,7 +8,7 @@ twi_secrets.py
 # VSCode and other
 .vscode/
 .venv
-
+*.log
 # Getting rid of the annoying pycache and cpy files
 **/__pycache__
 *.pyc
