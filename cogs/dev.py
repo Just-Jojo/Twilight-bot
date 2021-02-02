@@ -268,37 +268,6 @@ class DevCommands(BaseCog):
         await ctx.send("Removed that user from the blocklist")
 
     @commands.command()
-    async def load(self, ctx, cog: str):
-        """Load a cog"""
-        self.bot.load_extension(cog)
-        await ctx.send(content=f"Loaded `{cog}`")
-
-    @commands.command()
-    async def unload(self, ctx, cog: str):
-        """Unload a cog"""
-        if cog.lower() == "dev":
-            await ctx.send(content="Mate... what are you doing?")
-            return
-        self.bot.unload_extension(cog)
-        await ctx.send(content=f"Unloaded `{cog}`")
-
-    @commands.command()
-    async def cogs(self, ctx):
-        """List the cogs and their loaded state"""
-        cogs = self.bot.grab_cogs()
-        embed = Embed.create(ctx, title="Cogs")
-        cogs_list = []
-        for key, value in cogs.items():
-            _list = []
-            _list.append(key)
-            _list.append(value)
-            # Not the prettiest thing ever but it'll work...
-            cogs_list.append(_list)
-        embed.description = box(
-            tabulate(cogs_list, ("Cog Name", "Loaded")), "md")
-        await ctx.send(embed=embed)
-
-    @commands.command()
     async def test(self, ctx):
         """Testing command"""
         try:

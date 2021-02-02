@@ -28,16 +28,19 @@ import random
 import sys
 import traceback
 import typing
+from tabulate import tabulate
 from datetime import datetime
+import logging
 
 import discord
 from discord.ext import commands, tasks
 from discord.ext.commands import Bot as BotBase
-from twi_secrets import TOKEN, TWI_SETTINGS_PATH
-from utils import get_settings
+from twi_secrets import TOKEN, TWI_SETTINGS_PATH, LICENSE_PATH
+from utils import get_settings, Embed, box
 
-from .help import send_help_for, twilight_help
+from bot.help import send_help_for, twilight_help
 
+log = logging.getLogger("twilight.bot")
 if os.path.exists("./bot/cogs.json"):
     cogs_path = "./bot/cogs.json"
 else:
@@ -55,31 +58,48 @@ async def ping(ctx):
     await ctx.message.reply("Pong.", mention_author=False)
 
 
+@commands.command()
+@commands.is_owner()
+async def load(ctx, cog: str):
+    """Load a cog"""
+    bot = ctx.bot
+    bot.load_extension(cog)
+    await ctx.send(content=f"Loaded `{cog}`")
+
+
+@commands.command()
+@commands.is_owner()
+async def unload(ctx, cog: str):
+    """Unload a cog"""
+    bot = ctx.bot
+    bot.unload_extension(cog)
+    await ctx.send(content=f"Unloaded `{cog}`")
+
+
+@commands.command()
+@commands.is_owner()
+async def cogs(ctx):
+    """List the cogs and their loaded state"""
+    cogs = ctx.bot.grab_cogs()
+    embed = Embed.create(ctx, title="Cogs")
+    cogs_list = []
+    for key, value in cogs.items():
+        _list = []
+        _list.append(key)
+        _list.append(value)
+        # Not the prettiest thing ever but it'll work...
+        cogs_list.append(_list)
+    embed.description = box(
+        tabulate(cogs_list, ("Cog Name", "Loaded")), "md")
+    await ctx.send(embed=embed)
+
+to_add = [ping, load, unload, cogs, twilight_help]
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
 OWNERS = [544974305445019651, ]
 IGNORE_EXECEPTIONS = (commands.CommandNotFound, commands.BadArgument)
-LICENSE = """MIT License
-
-Copyright (c) 2020 Jojo#7711
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE."""
+with open(LICENSE_PATH) as fp:
+    LICENSE = fp.read()  # Open the license file
 
 
 async def dev_check(ctx: commands.Context):
@@ -171,8 +191,9 @@ class Twilight(BotBase):
             intents=intents, allowed_mentions=discord.AllowedMentions(
                 everyone=False, users=True, roles=False, replied_user=True)
         )
-        self.add_command(twilight_help)
-        self.add_command(ping)
+        for com in to_add:
+            self.add_command(com)
+            log.info(f"Loaded {com.name}")
 
     def setup(self):
         """Setup Twilight's cogs
@@ -195,9 +216,9 @@ class Twilight(BotBase):
             except commands.ExtensionNotFound as e:
                 print(f"Could not find {cog}")
             else:
-                print("{} loaded".format(cog))
+                log.info("{} loaded".format(cog))
         write_cogs(cogs)
-        print("Cogs loaded")
+        log.info("Cogs loaded")
 
     def save_blocklist(self):
         """Saves the blocklist to a JSON file
@@ -208,7 +229,7 @@ class Twilight(BotBase):
         blocklist["guilds"] = self.guild_blocklist
         with open(blocklist, "w") as fp:
             json.dump(blocklist, fp, indent=4)
-        print("Saved the blocklist")
+        log.info("Saved the blocklist")
 
     async def async_stop(self, exit_code: int = 0):
         """|coro|
@@ -227,7 +248,7 @@ class Twilight(BotBase):
                 4: Restart
         """
         await self.logout()
-        print("Logging out of Twilight")
+        log.info("Logging out of Twilight")
         self.exit_code = exit_code
 
     def stop(self, exit_code: int = 0):
@@ -249,15 +270,20 @@ class Twilight(BotBase):
     def run(self, no_cogs: bool = False, dev: bool = False):
         """Run Twilight
 
-        This doesn't take parameters as it does all the work itself
+        Parameters
+        ----------
+        no_cogs: :type:`bool`
+            Whether or not Twilight should load up cogs
+        dev: :type:`bool`
+            Locks commands to dev only.
         """
-        print("Waking up Twilight")
+        log.info("Waking up Twilight")
         if no_cogs is False:
             self.setup()
         if dev is True:
             self.add_check(dev_check)
 
-        print(f"Giving Twilight coffee. Running version {self.__version__}")
+        log.info(f"Giving Twilight coffee. Running version {self.__version__}")
         super().run(self.TOKEN, reconnect=True)
 
     async def on_command_error(self, ctx, exc: Exception):
@@ -288,7 +314,7 @@ class Twilight(BotBase):
             raise exc
 
     async def on_ready(self):
-        print("Twilight online.")
+        log.info("Twilight online.")
 
     async def on_message(self, message: discord.Message):
         if message.content in (f"<@!{self.user.id}>", f"<@{self.user.id}>"):

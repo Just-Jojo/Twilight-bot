@@ -27,6 +27,15 @@ import discord
 from discord.ext import commands
 from utils import Embed, TwilightEmbedMenu
 
+other_commands = """
+**Ping:** Pong.
+**Help:** Shows this message
+~ Owner only ~
+**Load:** Loads a cog
+**Unload:** Unloads a cog
+**Cogs:** Shows the cogs
+"""
+
 
 async def send_cog_help(
     ctx: commands.Context,
@@ -182,7 +191,7 @@ async def send_help(
     cust_coms = Embed.create(
         ctx=ctx, title="Twilight Help Menu", description="**__Other commands__**")
     cust_coms.add_field(
-        name="Commands", value="**Ping:** Pong.\n**Help:** Shows this message")
+        name="Commands", value=other_commands)
     cogs.append(cust_coms)
     if len(cogs) > 1:
         menu = TwilightEmbedMenu(cogs, index_pages=True)

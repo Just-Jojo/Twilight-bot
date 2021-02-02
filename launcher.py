@@ -21,31 +21,33 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-import sys
 
 import click
+import subprocess as subp
 
-from bot import twilight
-
-
-def run_bot(no_cogs, dev):
-    try:
-        twilight.run(no_cogs=no_cogs, dev=dev)
-    except KeyboardInterrupt:
-        print("Exiting Twilight!")
-        twilight.stop()
-    finally:
-        exit_code = twilight.exit_code
-        sys.exit(exit_code)
+import sys
 
 
-@click.command(help="Run Twilight")
-@click.option("--no-cogs", is_flag=True, default=False, help="Run the bot without cogs (only has ping/help/load)")
-@click.option("-d", "--dev", default=False, is_flag=True, help="Run the bot and lock the commands to the Dev")
+def run(no_cogs: bool, dev: bool):
+    while True:
+        print("Starting Twilight...")
+        cmd = ["py", "-m", "bot"]
+        if no_cogs:
+            cmd.append("--no-cogs")
+        if dev:
+            cmd.append("--dev")
+        status = subp.call(cmd)
+        if status != 4:
+            break
+
+
+@click.command()
+@click.option("-nc", "--no-cogs", is_flag=True, default=False)
+@click.option("-d", "--dev", is_flag=True, default=False)
 def main(no_cogs, dev):
-    run_bot(no_cogs=no_cogs, dev=dev)
+    run(no_cogs=no_cogs, dev=dev)
+    print("Thank you for running!")
 
 
 if __name__ == "__main__":
     main()
-# TODO: More options and cli
