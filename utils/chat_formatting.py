@@ -29,3 +29,7 @@ def box(text, lang):
 def snake(text):
   """Returns a string with snake spaces."""
   return text.replace(' ', '_')
+
+def reverse(text):
+  """Returns a reversed string."""
+  return text[::-1]
