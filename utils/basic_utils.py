@@ -51,21 +51,8 @@ def moderator():
         Otherwise it will return False, raising a check failure
     """
     async def inner(ctx: Context):
-        if ctx.guild is None:
-            return False  # Can't use mod commands in dms
-        if ctx.author.id == 544974305445019651:  # allow me to use mod commands
-            return True
-        settings = get_guild_settings(ctx.guild)  # Grab the settings...
-        mod = settings.get("mod")  # The role id...
-        admin = settings.get("admin")
-        if admin:
-            if ctx.guild.get_role(admin) in ctx.author.roles:
-                return True
-        if mod:
-            # And grab the role to see if the author has it
-            return ctx.guild.get_role(mod) in ctx.author.roles
-        else:
-            return False
+        # I had forgotten I wrote an `is_mod` function
+        return await is_mod(ctx=ctx, user=ctx.author)
     return check(inner)
 
 
@@ -79,16 +66,7 @@ def administrator():
         Otherwise it will return False, raising a check failure
     """
     async def inner(ctx: Context):
-        if ctx.guild is None:
-            return False
-        if ctx.author.id == 544974305445019651:
-            return True
-        settings = get_guild_settings(ctx.guild)
-        admin = settings.get("admin")
-        if admin:
-            return ctx.guild.get_role(admin) in ctx.author.roles
-        else:
-            return False
+        return await is_admin(ctx=ctx, user=ctx.author)
     return check(inner)
 
 
@@ -181,7 +159,8 @@ def guild_owner():
         Otherwise it will return False, raising a check failure
     """
     async def inner(ctx: Context):
-        if ctx.author.id == 544974305445019651:  # I need to be able to use guild_owner only commands
+        # I need to be able to use guild_owner only commands
+        if await ctx.bot.is_owner(ctx.author):
             return True
         return ctx.guild is not None and ctx.author == ctx.guild.owner
     return check(inner)
