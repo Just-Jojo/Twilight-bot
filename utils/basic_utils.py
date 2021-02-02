@@ -217,22 +217,6 @@ def humanize_timedelta(
 
     return ", ".join(strings)
 
-
-def box(text: str, lang: str = "") -> str:
-    """Put content in a code block
-
-    Parameters
-    ----------
-    text: :class:`str`
-        The text to place in the code block
-    lang: :class:`str`
-        The language for the block
-        Defaults to an empty string
-    """
-    ret = "```{}\n{}```".format(lang, text)
-    return ret
-
-
 def guild_setup(guild: discord.Guild) -> None:
     r"""Set up a Guild with the default settings
 
