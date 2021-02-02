@@ -32,7 +32,7 @@ from bot import Twilight  # Type hinting
 from discord import __version__ as dpyversion
 from discord.ext import commands
 from utils import (Embed, TwilightEmbedMenu, admin, box, guild_setup,
-                   humanize_timedelta, teardown)
+                   humanize_timedelta, teardown, box)
 
 from cogs.mixin import BaseCog
 
@@ -106,8 +106,8 @@ class Core(BaseCog):
     async def twilight_license(self, ctx):
         """Twilight's license"""
         embed = Embed.create(
-            self, ctx, title="Twilight bot License",
-            description=self.bot.license, footer="Twilight bot License :D"
+            ctx, title="Twilight bot License",
+            description=box(self.bot.license), footer="Twilight bot License :D"
         )
         await ctx.send(embed=embed)
 
