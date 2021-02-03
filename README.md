@@ -33,5 +33,7 @@ This should include the token, long traceback (can be any message), temp databas
 
 settings.json should be in the `cogs` folder, blocklist and cogs should be in the `bot` folder
 5. This isn't really necessary but if you're on windows (which this was designed to be ran on)
-Create a `.bat` file. This will catch the error level that `launcher.py` raises on exit and allows for auto restart.
+Create a `.bat` file. This will catch the error level that `bot/__main__.py` raises on exit and allows for auto restart.
+
+If you'd rather not I have recently rewritten the `launcher.py` file to automatically catch the error level and restart
 #### Thanks kindly!
