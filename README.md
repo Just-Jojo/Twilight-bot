@@ -24,7 +24,7 @@ Whilst I would perfer you not run Twilight on your own I will give you the tools
 
 1. Make sure you have Python 3.8 installed
 You need this to... run it
-2. Set up a vitual env
+2. Set up a virtual env
 `py -m venv .venv`
 3. Install the requirements
 `pip install -U -r requirements.txt`
