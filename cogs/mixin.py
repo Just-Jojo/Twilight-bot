@@ -38,6 +38,9 @@ class BaseCog(Cog):
         If overwriting is required for something, call super().on_ready()
     """
 
+    def __init__(self, bot):
+        self.bot = bot
+
     @Cog.listener()
     async def on_ready(self):
         """A listener to print out that the Cog is ready"""

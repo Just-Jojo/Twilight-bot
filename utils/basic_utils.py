@@ -21,8 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
+
 import datetime
 import json
+import logging
+from contextlib import contextmanager
 from os import path
 from typing import *
 
@@ -30,6 +33,8 @@ import discord
 from discord.ext.commands import Context, check
 
 from .embed import Embed
+
+log = logging.getLogger("basic-utils")
 
 if path.exists("./cogs/settingstings.json"):
     json_path = "./cogs/settingstings.json"
@@ -224,18 +229,20 @@ def guild_setup(guild: discord.Guild) -> None:
         settings: dict = json.load(fp)
 
     if str(guild.id) in settings.keys():
-        print(f"{guild.name} was in the database already.")
+        log.info(f"{guild.name} was in the database already.")
         return
     settings[str(guild.id)] = {
         "admin": [],
         "mod": [],
         "announce_channel": None,
         "modlog": None,
-        "prefixes": []  # prefixes: list(str)
+        "prefixes": [],  # prefixes: list(str)
+        "mute_remove": False,  # `mute` will remove roles
+        "muted_role": None  # int representing a role
     }
     with open(json_path, "w") as fp:
         json.dump(settings, fp, indent=4)
-    print("Added {} ({}) to Twilight's settings".format(guild.name, guild.id))
+    log.info("Added {} ({}) to Twilight's settings".format(guild.name, guild.id))
 
 
 def get_settings() -> dict:
@@ -297,12 +304,14 @@ def teardown(guild: discord.Guild):
     guild_id = str(guild.id)
     settings = get_settings()
     if guild_id not in settings.keys():
-        # This will *only* happen if the setup fails to trigger or a Twily was in a guild before this was implemented
-        print(
-            f"{guild.name} was not in Twilight's database so I did not remove any data")
+        # This will *only* happen if the setup fails to trigger or
+        # Twily was in a guild before this was implemented
+        log.info(
+            f"{guild.name} was not in Twilight's database so I did not remove any data"
+        )
         return
     del settings[guild_id]
-    print(f"Removed data for {guild.name}")
+    log.info(f"Removed data for {guild.name}")
     write_settings(settings=settings)
 
 
@@ -379,3 +388,25 @@ def modlog_add(guild: discord.Guild, channel: int) -> str:
     settings[str(guild.id)] = guild_settings
     write_settings(settings=settings)
     return "Set that channel as the modlog channel. Moderation actions will now be logged there"
+
+
+@contextmanager
+def edit_guild_settings(guild: discord.Guild):
+    """|context manager|
+
+    Open the settings and edit them easily
+
+    Parameters
+    ----------
+    guild: :class:`Guild`
+        The guild to edit settings for
+    """
+    try:
+        # __enter__
+        settings = get_guild_settings(guild)
+        yield settings
+    finally:
+        # __exit__
+        main_settings = get_settings()
+        main_settings[str(guild.id)] = settings
+        write_settings(settings=settings)

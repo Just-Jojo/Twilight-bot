@@ -40,9 +40,6 @@ class MyLittlePony(BaseCog):
     The heart of Twilight
     """
 
-    def __init__(self, bot: Twilight):
-        self.bot = bot
-
     def mlp_episode_description(
         self, ctx: commands.Context, episode_num: int,
         title: str, description: str, url: str = None

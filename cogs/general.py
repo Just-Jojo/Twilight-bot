@@ -36,9 +36,6 @@ from .mixin import BaseCog
 class General(BaseCog):
     """General, fun commands"""
 
-    def __init__(self, bot: Twilight):
-        self.bot = bot
-
     @commands.command()
     async def say(self, ctx, channel: typing.Optional[discord.TextChannel], *, message):
         """Have the bot repeat you"""

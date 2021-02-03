@@ -36,9 +36,6 @@ from .mixin import BaseCog
 class Admin(BaseCog):
     """Administration commands for Twilight"""
 
-    def __init__(self, bot):
-        self.bot = bot
-
     @commands.group(name="set")
     async def twilight_settings(self, ctx):
         """Base Twilight settings"""

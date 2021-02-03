@@ -1,15 +1,17 @@
-from .basic_utils import (
-    administrator as admin, moderator as mod,
-    get_settings, get_guild_settings,
-    tick, humanize_timedelta, box, write_settings, teardown,
-    is_admin, is_mod, guild_setup
-)
-from .embed import Embed
-from .converter import (RawUserIds,)
-# Gonna add more here
-from .paginator import (
-    TwilightEmbedMenu, TwilightStringMenu, TwilightMenu, TwilightPages)
-from .rps import (rock_paper_scissors as rps_game)
-from .predicates import *
-from .math import fraction, decimal
+from .basic_utils import administrator as admin
+from .basic_utils import (box, edit_guild_settings, get_guild_settings,
+                          get_settings, guild_setup, humanize_timedelta,
+                          is_admin, is_mod)
+from .basic_utils import moderator as mod
+from .basic_utils import teardown, tick, write_settings
 from .character_parser import char_embed
+from .converter import RawUserIds
+from .embed import Embed
+from .math import decimal, fraction
+from .mutes_api import (
+    mute, unmute, modlog
+)
+# Gonna add more here
+from .paginator import (TwilightMenu, TwilightPages)
+from .predicates import *
+from .rps import rock_paper_scissors as rps_game

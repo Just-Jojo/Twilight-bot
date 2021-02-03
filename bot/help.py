@@ -25,7 +25,7 @@ from asyncio import iscoroutine as iscoro
 
 import discord
 from discord.ext import commands
-from utils import Embed, TwilightEmbedMenu
+from utils import Embed, TwilightMenu, TwilightPages
 
 other_commands = """
 **Ping:** Pong.
@@ -92,13 +92,9 @@ async def send_cog_help(
         description = f"**__{cog.qualified_name}__**\n\n{cog.description}"
     if len(paged) > 1:
         embeds = []
-        for page in paged:
-            embed = Embed.create(
-                ctx, title="Twilight Help Menu", description=description)
-            embed.add_field(name="Commands", value=page)
-            embeds.append(embed)
-        menu = TwilightEmbedMenu(embeds)
-        return await menu.start(ctx=ctx, channel=ctx.channel)
+        pages = TwilightPages(paged)
+        menu = TwilightMenu(source=pages)
+        await menu.start(ctx=ctx, channel=ctx.channel)
     else:
         embed = Embed.create(
             ctx, title="Twilight Help Menu", description=description,
@@ -182,22 +178,12 @@ async def send_help(
                                 coms.append(
                                     f"**{command.name}:** {command.help}")
             paged = await pagify_commands(coms)
-            for page in paged:
-                embed = Embed.create(
-                    ctx, title="Twilight Help Menu", description=f"**__{cog.qualified_name}__**\n\n{cog.description}",
-                    footer="Twilight Bot Help!")
-                embed.add_field(name="Commands", value=page)
-                cogs.append(embed)
-    cust_coms = Embed.create(
-        ctx=ctx, title="Twilight Help Menu", description="**__Other commands__**")
-    cust_coms.add_field(
-        name="Commands", value=other_commands)
-    cogs.append(cust_coms)
-    if len(cogs) > 1:
-        menu = TwilightEmbedMenu(cogs, index_pages=True)
-        return await menu.start(ctx=ctx, channel=ctx.channel)
-    else:
-        return await ctx.send(embed=cogs[0])
+            paged.append(other_commands)
+            if len(cogs) > 1:
+                pages = TwilightPages(paged)
+                await TwilightMenu(source=pages).start(ctx=ctx, channel=ctx.channel)
+            else:
+                return await ctx.send(embed=cogs[0])
 
 
 async def send_command_help(
