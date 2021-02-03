@@ -35,6 +35,9 @@ other_commands = """
 **Unload:** Unloads a cog
 **Cogs:** Shows the cogs
 """
+# Since f-strings in Python can not have backslashes
+# Create a variable here and use it instead
+bs = "\n"
 
 
 async def send_cog_help(
@@ -81,9 +84,10 @@ async def send_cog_help(
                 else:
                     if len(command.help) > 30:
                         coms.append(
-                            f"**{command.name}:** {command.help[:30]}...")
+                            f"**{command.name}:** {command.help[:30].replace(bs, ' ')}...")
                     else:
-                        coms.append(f"**{command.name}:** {command.help}")
+                        coms.append(
+                            f"**{command.name}:** {command.help.replace(bs, ' ')}")
 
     paged = await pagify_commands(coms)
     if hasattr(cog, "__version__"):
@@ -173,10 +177,10 @@ async def send_help(
                         else:
                             if len(command.help) > 30:
                                 coms.append(
-                                    f"**{command.name}:** {command.help[:30]}...")
+                                    f"**{command.name}:** {command.help[:30].replace(bs, ' ')}...")
                             else:
                                 coms.append(
-                                    f"**{command.name}:** {command.help}")
+                                    f"**{command.name}:** {command.help.replace(bs, ' ')}")
             paged = await pagify_commands(coms)
             paged.append(other_commands)
             if len(cogs) > 1:
