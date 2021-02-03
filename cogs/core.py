@@ -31,7 +31,7 @@ import discord
 from bot import Twilight  # Type hinting
 from discord import __version__ as dpyversion
 from discord.ext import commands
-from utils import (Embed, TwilightEmbedMenu, admin, box, guild_setup,
+from utils import (Embed, box, guild_setup,
                    humanize_timedelta, teardown, box)
 
 from cogs.mixin import BaseCog
@@ -50,9 +50,6 @@ information = r"""
 class Core(BaseCog):
     """Core commands
     """
-
-    def __init__(self, bot: Twilight):
-        self.bot = bot
 
     @commands.command()
     async def invite(self, ctx):

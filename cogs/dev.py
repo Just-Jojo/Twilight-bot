@@ -12,7 +12,7 @@ from bot import Twilight
 from discord.ext import commands, tasks
 from tabulate import tabulate
 from twi_secrets import LONG_TRACEBACK
-from utils import (Embed, ReactionPred, TwilightEmbedMenu, TwilightMenu,
+from utils import (Embed, ReactionPred, TwilightPages, TwilightMenu,
                    TwilightPages, box, get_settings, tick, message_pred)
 
 from cogs.mixin import BaseCog
@@ -95,12 +95,8 @@ class DevCommands(BaseCog):
         if len(self.bot.last_exception) > 2000:
             embeds = []
             trace = self.long_traceback()
-            for line in trace:
-                embed = Embed.create(
-                    ctx, title="Traceback Error", description=line)
-                embeds.append(embed)
-            menu = TwilightEmbedMenu(embeds)
-            await menu.start(ctx=ctx, channel=ctx.channel)
+            pages = TwilightPages(trace)
+            await TwilightMenu(source=pages).start(ctx=ctx, channel=ctx.channel)
         else:
             embed = Embed.create(
                 ctx, title="Traceback Error", description=box(self.bot.last_exception, "py"))
@@ -173,15 +169,8 @@ class DevCommands(BaseCog):
         if len(self.bot.blocklist["guilds"]) < 1:
             return await ctx.send("There aren't any guilds in the blocklist!")
         paged = self.guild_paginate()
-        embeds = []
-        for page in paged:
-            embed = Embed.create(
-                ctx, title="Blocklisted guilds", description=box(page))
-            embeds.append(embed)
-        if len(embeds) == 1:
-            return await ctx.send(embed=embeds[0])
-        menu = TwilightEmbedMenu(embeds)
-        await menu.start(ctx=ctx, channel=ctx.channel)
+        pages = TwilightPages(paged)
+        await TwilightMenu(source=pages).start(ctx=ctx, channel=ctx.channel)
 
     def guild_paginate(self):
         """Paginate the guild blocklist"""
@@ -222,15 +211,8 @@ class DevCommands(BaseCog):
         if len(self.bot.blocklist["users"]) < 1:
             return await ctx.send("There aren't any members in the blocklist yet!")
         paged = self.paginate_blocked()
-        embeds = []
-        for page in paged:
-            embed = Embed.create(
-                ctx, title="Blocklisted members", description=box(paged))
-            embeds.append(embed)
-        if len(embeds) == 1:
-            return await ctx.send(embed=embeds[0])
-        menu = TwilightEmbedMenu(embeds)
-        await menu.start(ctx=ctx, channel=ctx.channel)
+        pages = TwilightPages(paged)
+        await TwilightMenu(source=pages).start(ctx=ctx, channel=ctx.channel)
 
     def paginate_blocked(self):
         """Paginate blocklisted members"""
