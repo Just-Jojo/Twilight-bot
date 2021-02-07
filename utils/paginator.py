@@ -28,9 +28,10 @@ Gonna be working with discord.ext.menus instead
 
 
 import typing
-
 import discord
 from discord.ext import commands, menus
+import logging
+log = logging.getLogger("paginator")
 
 __all__ = ["TwilightEmbedMenu", "TwilightStringMenu", "TwilightBaseMenu"]
 __version__ = "0.0.1"
@@ -38,12 +39,16 @@ __author__ = ["Jojo#7791"]
 
 
 class TwilightPages(menus.ListPageSource):
-    def __init__(self, data: list, use_embeds: bool, per_page: int = 15):
+    def __init__(self, data: list, use_embeds: bool = True):
         self.use_embeds = use_embeds
-        super().__init__(entries=data, per_page=per_page)
+        super().__init__(entries=data, per_page=15)
 
-    def format_page(self, menu: "TwilightMenu", page) -> typing.Union[discord.Embed, str]:
+    async def format_page(self, menu: "TwilightMenu", page) -> typing.Union[discord.Embed, str]:
         if self.use_embeds:
+            # log.info(page)
+            page = "".join(page)
+            if len(page) > 2048:
+                page = page[:-2045] + "..."
             ret = discord.Embed(title="Twilight Menu",
                                 description=page, colour=discord.Colour.purple())
             ret.set_footer(
@@ -55,7 +60,7 @@ class TwilightPages(menus.ListPageSource):
 
 class TwilightMenu(menus.MenuPages, inherit_buttons=False):
     def __init__(
-        self, source: menus.PageSource,
+        self, source: menus.ListPageSource,
         page_start: int = 0,
         clear_reactions_after: bool = True,
         delete_message_after: bool = False,
@@ -75,7 +80,7 @@ class TwilightMenu(menus.MenuPages, inherit_buttons=False):
         kwargs = await self._get_kwargs_from_page(page)
         return await channel.send(**kwargs)
 
-    async def show_check_page(self, page_number: int):
+    async def show_checked_page(self, page_number: int):
         max_pages = self._source.get_max_pages()
         try:
             if max_pages is None or max_pages > page_number >= 0:
@@ -88,7 +93,10 @@ class TwilightMenu(menus.MenuPages, inherit_buttons=False):
             pass
 
     def _skip_double_triangle_buttons(self):
-        return super()._skip_double_triangle_buttons()
+        max_pages = self._source.get_max_pages()
+        if max_pages is None:
+            return True
+        return max_pages <= 4
 
     def _skip_single_arrows(self):
         max_pages = self._source.get_max_pages()

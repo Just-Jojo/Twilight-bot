@@ -22,11 +22,13 @@ SOFTWARE.
 """
 import typing
 from asyncio import iscoroutine as iscoro
+import logging
 
 import discord
-from discord.ext import commands
-from utils import Embed, TwilightMenu, TwilightPages
+from discord.ext import commands, menus
+from utils import Embed
 
+log = logging.getLogger("help")
 other_commands = """
 **Ping:** Pong.
 **Help:** Shows this message
@@ -38,6 +40,87 @@ other_commands = """
 # Since f-strings in Python can not have backslashes
 # Create a variable here and use it instead
 bs = "\n"
+
+
+class HelpMenu(menus.Menu):
+    """A custom Help Menu for Twilight
+
+    Attributes
+    ----------
+    timeout: :class:`float`
+        Timeout for the Menu
+    """  # TODO: Write docstring
+
+    def __init__(self, pages: typing.List[discord.Embed]):
+        super().__init__(
+            timeout=15.0,
+            delete_message_after=False,
+            clear_reactions_after=True,
+            check_embeds=False,
+            message=None
+        )
+        self.pages = pages
+        self.index = 0
+        self.current_page = self.pages[self.index]
+
+    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel):
+        return await channel.send(embed=self.current_page)
+
+    async def show_page(self, index: int):
+        max_pages = len(self.pages)
+        if max_pages > index >= 0:
+            self.current_page = self.pages[index]
+            self.index = index
+        elif index > (max_pages - 1):
+            self.current_page = self.pages[0]
+            self.index = 0
+        else:
+            self.current_page = self.pages[max_pages - 1]
+            self.index = max_pages - 1
+        await self.message.edit(embed=self.current_page)
+
+    def _skip_double_triangle_buttons(self):
+        max_pages = len(self.pages)
+        return max_pages <= 4
+
+    def _skip_single_buttons(self):
+        max_pages = len(self.pages)
+        return max_pages == 1
+
+    @menus.button(
+        "\N{BLACK LEFT-POINTING DOUBLE TRIANGLE}",
+        position=menus.First(0),
+        skip_if=_skip_double_triangle_buttons
+    )
+    async def on_far_left(self, _):
+        await self.show_page(index=self.index - 5)
+
+    @menus.button(
+        "\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE}",
+        position=menus.Last(1),
+        skip_if=_skip_double_triangle_buttons
+    )
+    async def on_far_right(self, _):
+        await self.show_page(index=self.index + 5)
+
+    @menus.button(
+        "\N{BLACK RIGHTWARDS ARROW}",
+        position=menus.Last(0)
+    )
+    async def go_to_next(self, _):
+        await self.show_page(index=self.index + 1)
+
+    @menus.button(
+        "\N{LEFTWARDS BLACK ARROW}",
+        position=menus.First(0)
+    )
+    async def go_backwards(self, _):
+        await self.show_page(index=self.index - 1)
+
+    @menus.button("\N{CROSS MARK}")
+    async def stop_pages(self, _):
+        self.stop()
+        await self.message.delete()
 
 
 async def send_cog_help(
@@ -96,9 +179,15 @@ async def send_cog_help(
         description = f"**__{cog.qualified_name}__**\n\n{cog.description}"
     if len(paged) > 1:
         embeds = []
-        pages = TwilightPages(paged)
-        menu = TwilightMenu(source=pages)
-        await menu.start(ctx=ctx, channel=ctx.channel)
+        for page in paged:
+            embed = Embed.create(
+                ctx=ctx,
+                title=f"**__{cog.qualified_name}__**",
+                description=page,
+                author="Twilight Help System", author_url=ctx.bot.user.avatar_url
+            )
+            embeds.append(embed)
+        await HelpMenu(pages=embeds).start(ctx=ctx, channel=ctx.channel)
     else:
         embed = Embed.create(
             ctx, title="Twilight Help Menu", description=description,
@@ -181,13 +270,15 @@ async def send_help(
                             else:
                                 coms.append(
                                     f"**{command.name}:** {command.help.replace(bs, ' ')}")
-            paged = await pagify_commands(coms)
-            paged.append(other_commands)
-            if len(cogs) > 1:
-                pages = TwilightPages(paged)
-                await TwilightMenu(source=pages).start(ctx=ctx, channel=ctx.channel)
-            else:
-                return await ctx.send(embed=cogs[0])
+            paged = await pagify_commands(coms=coms)
+            for page in paged:
+                embed = Embed.create(
+                    ctx=ctx, title=f"**__{cog.qualified_name}__**",
+                    description=page, author="Twilight Help System",
+                    author_url=ctx.bot.user.avatar_url
+                )
+                cogs.append(embed)
+    await HelpMenu(pages=cogs).start(ctx=ctx, channel=ctx.channel)
 
 
 async def send_command_help(
