@@ -69,7 +69,7 @@ class MyLittlePony(BaseCog):
     @commands.command()
     async def smile(self, ctx):
         """Smile song!"""
-        title = "From My Little Pony: Friendship is Magic, Season 2, Episode 18, the Smile song!",
+        title = "From My Little Pony: Friendship is Magic, Season 2, Episode 18, the Smile song!"
         description = "Pinkie Pie loves to make ponies smile, so she had to sing about it. This song is very upbeat and happy :D\n[Smile!](https://www.youtube.com/watch?v=lQKaAlMNvm8&ab_channel=MyLittlePonyOfficial)"
 
         embed = Embed.create(ctx, title=title, description=description)
