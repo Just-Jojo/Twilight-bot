@@ -39,7 +39,6 @@ def run(no_cogs: bool, dev: bool):
         status = subp.call(cmd)
         if status != 4:
             break
-        subp.run(["cls"])
 
 
 @click.command()
