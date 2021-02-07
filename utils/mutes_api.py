@@ -69,8 +69,7 @@ def edit_member_settings(user: Member):
 
 
 async def mute(
-    ctx: commands.Context, user: Member,
-    reason: str = None, remove_roles: bool = True
+    ctx: commands.Context, user: Member, reason: str = None, remove_roles: bool = True
 ) -> str:
     """|coro|
 
@@ -101,18 +100,14 @@ async def mute(
                 try:
                     await user.remove_roles(role, reason=reason)
                 except discord.Forbidden:
-                    log.info(
-                        f"Could not remove {role.name} from {user.name}...")
+                    log.info(f"Could not remove {role.name} from {user.name}...")
                 else:
                     mem.append(role.id)
     await modlog(ctx=ctx, user=user, action="Mute", reason=reason)
     return f"Muted {user.name}!"
 
 
-async def unmute(
-    ctx: commands.Context, user: Member,
-    remove_roles: bool
-) -> str:
+async def unmute(ctx: commands.Context, user: Member, remove_roles: bool) -> str:
     """|coro|
 
     Unmute a user
@@ -180,11 +175,7 @@ async def kick(
     return f"Kicked {user}"
 
 
-async def ban(
-    ctx: commands.Context,
-    user: Member,
-    reason: str = None
-):
+async def ban(ctx: commands.Context, user: Member, reason: str = None):
     """|coro|
 
     Ban a user from the guild
@@ -209,11 +200,7 @@ async def ban(
     return f"Banned {user}"
 
 
-async def unban(
-    ctx: commands.Context,
-    user: int,
-    reason: str = None
-):
+async def unban(ctx: commands.Context, user: int, reason: str = None):
     bans = await ctx.guild.bans()
     bans = [be.user for be in bans]
     user = discord.utils.get(bans, id=user)
@@ -224,19 +211,11 @@ async def unban(
     except discord.HTTPException:
         return "Hm, something went wrong unbanning that user"
     else:
-        await modlog(
-            ctx=ctx,
-            user=user,
-            action="Unban",
-            reason=reason
-        )
+        await modlog(ctx=ctx, user=user, action="Unban", reason=reason)
     return f"Unbanned {user}"
 
 
-async def modlog(
-    ctx: commands.Context, user: Member,
-    action: str, reason: str = None
-):
+async def modlog(ctx: commands.Context, user: Member, action: str, reason: str = None):
     """|coro|
 
     Log a message to the modlog
@@ -265,11 +244,17 @@ async def modlog(
             session["modlog"] = None
         return
     embed = Embed.create(
-        ctx=ctx, title=action.capitalize(),
+        ctx=ctx,
+        title=action.capitalize(),
         description=f"{user.name} was {action}(ed) by {ctx.author.name}",
-        author=f"{ctx.guild.name} Moderation log", author_url=ctx.guild.icon_url
+        author=f"{ctx.guild.name} Moderation log",
+        author_url=ctx.guild.icon_url,
     )
-    for key, value in {"Member": user.name, "Moderator": ctx.author.name, "Reason": reason}:
+    for key, value in {
+        "Member": user.name,
+        "Moderator": ctx.author.name,
+        "Reason": reason,
+    }:
         if value is not None:
             embed.add_field(name=key, value=value)
     await channel.send(embed=embed)

@@ -31,8 +31,7 @@ import discord
 from bot import Twilight  # Type hinting
 from discord import __version__ as dpyversion
 from discord.ext import commands
-from utils import (Embed, box, guild_setup,
-                   humanize_timedelta, teardown, box)
+from utils import Embed, box, guild_setup, humanize_timedelta, teardown, box
 
 from cogs.mixin import BaseCog
 
@@ -48,8 +47,7 @@ information = r"""
 
 
 class Core(BaseCog):
-    """Core commands
-    """
+    """Core commands"""
 
     @commands.command()
     async def invite(self, ctx):
@@ -70,14 +68,13 @@ class Core(BaseCog):
     @commands.command()
     async def info(self, ctx):
         """Twilight's info"""
-        embed = Embed.create(
-            ctx, title="Twilight bot Info", footer="Twilight bot Info"
-        )
+        embed = Embed.create(ctx, title="Twilight bot Info", footer="Twilight bot Info")
         embed.add_field(
             name="<:dpy:779489296389767208>", value="Version: `{}`".format(dpyversion)
         )
         embed.add_field(
-            name="<:twilight:734586922910875750>", value="Version: `{}`".format(self.bot.__version__)
+            name="<:twilight:734586922910875750>",
+            value="Version: `{}`".format(self.bot.__version__),
         )
         embed.add_field(
             name="<:python:805910216460992612>", value="Version: `{}`".format(pver())
@@ -90,11 +87,9 @@ class Core(BaseCog):
         """Get Twilight's uptime"""
         since = self.bot.uptime.strftime("%Y-%m-%D %H:%M:%S")
         uptime = datetime.utcnow() - self.bot.uptime
-        uptime_str = humanize_timedelta(
-            timedelta=uptime) or "Less than one second"
+        uptime_str = humanize_timedelta(timedelta=uptime) or "Less than one second"
         # await ctx.send("Been up for: **{}** (since {} UTC)".format(uptime_str, since))
-        embed = Embed.create(ctx, title="Uptime!",
-                             footer="Twilight uptime")
+        embed = Embed.create(ctx, title="Uptime!", footer="Twilight uptime")
         embed.add_field(name="Total time", value="**{}**".format(uptime_str))
         embed.add_field(name="Up since", value="**{}**".format(since))
         await ctx.send(embed=embed)
@@ -103,8 +98,10 @@ class Core(BaseCog):
     async def twilight_license(self, ctx):
         """Twilight's license"""
         embed = Embed.create(
-            ctx, title="Twilight bot License",
-            description=box(self.bot.license), footer="Twilight bot License :D"
+            ctx,
+            title="Twilight bot License",
+            description=box(self.bot.license),
+            footer="Twilight bot License :D",
         )
         await ctx.send(embed=embed)
 
@@ -115,7 +112,7 @@ class Core(BaseCog):
         guild_setup(guild)
         embed_basic = {
             "title": "Twilight has joined {}!".format(guild.name),
-            "color": 0x11C5E5
+            "color": 0x11C5E5,
         }
         embed = discord.Embed(**embed_basic)
         embed.set_author(name=guild.name, icon_url=guild.icon_url)

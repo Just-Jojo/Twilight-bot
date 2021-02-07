@@ -46,8 +46,14 @@ async def message_pred(ctx: commands.Context) -> bool:
     bool
         True for Yes, False for No
     """
+
     def inner(m: discord.Message):
-        return m.author.id == ctx.author.id and m.channel.id == ctx.channel.id and m.content.lower().startswith(("y", "n"))
+        return (
+            m.author.id == ctx.author.id
+            and m.channel.id == ctx.channel.id
+            and m.content.lower().startswith(("y", "n"))
+        )
+
     bot = ctx.bot
     try:
         result = await bot.wait_for("message", check=inner, timeout=15.0)
@@ -68,18 +74,31 @@ class ReactionPred(menus.Menu):
         Defaults to `False`
     """
 
-    def __init__(self, message: typing.Union[str, discord.Embed], timeout: float = 15.0, delete: bool = False):
+    def __init__(
+        self,
+        message: typing.Union[str, discord.Embed],
+        timeout: float = 15.0,
+        delete: bool = False,
+    ):
         self.msg = message
         self.confirm = False
-        super().__init__(timeout=timeout, delete_message_after=delete, clear_reactions_after=True)
+        super().__init__(
+            timeout=timeout, delete_message_after=delete, clear_reactions_after=True
+        )
 
-    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel):
+    async def send_initial_message(
+        self, ctx: commands.Context, channel: discord.TextChannel
+    ):
         if isinstance(self.msg, discord.Embed):
             return await channel.send(embed=self.msg)
         else:
             return await channel.send(content=self.msg)
 
-    async def prompt(self, ctx: commands.Context, channel: typing.Optional[discord.TextChannel] = None):
+    async def prompt(
+        self,
+        ctx: commands.Context,
+        channel: typing.Optional[discord.TextChannel] = None,
+    ):
         """Starts the prompt for the Predicate
 
         Parameters

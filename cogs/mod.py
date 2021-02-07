@@ -35,38 +35,35 @@ class Mod(BaseCog):
 
     @commands.command()
     async def mute(self, ctx, member: RawUserIds, *, reason: str = None):
-        """Mute a user
-        """
+        """Mute a user"""
         remove_roles = get_guild_settings(ctx.guild)["mute_remove"]
-        result = await mute(ctx=ctx, user=member, reason=reason, remove_roles=remove_roles)
+        result = await mute(
+            ctx=ctx, user=member, reason=reason, remove_roles=remove_roles
+        )
         await ctx.send(result)
 
     @commands.command()
     async def unmute(self, ctx, member: RawUserIds):
-        """Unmute a user
-        """
+        """Unmute a user"""
         remove_roles = get_guild_settings(ctx.guild)["mute_remove"]
         result = await unmute(ctx=ctx, user=member, remove_roles=remove_roles)
         await ctx.send(result)
 
     @commands.command()
     async def ban(self, ctx, user: RawUserIds, *, reason: str):
-        """Ban a user
-        """
+        """Ban a user"""
         result = await ban(ctx, user, reason)
         await ctx.send(result)
 
     @commands.command()
     async def unban(self, ctx, user: RawUserIds, *, reason: str):
-        """Unban a user
-        """
+        """Unban a user"""
         result = await unban(ctx, user, reason)
         await ctx.send(result)
 
     @commands.command()
     async def kick(self, ctx, user: RawUserIds, *, reason):
-        """Kick a user
-        """
+        """Kick a user"""
         result = await kick(ctx, user, reason)
         await ctx.send(result)
 

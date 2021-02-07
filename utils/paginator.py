@@ -31,6 +31,7 @@ import typing
 import discord
 from discord.ext import commands, menus
 import logging
+
 log = logging.getLogger("paginator")
 
 __all__ = ["TwilightEmbedMenu", "TwilightStringMenu", "TwilightBaseMenu"]
@@ -43,16 +44,21 @@ class TwilightPages(menus.ListPageSource):
         self.use_embeds = use_embeds
         super().__init__(entries=data, per_page=15)
 
-    async def format_page(self, menu: "TwilightMenu", page) -> typing.Union[discord.Embed, str]:
+    async def format_page(
+        self, menu: "TwilightMenu", page
+    ) -> typing.Union[discord.Embed, str]:
         if self.use_embeds:
             # log.info(page)
             page = "".join(page)
             if len(page) > 2048:
                 page = page[:-2045] + "..."
-            ret = discord.Embed(title="Twilight Menu",
-                                description=page, colour=discord.Colour.purple())
+            ret = discord.Embed(
+                title="Twilight Menu", description=page, colour=discord.Colour.purple()
+            )
             ret.set_footer(
-                text=f"Page {menu.current_page + 1}/{self.get_max_pages()}", icon_url=menu.bot.user.avatar_url)
+                text=f"Page {menu.current_page + 1}/{self.get_max_pages()}",
+                icon_url=menu.bot.user.avatar_url,
+            )
         else:
             ret = page
         return ret
@@ -60,17 +66,20 @@ class TwilightPages(menus.ListPageSource):
 
 class TwilightMenu(menus.MenuPages, inherit_buttons=False):
     def __init__(
-        self, source: menus.ListPageSource,
+        self,
+        source: menus.ListPageSource,
         page_start: int = 0,
         clear_reactions_after: bool = True,
         delete_message_after: bool = False,
         timeout: int = 30,
-        message: discord.Message = None
+        message: discord.Message = None,
     ):
         super().__init__(
-            source=source, clear_reactions_after=clear_reactions_after,
-            delete_message_after=delete_message_after, timeout=timeout,
-            message=message
+            source=source,
+            clear_reactions_after=clear_reactions_after,
+            delete_message_after=delete_message_after,
+            timeout=timeout,
+            message=message,
         )
         self.page_start = page_start
 
@@ -104,19 +113,35 @@ class TwilightMenu(menus.MenuPages, inherit_buttons=False):
             return True
         return max_pages == 1
 
-    @menus.button("\N{BLACK RIGHTWARDS ARROW}", position=menus.Last(0), skip_if=_skip_single_arrows)
+    @menus.button(
+        "\N{BLACK RIGHTWARDS ARROW}",
+        position=menus.Last(0),
+        skip_if=_skip_single_arrows,
+    )
     async def on_right(self, payload):
         await self.show_checked_page(self.current_page + 1)
 
-    @menus.button("\N{LEFTWARDS BLACK ARROW}", position=menus.First(1), skip_if=_skip_single_arrows)
+    @menus.button(
+        "\N{LEFTWARDS BLACK ARROW}",
+        position=menus.First(1),
+        skip_if=_skip_single_arrows,
+    )
     async def on_left(self, payload):
         await self.show_checked_page(self.current_page - 1)
 
-    @menus.button("\N{BLACK LEFT-POINTING DOUBLE TRIANGLE}", position=menus.First(0), skip_if=_skip_double_triangle_buttons)
+    @menus.button(
+        "\N{BLACK LEFT-POINTING DOUBLE TRIANGLE}",
+        position=menus.First(0),
+        skip_if=_skip_double_triangle_buttons,
+    )
     async def on_far_left(self, payload):
         await self.show_checked_page(self.current_page - 5)
 
-    @menus.button("\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE}", position=menus.Last(1), skip_if=_skip_double_triangle_buttons)
+    @menus.button(
+        "\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE}",
+        position=menus.Last(1),
+        skip_if=_skip_double_triangle_buttons,
+    )
     async def on_far_right(self, payload):
         await self.show_checked_page(self.current_page + 5)
 

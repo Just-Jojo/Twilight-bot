@@ -23,7 +23,9 @@ SOFTWARE.
 """
 __all__ = ["fraction", "decimal"]
 __version__ = "0.0.1"
-__author__ = ["kreusada", ]
+__author__ = [
+    "kreusada",
+]
 
 
 def fraction(number: float) -> str:
@@ -40,7 +42,7 @@ def fraction(number: float) -> str:
         The fractionized version of the decmial
     """
     n = number
-    return(f"{(n).as_integer_ratio()[0]}/{(n).as_integer_ratio()[1]}")
+    return f"{(n).as_integer_ratio()[0]}/{(n).as_integer_ratio()[1]}"
 
 
 def decimal(fraction: str) -> str:
@@ -59,8 +61,8 @@ def decimal(fraction: str) -> str:
         If the type isn't int/int or float/float
     """
     f = fraction
-    l, r = f.split('/')
-    if l.isdigit() and r.isdigit() and '/' in f:
-        return(f"{float(l)/float(r)}")
+    l, r = f.split("/")
+    if l.isdigit() and r.isdigit() and "/" in f:
+        return f"{float(l)/float(r)}"
     else:
         raise TypeError("Must be type `int/int` or `float/float`")

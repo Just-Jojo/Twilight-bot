@@ -52,14 +52,14 @@ def backtick(text: str):
     return "`{}`".format(text)
 
 
-def box(text: str, lang: str = ''):
+def box(text: str, lang: str = ""):
     """Returns a string inside a code-block."""
     return "```{}\n{}\n```".format(lang, text)
 
 
 def snake(text: str):
     """Returns a string with snake spaces."""
-    return text.replace(' ', '_')
+    return text.replace(" ", "_")
 
 
 def reverse(text: str):

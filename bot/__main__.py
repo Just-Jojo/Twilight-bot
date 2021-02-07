@@ -41,9 +41,11 @@ def init_log():
         dpylog.setLevel(logging.WARNING)
 
         fmt = logging.Formatter(
-            "[{asctime}] [{levelname}] {name}: {message}", datefmt="%Y-%m-%d %H:%M:%S", style="{")
-        stdout_handler = logging.StreamHandler(
-            sys.stdout)  # Log to the console
+            "[{asctime}] [{levelname}] {name}: {message}",
+            datefmt="%Y-%m-%d %H:%M:%S",
+            style="{",
+        )
+        stdout_handler = logging.StreamHandler(sys.stdout)  # Log to the console
         root.addHandler(stdout_handler)
         logging.captureWarnings(True)
 

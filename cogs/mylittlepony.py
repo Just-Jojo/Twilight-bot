@@ -41,28 +41,36 @@ class MyLittlePony(BaseCog):
     """
 
     def mlp_episode_description(
-        self, ctx: commands.Context, episode_num: int,
-        title: str, description: str, url: str = None
+        self,
+        ctx: commands.Context,
+        episode_num: int,
+        title: str,
+        description: str,
+        url: str = None,
     ) -> discord.Embed:  # TODO Remove this in favour of webscraping
         """Generate an episode Embed from the given variables"""
         description += "...\nRead more [here]({})".format(url)
         embed = Embed.create(
-            ctx, title=title.format(
-                episode_num, title),
+            ctx,
+            title=title.format(episode_num, title),
             description=description,
-            thumbnail=MLP_LOGO, footer="Twilight Episode search",
-            color=discord.Color.purple()
+            thumbnail=MLP_LOGO,
+            footer="Twilight Episode search",
+            color=discord.Color.purple(),
         )
         return embed
 
     def mlp_character_description(
-        self, ctx: commands.Context, character: str,
-        description: str, url: str
+        self, ctx: commands.Context, character: str, description: str, url: str
     ) -> discord.Embed:  # TODO Remove this in favour of webscraping
         """Generate a character Embed from the given variables"""
         embed = Embed.create(
-            ctx, title=f"{character}'s Bio", description=description,
-            image=url, footer="Twilight Character search", color=discord.Color.purple()
+            ctx,
+            title=f"{character}'s Bio",
+            description=description,
+            image=url,
+            footer="Twilight Character search",
+            color=discord.Color.purple(),
         )
         return embed
 
@@ -78,13 +86,17 @@ class MyLittlePony(BaseCog):
     @commands.command()
     async def episode(self, ctx, episode: typing.Optional[int]):
         """Episode search command"""
-        await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
+        await ctx.send(
+            "Whoops! We're rebuilding this command right now. Hang on tight!"
+        )
 
     @commands.command()
     async def character(self, ctx, *, name: typing.Optional[str]):
         """Look for a character"""
         if ctx.author.id != 544974305445019651:
-            return await ctx.send("Whoops! We're rebuilding this command right now. Hang on tight!")
+            return await ctx.send(
+                "Whoops! We're rebuilding this command right now. Hang on tight!"
+            )
         words = []
         for word in name.split():
             words.append(word.capitalize())

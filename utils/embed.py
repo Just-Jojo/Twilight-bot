@@ -29,18 +29,31 @@ from discord import Color, Embed as Emb
 from discord.ext import commands
 
 TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
-__all__ = ["Embed", ]
+__all__ = [
+    "Embed",
+]
 __version__ = "0.0.1"
-__author__ = ["Jojo#7791", ]
+__author__ = [
+    "Jojo#7791",
+]
 
 
 class Embed:
     """Creates a discord Embed object"""
+
     @classmethod
     def create(
-        cls, ctx: commands.Context, title: str = None, description: str = None,
-        color: Color = None, footer: str = None, footer_url: str = None,
-        thumbnail: str = None, image: str = None, author: str = None, author_url: str = None
+        cls,
+        ctx: commands.Context,
+        title: str = None,
+        description: str = None,
+        color: Color = None,
+        footer: str = None,
+        footer_url: str = None,
+        thumbnail: str = None,
+        image: str = None,
+        author: str = None,
+        author_url: str = None,
     ) -> discord.Embed:
         """Creates a Twilight embed
 
@@ -163,8 +176,7 @@ class Embed:
         """
         data = Emb()
         if ctx:
-            data.set_author(name=ctx.author.name,
-                            icon_url=ctx.author.avatar_url)
+            data.set_author(name=ctx.author.name, icon_url=ctx.author.avatar_url)
         else:
             try:
                 author = kwargs["author"]

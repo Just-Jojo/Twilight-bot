@@ -89,14 +89,16 @@ async def cogs(ctx):
         _list.append(value)
         # Not the prettiest thing ever but it'll work...
         cogs_list.append(_list)
-    embed.description = box(
-        tabulate(cogs_list, ("Cog Name", "Loaded")), "md")
+    embed.description = box(tabulate(cogs_list, ("Cog Name", "Loaded")), "md")
     await ctx.send(embed=embed)
+
 
 to_add = [ping, load, unload, cogs, twilight_help]
 TWILIGHT_WAVE_PNG = "https://cdn.discordapp.com/attachments/779822877460660274/779866702971666442/twilight_wave.png"
 TWILIGHT_PFP = "https://cdn.discordapp.com/avatars/734159757488685126/9acbfbc1be79bd3b73b763dba39e647d.webp?size=1024"
-OWNERS = [544974305445019651, ]
+OWNERS = [
+    544974305445019651,
+]
 IGNORE_EXECEPTIONS = (commands.CommandNotFound, commands.BadArgument)
 with open(LICENSE_PATH) as fp:
     LICENSE = fp.read()  # Open the license file
@@ -172,6 +174,7 @@ class Twilight(BotBase):
         key `users` contains the blocklisted user ids
         key `guilds` contains the blocklisted guild ids
     """
+
     __version__ = "0.1.10"
     __author__ = "Jojo#7791"
 
@@ -187,9 +190,13 @@ class Twilight(BotBase):
         intents = discord.Intents.default()
         intents.members = True
         super().__init__(
-            command_prefix=grab_prefix, help_command=None, owner_ids=OWNERS,
-            intents=intents, allowed_mentions=discord.AllowedMentions(
-                everyone=False, users=True, roles=False, replied_user=True)
+            command_prefix=grab_prefix,
+            help_command=None,
+            owner_ids=OWNERS,
+            intents=intents,
+            allowed_mentions=discord.AllowedMentions(
+                everyone=False, users=True, roles=False, replied_user=True
+            ),
         )
         for com in to_add:
             self.add_command(com)
@@ -221,8 +228,7 @@ class Twilight(BotBase):
         log.info("Cogs loaded")
 
     def save_blocklist(self):
-        """Saves the blocklist to a JSON file
-        """
+        """Saves the blocklist to a JSON file"""
         with open(blocklist_path) as fp:
             blocklist = json.load(fp)
         blocklist["users"] = self.blocklist
@@ -299,11 +305,18 @@ class Twilight(BotBase):
             else:
                 return await send_help_for(ctx, ctx.command)
         elif isinstance(exc, commands.CheckFailure):  # Check failures are the worstest
-            return await ctx.send("You did not pass the required check for command `{}`".format(ctx.command))
-        await ctx.send("`Error in command '{}'. Check your console for details`".format(ctx.command))
-        self.last_exception = "".join(traceback.format_exception(
-            type(exc), exc, exc.__traceback__
+            return await ctx.send(
+                "You did not pass the required check for command `{}`".format(
+                    ctx.command
+                )
+            )
+        await ctx.send(
+            "`Error in command '{}'. Check your console for details`".format(
+                ctx.command
+            )
         )
+        self.last_exception = "".join(
+            traceback.format_exception(type(exc), exc, exc.__traceback__)
         )
         if hasattr(exc, "original"):
             if isinstance(exc, discord.Forbidden):
@@ -318,7 +331,9 @@ class Twilight(BotBase):
 
     async def on_message(self, message: discord.Message):
         if message.content in (f"<@!{self.user.id}>", f"<@{self.user.id}>"):
-            return await message.reply(f"My prefixes are {', '.join(grab_prefix(self, message))}")
+            return await message.reply(
+                f"My prefixes are {', '.join(grab_prefix(self, message))}"
+            )
         if message.author.bot:
             return  # Pesky bots
         if message.author.id in self.blocklist:

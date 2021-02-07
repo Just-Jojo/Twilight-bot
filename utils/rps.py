@@ -33,7 +33,7 @@ embeder = Embed()
 rps = {
     "rock": ["Rock. We tied!", "Paper. I win!", "Scissors. You win!"],
     "paper": ["Rock. I win!", "Paper. We tied!", "Scissors. I win!"],
-    "scissors": ["Rock. I win!", "Paper. You win!", "Scissors. We tied!"]
+    "scissors": ["Rock. I win!", "Paper. You win!", "Scissors. We tied!"],
 }
 
 __all__ = ["rock_paper_scissors"]
@@ -49,7 +49,10 @@ def arg_parser(arg: str) -> Tuple[str, int]:
         return "Paper", 1
     if arg == "s":
         return "Scissors", 2
-    return None, 0  # Return 0 to make sure that it doesn't complain when a bad argument is given
+    return (
+        None,
+        0,
+    )  # Return 0 to make sure that it doesn't complain when a bad argument is given
 
 
 async def rock_paper_scissors(ctx: Context, choice: str) -> None:
@@ -59,12 +62,13 @@ async def rock_paper_scissors(ctx: Context, choice: str) -> None:
         bot_choice = random.choice(list(rps.keys()))
         game_outcome = rps[bot_choice][numb]
         embed: DEmbed = embeder.create(
-            ctx, title="Rock Paper Scissors",
+            ctx,
+            title="Rock Paper Scissors",
             description="Play Rock Paper Scissors!\nUse `>rps <choice>` to play!",
-            footer="Twilight bot RPS", thumbnail=ctx.bot.user.avatar_url
+            footer="Twilight bot RPS",
+            thumbnail=ctx.bot.user.avatar_url,
         )
-        embed.add_field(name="Bot's choice",
-                        value=bot_choice.capitalize(), inline=True)
+        embed.add_field(name="Bot's choice", value=bot_choice.capitalize(), inline=True)
         embed.add_field(name="User's choice", value=choice, inline=True)
         embed.add_field(name="Outcome", value=game_outcome, inline=False)
         await ctx.send(embed=embed)

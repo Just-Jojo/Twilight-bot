@@ -62,9 +62,15 @@ class General(BaseCog):
     async def flip(self, ctx):
         """Flip a coin"""
         heads_tails = ["HEADS", "TAILS"]
-        await ctx.send("*Flips a coin and..... {}!!!*".format(random.choice(heads_tails)))
+        await ctx.send(
+            "*Flips a coin and..... {}!!!*".format(random.choice(heads_tails))
+        )
 
-    @commands.command(aliases=["rps", ])
+    @commands.command(
+        aliases=[
+            "rps",
+        ]
+    )
     async def rockpaperscissors(self, ctx, choice: str):
         """Play a game of rock paper scissors with Twilight"""
         await rps_game(ctx, choice)

@@ -12,17 +12,26 @@ from bot import Twilight
 from discord.ext import commands, tasks
 from tabulate import tabulate
 from twi_secrets import LONG_TRACEBACK
-from utils import (Embed, ReactionPred, TwilightPages, TwilightMenu,
-                   TwilightPages, box, get_settings, tick, message_pred)
+from utils import (
+    Embed,
+    ReactionPred,
+    TwilightPages,
+    TwilightMenu,
+    TwilightPages,
+    box,
+    get_settings,
+    tick,
+    message_pred,
+)
 
 from cogs.mixin import BaseCog
 
-START_CODE_BLOCK_RE = re.compile(
-    r"^((```py)(?=\s)|(```))")
+START_CODE_BLOCK_RE = re.compile(r"^((```py)(?=\s)|(```))")
 
 
 class DevCommands(BaseCog):
     """Commands for Jojo mostly debugging Twilight."""
+
     __version__ = "0.1.2"
 
     def __init__(self, bot: Twilight):
@@ -40,7 +49,9 @@ class DevCommands(BaseCog):
 
     @staticmethod
     def async_compile(source: str, filename: str, mode: str):
-        return compile(source, filename, mode, flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT, optimize=0)
+        return compile(
+            source, filename, mode, flags=ast.PyCF_ALLOW_TOP_LEVEL_AWAIT, optimize=0
+        )
 
     @staticmethod
     async def maybe_await(coro):
@@ -56,7 +67,8 @@ class DevCommands(BaseCog):
         if e.text is None:
             return box("{0.__class__.__name__}: {0}".format(e), lang="py")
         return box(
-            "{0.text}\n{1:>{0.offset}}\n{2}: {0}".format(e, "^", type(e).__name__), lang="py"
+            "{0.text}\n{1:>{0.offset}}\n{2}: {0}".format(e, "^", type(e).__name__),
+            lang="py",
         )
 
     @staticmethod
@@ -99,7 +111,10 @@ class DevCommands(BaseCog):
             await TwilightMenu(source=pages).start(ctx=ctx, channel=ctx.channel)
         else:
             embed = Embed.create(
-                ctx, title="Traceback Error", description=box(self.bot.last_exception, "py"))
+                ctx,
+                title="Traceback Error",
+                description=box(self.bot.last_exception, "py"),
+            )
             await ctx.send(embed=embed)
 
     def long_traceback(self):
@@ -127,7 +142,7 @@ class DevCommands(BaseCog):
             "aysncio": asyncio,
             "discord": discord,
             "commands": commands,
-            "__name__": "__main__"
+            "__name__": "__main__",
         }
         code = self.cleanup_code(code)
         try:
@@ -198,7 +213,12 @@ class DevCommands(BaseCog):
         self.bot.save_blocklist()
         await ctx.send("Added that guild to the blocklist")
 
-    @guild.command(name="remove", aliases=["del", ])
+    @guild.command(
+        name="remove",
+        aliases=[
+            "del",
+        ],
+    )
     async def member_remove(self, ctx, guild_id: int):
         """Remove a guild from the blocklist via id"""
         self.bot.guild_blocklist.pop(self.bot.guild_blocklist.index(guild_id))
@@ -265,6 +285,7 @@ class DevCommands(BaseCog):
         """Save the database in case I fuck up"""
         current_settings = get_settings()
         from twi_secrets import TEMP_DATABASE
+
         file_ext = random.randint(10000000, 5000000000)
         full_path = os.path.join(TEMP_DATABASE, f"db_backup.{file_ext}.json")
         with open(full_path, "w+") as fp:

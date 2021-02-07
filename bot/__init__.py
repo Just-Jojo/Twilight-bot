@@ -1,3 +1,3 @@
-from .bot import (Twilight, grab_prefix)
+from .bot import Twilight, grab_prefix
 
 twilight = Twilight()

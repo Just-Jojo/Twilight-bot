@@ -57,13 +57,15 @@ class HelpMenu(menus.Menu):
             delete_message_after=False,
             clear_reactions_after=True,
             check_embeds=False,
-            message=None
+            message=None,
         )
         self.pages = pages
         self.index = 0
         self.current_page = self.pages[self.index]
 
-    async def send_initial_message(self, ctx: commands.Context, channel: discord.TextChannel):
+    async def send_initial_message(
+        self, ctx: commands.Context, channel: discord.TextChannel
+    ):
         return await channel.send(embed=self.current_page)
 
     async def show_page(self, index: int):
@@ -90,7 +92,7 @@ class HelpMenu(menus.Menu):
     @menus.button(
         "\N{BLACK LEFT-POINTING DOUBLE TRIANGLE}",
         position=menus.First(0),
-        skip_if=_skip_double_triangle_buttons
+        skip_if=_skip_double_triangle_buttons,
     )
     async def on_far_left(self, _):
         await self.show_page(index=self.index - 5)
@@ -98,22 +100,16 @@ class HelpMenu(menus.Menu):
     @menus.button(
         "\N{BLACK RIGHT-POINTING DOUBLE TRIANGLE}",
         position=menus.Last(1),
-        skip_if=_skip_double_triangle_buttons
+        skip_if=_skip_double_triangle_buttons,
     )
     async def on_far_right(self, _):
         await self.show_page(index=self.index + 5)
 
-    @menus.button(
-        "\N{BLACK RIGHTWARDS ARROW}",
-        position=menus.Last(0)
-    )
+    @menus.button("\N{BLACK RIGHTWARDS ARROW}", position=menus.Last(0))
     async def go_to_next(self, _):
         await self.show_page(index=self.index + 1)
 
-    @menus.button(
-        "\N{LEFTWARDS BLACK ARROW}",
-        position=menus.First(0)
-    )
+    @menus.button("\N{LEFTWARDS BLACK ARROW}", position=menus.First(0))
     async def go_backwards(self, _):
         await self.show_page(index=self.index - 1)
 
@@ -167,10 +163,12 @@ async def send_cog_help(
                 else:
                     if len(command.help) > 30:
                         coms.append(
-                            f"**{command.name}:** {command.help[:30].replace(bs, ' ')}...")
+                            f"**{command.name}:** {command.help[:30].replace(bs, ' ')}..."
+                        )
                     else:
                         coms.append(
-                            f"**{command.name}:** {command.help.replace(bs, ' ')}")
+                            f"**{command.name}:** {command.help.replace(bs, ' ')}"
+                        )
 
     paged = await pagify_commands(coms)
     if hasattr(cog, "__version__"):
@@ -184,14 +182,18 @@ async def send_cog_help(
                 ctx=ctx,
                 title=f"**__{cog.qualified_name}__**",
                 description=page,
-                author="Twilight Help System", author_url=ctx.bot.user.avatar_url
+                author="Twilight Help System",
+                author_url=ctx.bot.user.avatar_url,
             )
             embeds.append(embed)
         await HelpMenu(pages=embeds).start(ctx=ctx, channel=ctx.channel)
     else:
         embed = Embed.create(
-            ctx, title="Twilight Help Menu", description=description,
-            footer="Twilight Bot Help!")
+            ctx,
+            title="Twilight Help Menu",
+            description=description,
+            footer="Twilight Bot Help!",
+        )
         embed.add_field(name="Commands", value=paged[0])
         return await ctx.send(embed=embed)
 
@@ -224,9 +226,7 @@ async def pagify_commands(coms: typing.List[str]) -> typing.List[str]:
     return ret
 
 
-async def send_help(
-    ctx: commands.Context
-) -> discord.Message:
+async def send_help(ctx: commands.Context) -> discord.Message:
     """The base help system
 
     This will iterate over each and every cog and command the bot has
@@ -266,24 +266,27 @@ async def send_help(
                         else:
                             if len(command.help) > 30:
                                 coms.append(
-                                    f"**{command.name}:** {command.help[:30].replace(bs, ' ')}...")
+                                    f"**{command.name}:** {command.help[:30].replace(bs, ' ')}..."
+                                )
                             else:
                                 coms.append(
-                                    f"**{command.name}:** {command.help.replace(bs, ' ')}")
+                                    f"**{command.name}:** {command.help.replace(bs, ' ')}"
+                                )
             paged = await pagify_commands(coms=coms)
             for page in paged:
                 embed = Embed.create(
-                    ctx=ctx, title=f"**__{cog.qualified_name}__**",
-                    description=page, author="Twilight Help System",
-                    author_url=ctx.bot.user.avatar_url
+                    ctx=ctx,
+                    title=f"**__{cog.qualified_name}__**",
+                    description=page,
+                    author="Twilight Help System",
+                    author_url=ctx.bot.user.avatar_url,
                 )
                 cogs.append(embed)
     await HelpMenu(pages=cogs).start(ctx=ctx, channel=ctx.channel)
 
 
 async def send_command_help(
-    ctx: commands.Context,
-    command: typing.Union[str, commands.Command]
+    ctx: commands.Context, command: typing.Union[str, commands.Command]
 ) -> discord.Message:
     """Send help for a command
 
@@ -324,16 +327,17 @@ async def send_command_help(
     full_command += " " + " ".join(params)
     desc = command.help if command.help is not None else ""
     embed = Embed.create(
-        ctx, author="Twilight Help System", author_url=bot.user.avatar_url, title=f"`Syntax {ctx.prefix}{full_command}`",
-        description=desc, footer="Twilight Bot Help!"
+        ctx,
+        author="Twilight Help System",
+        author_url=bot.user.avatar_url,
+        title=f"`Syntax {ctx.prefix}{full_command}`",
+        description=desc,
+        footer="Twilight Bot Help!",
     )
     await ctx.send(embed=embed)
 
 
-async def send_help_for(
-    ctx: commands.Context,
-    thing: str = None
-) -> discord.Message:
+async def send_help_for(ctx: commands.Context, thing: str = None) -> discord.Message:
     """Send help for an object
 
     If the object is none it will send the normal help menu

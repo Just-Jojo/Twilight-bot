@@ -29,9 +29,13 @@ import discord
 import wikia
 from twi_secrets import MLP_FIM_LOGO
 
-__all__ = ["char_embed", ]
+__all__ = [
+    "char_embed",
+]
 __version__ = "0.0.1"
-__author__ = ["Jojo#7791", ]
+__author__ = [
+    "Jojo#7791",
+]
 
 
 def parse_numbers(string: str) -> str:
@@ -94,15 +98,21 @@ def char_embed(character: str, image_url: str = None) -> discord.Embed:
         content = "".join(content.split(match))
     content = parse_numbers(content)
     if content.endswith((".", "?", "!")):
-        description = content[:-1] + \
-            f"... For more, read the [wiki page]({page.url.replace(' ', '_')})"
+        description = (
+            content[:-1]
+            + f"... For more, read the [wiki page]({page.url.replace(' ', '_')})"
+        )
     else:
-        description = content + \
-            f"... For more, see [the wiki page]({page.url.replace(' ', '_')}) for {character}"
+        description = (
+            content
+            + f"... For more, see [the wiki page]({page.url.replace(' ', '_')}) for {character}"
+        )
     data.description = description
     data.colour = discord.Colour.purple()  # Because Twilight
-    data.set_footer(text="Built using Wikia api for Python",
-                    icon_url="https://cdn.discordapp.com/attachments/707431591051264121/800802724823695390/iconfinder_Asset_27_6467920.png")
+    data.set_footer(
+        text="Built using Wikia api for Python",
+        icon_url="https://cdn.discordapp.com/attachments/707431591051264121/800802724823695390/iconfinder_Asset_27_6467920.png",
+    )
     if image_url:
         data.set_thumbnail(url=image_url)
     else:

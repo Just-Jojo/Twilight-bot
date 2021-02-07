@@ -43,7 +43,9 @@ else:
 
 __version__ = "0.1.0"
 # Also whoever wrote the humanize_timedelta, I didn't make that
-__author__ = ["Jojo#7791", ]
+__author__ = [
+    "Jojo#7791",
+]
 
 
 def moderator():
@@ -55,9 +57,11 @@ def moderator():
         If the user is a mod, admin, or the bot owner this will return True, allowing them to use the command
         Otherwise it will return False, raising a check failure
     """
+
     async def inner(ctx: Context):
         # I had forgotten I wrote an `is_mod` function
         return await is_mod(ctx=ctx, user=ctx.author)
+
     return check(inner)
 
 
@@ -70,8 +74,10 @@ def administrator():
         If the user has an adminstrator role this will return True, allowing them to use that command
         Otherwise it will return False, raising a check failure
     """
+
     async def inner(ctx: Context):
         return await is_admin(ctx=ctx, user=ctx.author)
+
     return check(inner)
 
 
@@ -163,22 +169,25 @@ def guild_owner():
         If the user owns the guild or the bot this will return True
         Otherwise it will return False, raising a check failure
     """
+
     async def inner(ctx: Context):
         # I need to be able to use guild_owner only commands
         if await ctx.bot.is_owner(ctx.author):
             return True
         return ctx.guild is not None and ctx.author == ctx.guild.owner
+
     return check(inner)
 
 
 def humanize_timedelta(
-    *, timedelta: Optional[datetime.timedelta] = None, seconds: Optional[SupportsInt] = None
+    *,
+    timedelta: Optional[datetime.timedelta] = None,
+    seconds: Optional[SupportsInt] = None,
 ) -> str:  # I didn't steal this from red, how silly that would have been :p
     try:
         obj = seconds if seconds is not None else timedelta.total_seconds()
     except AttributeError:
-        raise ValueError(
-            "You must provide either a timedelta or a number of seconds")
+        raise ValueError("You must provide either a timedelta or a number of seconds")
 
     seconds = int(obj)
     periods = [
@@ -201,6 +210,7 @@ def humanize_timedelta(
 
     return ", ".join(strings)
 
+
 def guild_setup(guild: discord.Guild) -> None:
     r"""Set up a Guild with the default settings
 
@@ -222,7 +232,7 @@ def guild_setup(guild: discord.Guild) -> None:
         "modlog": None,
         "prefixes": [],  # prefixes: list(str)
         "mute_remove": False,  # `mute` will remove roles
-        "muted_role": None  # int representing a role
+        "muted_role": None,  # int representing a role
     }
     with open(json_path, "w") as fp:
         json.dump(settings, fp, indent=4)
