@@ -175,7 +175,7 @@ class Twilight(BotBase):
         key `guilds` contains the blocklisted guild ids
     """
 
-    __version__ = "0.1.10"
+    __version__ = "0.1.11"
     __author__ = "Jojo#7791"
 
     def __init__(self):
