@@ -22,22 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import click
+import os
 import subprocess as subp
 
-import sys
+import click
+
+CLS = "cls" if os.name == "nt" else "clear"
 
 
 def run(no_cogs: bool, dev: bool):
     while True:
         print("Starting Twilight...")
-        cmd = ["py", "-m", "bot"]
+        cmd = ["py", "-m", "twilight"]
         if no_cogs:
             cmd.append("--no-cogs")
         if dev:
             cmd.append("--dev")
         status = subp.call(cmd)
-        if status != 4:
+        os.system(CLS)
+        if status != 2:
             break
 
 
@@ -45,6 +48,7 @@ def run(no_cogs: bool, dev: bool):
 @click.option("-nc", "--no-cogs", is_flag=True, default=False)
 @click.option("-d", "--dev", is_flag=True, default=False)
 def main(no_cogs, dev):
+    os.system(CLS)
     run(no_cogs=no_cogs, dev=dev)
     print("Thank you for running!")
 

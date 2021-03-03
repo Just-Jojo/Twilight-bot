@@ -14,3 +14,5 @@ twi_secrets.py
 *.pyc
 # tmp for if vs code doesn't delete temp files
 **/*.tmp
+*_old/
+data/
