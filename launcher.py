@@ -39,9 +39,10 @@ def run(no_cogs: bool, dev: bool):
         if dev:
             cmd.append("--dev")
         status = subp.call(cmd)
-        os.system(CLS)
         if status != 2:
             break
+        else:
+            os.system(CLS)
 
 
 @click.command()
@@ -51,6 +52,9 @@ def main(no_cogs, dev):
     os.system(CLS)
     run(no_cogs=no_cogs, dev=dev)
     print("Thank you for running!")
+    if os.name == "nt":
+        # Windows only sadly
+        os.system("PAUSE")
 
 
 if __name__ == "__main__":
