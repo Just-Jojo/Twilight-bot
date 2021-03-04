@@ -34,6 +34,7 @@ from .abc import Cog
 
 from sys import version
 
+from twilight.utils import rps_game
 from twilight.utils.formatting import box
 
 py_version = version.split()[0]
@@ -71,7 +72,7 @@ class Core(Cog):
         msg = "Flipping a coin..."
         await ctx.send(msg)
         await asyncio.sleep(1)
-        await ctx.send(f"{random.choice(['Heads', 'Tails'])}!")
+        await ctx.send(f":coin: {random.choice(['Heads', 'Tails'])}!")
 
     @commands.command()
     async def version(self, ctx):
@@ -103,4 +104,18 @@ class Core(Cog):
         )
         embed.set_thumbnail(url=self.bot.user.avatar_url)
         embed.set_footer(text="With ❤ from Jojo")
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def rps(self, ctx, arg: str):
+        """Play a game of Rock Paper Scissors with Twilight!"""
+        embed = discord.Embed(
+            title="Twilight Rock Paper Scissors!", colour=discord.Colour.blurple()
+        )
+        result, twi_choice, user_choice = rps_game(arg=arg, extra_info=True)
+        embed.description = (
+            f"**My Choice**: {twi_choice}"
+            f"\n**Your Choice**: {user_choice}"
+            f"\n**Result**: {result}"
+        )
         await ctx.send(embed=embed)
