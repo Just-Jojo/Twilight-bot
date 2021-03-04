@@ -25,18 +25,24 @@ SOFTWARE.
 import asyncio
 import logging
 import random
-from sys import version
 
 import discord
 from discord import __version__ as dpy_version
 from discord.ext import commands
 
-from twilight.utils.formatting import box
-
 from .abc import Cog
+
+from sys import version
+
+from twilight.utils.formatting import box
 
 py_version = version.split()[0]
 
+_github_message = (
+    "If you would like to contribute to Twilight, want to look at the source code, "
+    "or are just interested in how some things might work, check out her [repository]"
+    "(https://github.com/Just-Jojo/Twilight-Bot) on GitHub!"
+)
 _license_info = (
     "Twilight is a custom Discord bot written in Python by Jojo#7791\n"
     "Her source code is licensed under MIT and is available at https://github.com/Just-Jojo/Twilight-Bot"
@@ -85,4 +91,16 @@ class Core(Cog):
             text="Licensed under MIT | `>github` for GitHub repo link",
             icon_url=self.bot.user.avatar_url,
         )
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    async def github(self, ctx):
+        """Get the GitHub URL for this project"""
+        embed = discord.Embed(
+            title="Twilight's GitHub Page!",
+            description=_github_message,
+            colour=discord.Colour.purple(),
+        )
+        embed.set_thumbnail(url=self.bot.user.avatar_url)
+        embed.set_footer(text="With ❤ from Jojo")
         await ctx.send(embed=embed)
