@@ -199,6 +199,12 @@ class Twilight(Bot):
         await self.logout()
         sys.exit(self._exit_code)
 
+    async def on_connect(self):
+        log.info("Twilight is now connected.")
+
+    async def on_ready(self):
+        log.info("Twilight is now online.")
+
 
 class ShutdownCodes(IntEnum):
     """An Int Enum containing the various shutdown codes
