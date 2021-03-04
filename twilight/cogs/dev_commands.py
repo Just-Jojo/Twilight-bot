@@ -27,8 +27,8 @@ import logging
 import discord
 from discord.ext import commands, tasks
 
-from twilight.utils.formatting import tick
 from twi_secrets import LOG_PATH
+from twilight.utils.formatting import tick
 
 from .abc import Cog
 
@@ -39,6 +39,7 @@ class Dev(Cog):
     def __init__(self, bot: "Twilight"):
         self.bot = bot
         self.log = logging.getLogger("twilight.cogs.Dev")
+        self.clear = False
         self.clear_logs.start()
 
     @commands.command()
@@ -111,9 +112,15 @@ class Dev(Cog):
 
     @tasks.loop(hours=24)
     async def clear_logs(self):
-        with open(LOG_PATH, "w+"):
-            pass
-        self.log.info("Cleared Logs.")
+        # I wouldn't like the bot to wipe logs
+        # every time this cog is reloaded
+        # so I added a simple switch
+        if self.clear:
+            with open(LOG_PATH, "w+"):
+                pass
+            self.log.info("Cleared Logs.")
+        else:
+            self.clear = True
 
     async def cog_check(self, ctx: commands.Context):
         return await ctx.bot.is_owner(ctx.author)
