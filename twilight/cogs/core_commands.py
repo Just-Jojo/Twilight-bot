@@ -25,11 +25,17 @@ SOFTWARE.
 import asyncio
 import logging
 import random
+from sys import version
 
 import discord
+from discord import __version__ as dpy_version
 from discord.ext import commands
 
+from twilight.utils.formatting import box
+
 from .abc import Cog
+
+py_version = version.split()[0]
 
 _license_info = (
     "Twilight is a custom Discord bot written in Python by Jojo#7791\n"
@@ -60,3 +66,23 @@ class Core(Cog):
         await ctx.send(msg)
         await asyncio.sleep(1)
         await ctx.send(f"{random.choice(['Heads', 'Tails'])}!")
+
+    @commands.command()
+    async def version(self, ctx):
+        """Get Twilight's version"""
+        embed = discord.Embed(
+            title="Twilight's versions...", colour=discord.Colour.purple()
+        )
+        embed.description = box(
+            (
+                f"Twilight Version: {self.bot.__version__}\n"
+                f"Discord.py Version: {dpy_version}\n"
+                f"Python version: {py_version}"
+            ),
+            "yaml",
+        )
+        embed.set_footer(
+            text="Licensed under MIT | `>github` for GitHub repo link",
+            icon_url=self.bot.user.avatar_url,
+        )
+        await ctx.send(embed=embed)

@@ -68,6 +68,10 @@ async def dev_mode(ctx: commands.Context):
 
 
 class Twilight(Bot):
+    """Twilight bot class"""
+
+    __version__ = "2.0.0"  # \o/
+
     def __init__(self, cli_flags):
         config_path, guild_path, member_path = setup_paths()
         self.config = setup_config(config_path)
@@ -105,7 +109,7 @@ class Twilight(Bot):
             pass
         elif isinstance(exc, commands.CommandNotFound):
             pass
-        elif isinstance(commands.MissingRequiredArgument):
+        elif isinstance(exc, commands.MissingRequiredArgument):
             await ctx.send_help(ctx.command)
         elif isinstance(exc, commands.BadArgument):
             if exc.args:
