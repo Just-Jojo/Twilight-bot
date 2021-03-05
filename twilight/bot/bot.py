@@ -251,7 +251,7 @@ class Twilight(Bot):
         found = self.guild_config.get(str(guild.id), None)
         if found is None:
             self.guild_config[str(guild.id)] = _guild_config
-            self._save_config()
+            await self._save_config()
 
     async def _save_config(self):
         """|coro|
