@@ -39,8 +39,17 @@ from twilight.cogs.abc import Cog
 
 log = logging.getLogger("twilight.bot")
 
+_guild_config = {
+    "prefixes": [],
+    "member_welcome": ["Welcome {0.mention} to {1.name}"],
+    "member_leave": ["Goodbye {0.name}! We'll miss you!"],
+    "welcome_channel": None,
+    "admins": [],
+    "mods": [],  # admins and mods are role ids
+}
 
-def setup_paths() -> typing.Tuple[str]:
+
+def setup_paths() -> typing.Tuple[str, str, str]:
     """Returns the paths for the bot to use"""
     if path.exists("./data/config.json"):
         config_path = "./data/config.json"
@@ -57,9 +66,13 @@ def setup_paths() -> typing.Tuple[str]:
     return config_path, guild_path, member_path
 
 
-def setup_config(conf_path: str) -> dict:
+def setup_config(conf_path: str, guild_path: str, member_path: str) -> dict:
     with open(conf_path) as fp:
         ret = json.load(fp)
+    with open(guild_path) as fp:
+        guild = json.load(fp)
+    with open(member_path) as fp:
+        member = json.load(fp)
     return ret
 
 
@@ -70,11 +83,13 @@ async def dev_mode(ctx: commands.Context):
 class Twilight(Bot):
     """Twilight bot class"""
 
-    __version__ = "2.0.0"  # \o/
+    __version__ = "2.0.1"  # \o/
 
     def __init__(self, cli_flags):
-        config_path, guild_path, member_path = setup_paths()
-        self.config = setup_config(config_path)
+        self.config_path, self.guild_path, self.member_path = setup_paths()
+        self.config, self.guild_config, self.member_config = setup_config(
+            self.config_path, self.guild_path, self.member_path
+        )
 
         async def get_prefix(bot: self, m: discord.Message):
             base = [self.config["base_prefix"]]
@@ -103,6 +118,7 @@ class Twilight(Bot):
             self._disable_com.append("invite")
         self._exit_code = ShutdownCodes.CRITICAL
         self.blacklist = []
+        self._changed_status = False
 
     async def on_command_error(self, ctx: commands.Context, exc: Exception):
         if isinstance(exc, commands.NotOwner) or isinstance(exc, commands.CheckFailure):
@@ -142,14 +158,7 @@ class Twilight(Bot):
         for cog in to_del:
             to_load.remove(cog)
         for com in self._disable_com:
-            removed = self.remove_command(com)
-            if removed is not None:
-
-                @commands.command(name=com, hidden=True)
-                async def _replaced(ctx):
-                    await ctx.send("This command is disabled!")
-
-                self.add_command(_replaced)
+            self.disable_command(com)
         self._disable_com = []
         if to_load:
             log.info(f"Loaded these cogs: {', '.join(to_load)}")
@@ -171,6 +180,8 @@ class Twilight(Bot):
             @commands.command(name=command)
             async def _replaced(ctx):
                 await ctx.send("This command is disabled")
+
+            self.add_command(_replaced)
 
     def add_cog(self, cog: Cog):
         """Add a cog to Twilight"""
@@ -201,9 +212,59 @@ class Twilight(Bot):
 
     async def on_connect(self):
         log.info("Twilight is now connected.")
+        if not self._changed_status:
+            await self.change_presence(activity=discord.Game(name="V2 is out! | >help"))
+            self._changed_status = True
 
     async def on_ready(self):
         log.info("Twilight is now online.")
+
+    async def on_guild_join(self, guild: discord.Guild):
+        # Convert the id to a string as that's what I use
+        # for keys in the data file
+        gid = str(guild.id)
+        if gid not in self.guild_config.keys():
+            self.guild_config[gid] = _guild_config
+            await self._save_config()
+        log.info(f"Joined {guild.name}")
+
+    async def on_guild_leave(self, guild: discord.Guild):
+        # For guild leaves I might leave the data there
+        # I will have to call my guild update method (coming soon™)
+        log.info(f"Left {guild.name}")
+
+    async def on_member_join(self, member: discord.Member):
+        guild = member.guild
+        await self._check_guild(guild)
+        if not (channel := self.guild_config[str(guild.id)]["welcome_channel"]):
+            return
+        welcome = self.guild_config[str(guild.id)].get(
+            "member_welcome", "Welcome {0.mention} to {1.name}"
+        )
+        await channel.send(welcome.format(member, guild))
+
+    async def _check_guild(self, guild: discord.Guild):
+        """|coro|
+
+        Check a guild to see if it is in the config
+        """
+        found = self.guild_config.get(str(guild.id), None)
+        if found is None:
+            self.guild_config[str(guild.id)] = _guild_config
+            self._save_config()
+
+    async def _save_config(self):
+        """|coro|
+
+        Save and update the config
+        """
+        with open(self.guild_path, "w") as fp:
+            json.dump(self.guild_config, fp, indent=4)
+        with open(self.member_path, "w") as fp:
+            json.dump(self.member_config, fp, indent=4)
+        _, self.guild_config, self.member_config = setup_config(
+            self.config_path, self.guild_path, self.member_path
+        )
 
 
 class ShutdownCodes(IntEnum):
