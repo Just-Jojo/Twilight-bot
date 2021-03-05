@@ -28,7 +28,7 @@ import random
 
 import discord
 from discord import __version__ as dpy_version
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from .abc import Cog
 
@@ -137,3 +137,22 @@ class Core(Cog):
             embed.add_field(name=key, value=value, inline=False)
         embed.set_footer(text="Twilight, a Discord bot by Jojo#7791")
         await ctx.send(embed=embed)
+
+    def cog_unload(self):
+        self.check_guilds.cancel()
+
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self._checked_guilds = False
+        self.check_guilds.start()
+        await super().on_ready()
+
+    @tasks.loop(hours=24)
+    async def check_guilds(self):
+        if not self._checked_guilds:
+            self._checked_guilds = True
+        else:
+            self.log.info("Checking guilds...")
+            for guild in self.bot.guilds:
+                await self.bot._check_guild(guild)
+            self.log.info("Finished checking guilds.")
