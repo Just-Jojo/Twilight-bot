@@ -84,6 +84,8 @@ class Dev(Cog):
         """Reload a cog!"""
         try:
             self.maybe_reload(cog)
+        except commands.ExtensionNotFound:
+            await ctx.send("Hm, I couldn't find that cog")
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in reloading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
@@ -91,7 +93,7 @@ class Dev(Cog):
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
         else:
-            await ctx.send(f"Reloaded {cog}")
+            await ctx.send(f"Reloaded '{cog}'")
 
     def maybe_reload(self, cog: str):
         try:
