@@ -27,6 +27,8 @@ from discord.ext import commands
 
 
 def guild_owner():
+    """Checks if a user owns the guild"""
+
     async def pred(ctx: commands.Context):
         return ctx.guild is not None and ctx.author == ctx.guild.owner
 
@@ -34,6 +36,8 @@ def guild_owner():
 
 
 def admin():
+    """Checks if a user is an admin or higher"""
+
     async def pred(ctx: commands.Context):
         return True
 
@@ -41,6 +45,8 @@ def admin():
 
 
 def mod():
+    """Checks if the user is a mod or higher"""
+
     async def pred(ctx: commands.Context):
         return True
 

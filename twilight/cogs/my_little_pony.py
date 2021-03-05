@@ -7,6 +7,8 @@ from .abc import Cog
 
 
 class MyLittlePony(Cog):
+    """The My Little Pony cog"""
+
     def __init__(self, bot):
         self.bot = bot
         self.log = logging.getLogger("twilight.cogs.MLP")
