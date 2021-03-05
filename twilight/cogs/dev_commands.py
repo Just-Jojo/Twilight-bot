@@ -55,6 +55,7 @@ class Dev(Cog):
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in loading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
+            await ctx.send(f"Details:\n{exc}")
             self.log.exception(
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
@@ -73,6 +74,7 @@ class Dev(Cog):
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in unloading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
+            await ctx.send(f"Details:\n{exc}")
             self.log.exception(
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
@@ -89,6 +91,7 @@ class Dev(Cog):
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in reloading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
+            await ctx.send(f"Details:\n{exc}")
             self.log.exception(
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
@@ -116,9 +119,10 @@ class Dev(Cog):
     @commands.command()
     async def test(self, ctx):
         """Test command"""
-        source = TwilightPageSource(entries=list(range(0, 5)), title="Testing!")
-        menu = TwilightMenu(source=source)
-        await menu.start(ctx, channel=ctx.channel)
+        try:
+            raise Exception("Testing this out!")
+        except Exception as exc:
+            await ctx.send(f"Hm, that didn't work\n{exc}")
 
     @tasks.loop(hours=24)
     async def clear_logs(self):
