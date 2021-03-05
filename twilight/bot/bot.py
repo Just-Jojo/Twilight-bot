@@ -73,7 +73,7 @@ def setup_config(conf_path: str, guild_path: str, member_path: str) -> dict:
         guild = json.load(fp)
     with open(member_path) as fp:
         member = json.load(fp)
-    return ret
+    return ret, guild, member
 
 
 async def dev_mode(ctx: commands.Context):
