@@ -31,6 +31,7 @@ from twi_secrets import LOG_PATH
 from twilight.utils.formatting import tick
 
 from .abc import Cog
+from twilight.menus import TwilightPageSource, TwilightMenu
 
 
 class Dev(Cog):
@@ -109,6 +110,13 @@ class Dev(Cog):
         """Restart Twilight"""
         await ctx.send("Okay, I'm restarting!")
         await self.bot.shutdown(True)
+
+    @commands.command()
+    async def test(self, ctx):
+        """Test command"""
+        source = TwilightPageSource(entries=list(range(0, 5)), title="Testing!")
+        menu = TwilightMenu(source=source)
+        await menu.start(ctx, channel=ctx.channel)
 
     @tasks.loop(hours=24)
     async def clear_logs(self):
