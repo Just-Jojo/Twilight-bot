@@ -119,3 +119,21 @@ class Core(Cog):
             f"\n**Result**: {result}"
         )
         await ctx.send(embed=embed)
+
+    @commands.command()
+    async def invite(self, ctx):
+        """Invite Twilight to your server"""
+        embed = discord.Embed(title="Invite Twilight", colour=discord.Colour.blue())
+        for key, value in {
+            "Invite link": (
+                "Here is the [link](https://discord.com/api/oauth2/authorize?client"
+                "_id=734159757488685126&permissions=0&scope=bot) to invite Twilight to your server!"
+            ),
+            "Support server": (
+                "Here is the [link](https://discord.gg/GXBph9Qh4n) "
+                "for the support server! Don't be afraid to ask a question!"
+            ),
+        }.items():
+            embed.add_field(name=key, value=value, inline=False)
+        embed.set_footer(text="Twilight, a Discord bot by Jojo#7791")
+        await ctx.send(embed=embed)
