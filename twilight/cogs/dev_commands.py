@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2020 Jojo#7711
+Copyright (c) 2020-2021 Jojo#7711
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -119,10 +119,7 @@ class Dev(Cog):
     @commands.command()
     async def test(self, ctx):
         """Test command"""
-        try:
-            raise Exception("Testing this out!")
-        except Exception as exc:
-            await ctx.send(f"Hm, that didn't work\n{exc}")
+        self.bot.dispatch("member_join", ctx.author)
 
     @tasks.loop(hours=24)
     async def clear_logs(self):

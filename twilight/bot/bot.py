@@ -1,7 +1,7 @@
 """
 MIT License
 
-Copyright (c) 2020 Jojo#7711
+Copyright (c) 2020-2021 Jojo#7711
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -36,6 +36,8 @@ from discord.ext.commands import Bot
 
 from twilight.cogs import Core, Dev, cogs
 from twilight.cogs.abc import Cog
+from twilight.utils.help import TwilightHelp
+import random
 
 log = logging.getLogger("twilight.bot")
 
@@ -108,6 +110,7 @@ class Twilight(Bot):
         self._disable_com = []
         super().__init__(
             command_prefix=get_prefix,
+            # help_command=TwilightHelp,
             allowed_mentions=allowed_mentions,
             owner_ids=self.config["owners"],
             intents=intents,
@@ -236,12 +239,22 @@ class Twilight(Bot):
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
         await self._check_guild(guild)
-        if not (channel := self.guild_config[str(guild.id)]["welcome_channel"]):
+        channel = self.guild_config[str(guild.id)]["welcome_channel"]
+        log.info(f"{guild}, {member}, {channel}")
+        if channel is None:
             return
+        else:
+            channel = guild.get_channel(channel)
+            if channel is None:
+                return
         welcome = self.guild_config[str(guild.id)].get(
-            "member_welcome", "Welcome {0.mention} to {1.name}"
+            "member_welcome", ["Welcome {0.mention} to {1.name}!"]
         )
+        welcome = random.choice(welcome)
         await channel.send(welcome.format(member, guild))
+
+    async def on_member_leave(self, member: discord.Member):
+        ...
 
     async def _check_guild(self, guild: discord.Guild):
         """|coro|
