@@ -110,7 +110,7 @@ class Twilight(Bot):
         self._disable_com = []
         super().__init__(
             command_prefix=get_prefix,
-            # help_command=TwilightHelp,
+            help_command=TwilightHelp(),
             allowed_mentions=allowed_mentions,
             owner_ids=self.config["owners"],
             intents=intents,
