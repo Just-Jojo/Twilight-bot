@@ -177,16 +177,16 @@ class Paginator:
             return "None"
         return info
 
-    def add_command(self, command: commands.Command, signature: str):
+    def add_command(self, prefix: str, command: commands.Command, signature: str):
         page = self._new_page(
-            title=command.qualified_name,
+            title=f"{prefix}{command.qualified_name}",
             description=self.__command_info(command) or "",
         )
         if command.aliases:
             page.title += (
                 f"\nAliases: {self.prefix}{', '.join(command.aliases)}{self.suffix}"
             )
-        page.description = f"Usage:\n{signature}"
+        page.description = f"Usage:\n```{signature}```"
         self._add_page(page)
 
     def add_group(self, group: commands.Group, com_list: typing.List[commands.Command]):
@@ -306,7 +306,9 @@ class TwilightHelp(commands.HelpCommand):
     async def send_command_help(self, command: commands.Command):
         filtered = await self.filter_commands([command])
         if filtered:
-            self.paginator.add_command(command, self.get_command_signature(command))
+            self.paginator.add_command(
+                self.clean_prefix, command, self.get_command_signature(command)
+            )
             await self.send_pages()
 
     async def send_group_help(self, group: commands.Group):
