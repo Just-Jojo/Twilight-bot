@@ -25,17 +25,16 @@ SOFTWARE.
 import asyncio
 import logging
 import random
+from sys import version
 
 import discord
 from discord import __version__ as dpy_version
 from discord.ext import commands, tasks
 
-from .abc import Cog
-
-from sys import version
-
 from twilight.utils import rps_game
 from twilight.utils.formatting import box
+
+from .abc import Cog
 
 py_version = version.split()[0]
 
@@ -138,6 +137,13 @@ class Core(Cog):
             embed.add_field(name=key, value=value, inline=False)
         embed.set_footer(text="Twilight, a Discord bot by Jojo#7791")
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.is_owner()
+    async def test(self, ctx):
+        self._checked_guilds = True
+        await self.check_guilds()
+        self._checked_guilds = False
 
     def cog_unload(self):
         self.check_guilds.cancel()
