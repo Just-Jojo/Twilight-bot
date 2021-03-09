@@ -23,15 +23,16 @@ SOFTWARE.
 """
 
 import logging
+from copy import copy
 
 import discord
 from discord.ext import commands, tasks
 
 from twi_secrets import LOG_PATH
-from twilight.utils.formatting import tick
+from twilight.menus import TwilightMenu, TwilightPageSource
+from twilight.utils.formatting import tick, box
 
 from .abc import Cog
-from twilight.menus import TwilightPageSource, TwilightMenu
 
 
 class Dev(Cog):
@@ -55,7 +56,7 @@ class Dev(Cog):
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in loading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
-            await ctx.send(f"Details:\n{exc}")
+            await ctx.send(f"Details:\n{box(exc, 'py')}")
             self.log.exception(
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
@@ -74,7 +75,7 @@ class Dev(Cog):
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in unloading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
-            await ctx.send(f"Details:\n{exc}")
+            await ctx.send(f"Details:\n{box(exc, 'py')}")
             self.log.exception(
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
@@ -91,7 +92,7 @@ class Dev(Cog):
         except (commands.ExtensionFailed, Exception) as exc:
             msg = tick(f"Error in reloading '{cog}'. Please check your logs")
             await ctx.send(content=msg)
-            await ctx.send(f"Details:\n{exc}")
+            await ctx.send(f"Details:\n{box(exc, 'py')}")
             self.log.exception(
                 f"Could not load {cog} for the following reason:\n", exc_info=exc
             )
@@ -117,9 +118,13 @@ class Dev(Cog):
         await self.bot.shutdown(True)
 
     @commands.command()
-    async def test(self, ctx):
-        """Test command"""
-        self.bot.dispatch("member_join", ctx.author)
+    async def mock(self, ctx, user: discord.Member, *, command: str):
+        """Use a command as a user"""
+        msg = copy(ctx.message)
+        msg.author = user
+        msg.content = ctx.prefix + command
+
+        self.bot.dispatch("message", msg)
 
     @tasks.loop(hours=24)
     async def clear_logs(self):
