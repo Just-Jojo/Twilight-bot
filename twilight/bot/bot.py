@@ -25,6 +25,7 @@ SOFTWARE.
 import asyncio
 import json
 import logging
+import random
 import sys
 import typing
 from enum import IntEnum
@@ -37,7 +38,6 @@ from discord.ext.commands import Bot
 from twilight.cogs import Core, Dev, cogs
 from twilight.cogs.abc import Cog
 from twilight.utils.help import TwilightHelp
-import random
 
 log = logging.getLogger("twilight.bot")
 
@@ -49,6 +49,7 @@ _guild_config = {
     "admins": [],
     "mods": [],  # admins and mods are role ids
 }
+__all__ = ["Twilight", "ShutdownCodes"]
 
 
 def setup_paths() -> typing.Tuple[str, str, str]:
@@ -272,9 +273,9 @@ class Twilight(Bot):
         Save and update the config
         """
         with open(self.guild_path, "w") as fp:
-            json.dump(self.guild_config, fp, indent=4)
+            json.dump(self.guild_config, fp)
         with open(self.member_path, "w") as fp:
-            json.dump(self.member_config, fp, indent=4)
+            json.dump(self.member_config, fp)
         _, self.guild_config, self.member_config = setup_config(
             self.config_path, self.guild_path, self.member_path
         )
