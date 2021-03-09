@@ -280,27 +280,26 @@ class TwilightHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping: dict):
         bot = self.context.bot
         channel = self.get_destination()
-        async with channel.typing():
-            mapping = dict((name, []) for name in mapping)
-            help_filtered = (
-                filter(lambda c: c.name != "help", bot.commands)
-                if len(bot.commands) > 1
-                else bot.commands
-            )
-            for command in await self.filter_commands(
-                help_filtered, sort=self.sort_commands
-            ):
-                mapping[command.cog].append(command)
-            self.paginator.add_cog(self.no_category, mapping.pop(None))
-            sorted_map = sorted(
-                mapping.items(),
-                key=lambda cg: cg[0].qualified_name
-                if isinstance(cg[0], commands.Cog)
-                else str(cg[0]),
-            )
-            for cog, com_list in sorted_map:
-                self.paginator.add_cog(cog, com_list)
-            self.paginator.add_index(self.show_index, self.index_title, bot)
+        mapping = dict((name, []) for name in mapping)
+        help_filtered = (
+            filter(lambda c: c.name != "help", bot.commands)
+            if len(bot.commands) > 1
+            else bot.commands
+        )
+        for command in await self.filter_commands(
+            help_filtered, sort=self.sort_commands
+        ):
+            mapping[command.cog].append(command)
+        self.paginator.add_cog(self.no_category, mapping.pop(None))
+        sorted_map = sorted(
+        mapping.items(),
+        key=lambda cg: cg[0].qualified_name
+        if isinstance(cg[0], commands.Cog)
+        else str(cg[0]),
+        )
+        for cog, com_list in sorted_map:
+            self.paginator.add_cog(cog, com_list)
+        self.paginator.add_index(self.show_index, self.index_title, bot)
         await self.send_pages()
 
     async def send_command_help(self, command: commands.Command):
