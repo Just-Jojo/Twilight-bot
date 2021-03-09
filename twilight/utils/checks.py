@@ -25,6 +25,34 @@ SOFTWARE.
 import discord
 from discord.ext import commands
 
+import os.path
+import typing
+import json
+
+
+__all__ = ["admin", "guild_owner", "mod"]
+Role = typing.Literal["admins", "mods"]
+RoleList = typing.List[int]
+
+if os.path.exists("./data/guild_data.json"):
+    path = "./data/guild_data.json"
+else:
+    from twi_secrets import GUILD_DATAPATH as path
+
+
+def get_role(guild: discord.Guild, role: Role) -> RoleList:
+    ret = []
+    with open(path) as fp:
+        items = json.load(fp)
+    if role == "admins":
+        ret = items["admins"]
+    mods = items["mods"]
+    if ret:
+        ret.extend(mods)
+    else:
+        ret = mods
+    return ret
+
 
 def guild_owner():
     """Checks if a user owns the guild"""
@@ -39,7 +67,16 @@ def admin():
     """Checks if a user is an admin or higher"""
 
     async def pred(ctx: commands.Context):
-        return True
+        if ctx.guild is None:
+            return False
+        if await ctx.bot.is_owner(ctx.author):
+            return True
+        roles = get_role(ctx.guild, "admins")
+        for role in roles:
+            _ = ctx.guild.get_role(role)
+            if _ in ctx.author.roles:
+                return True
+        return False
 
     return commands.check(pred)
 
@@ -48,6 +85,15 @@ def mod():
     """Checks if the user is a mod or higher"""
 
     async def pred(ctx: commands.Context):
-        return True
+        if ctx.guild is None:
+            return False
+        if await ctx.bot.is_owner(ctx.author):
+            return True
+        roles = get_role(ctx.guild, "mods")
+        for role in roles:
+            _ = ctx.guild.get_role(role)
+            if _ in ctx.author.roles:
+                return True
+        return False
 
     return commands.check(pred)

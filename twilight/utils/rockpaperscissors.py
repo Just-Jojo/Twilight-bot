@@ -25,9 +25,10 @@ SOFTWARE.
 # This is a complex-simple Rock Paper Scissors game built for Discord
 # I might make this into a package later because it's awesome as heck lol
 
-import discord
 import random
 import typing
+
+import discord
 
 GAME_PIECES = {
     "Rock": ["Rock. We tied!", "Paper. I win!", "Scissors. You win!"],
