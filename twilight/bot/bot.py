@@ -35,8 +35,15 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 
+from twi_secrets import (
+    BLACKLIST_PATH,
+    DATAPATH as config_path,
+    GUILD_DATAPATH as guild_path,
+    MEMBER_DATAPATH as member_path,
+)
 from twilight.cogs import Core, Dev, cogs
 from twilight.cogs.abc import Cog
+from twilight.utils import Config
 from twilight.utils.help import TwilightHelp
 
 log = logging.getLogger("twilight.bot")
@@ -52,31 +59,11 @@ _guild_config = {
 __all__ = ["Twilight", "ShutdownCodes"]
 
 
-def setup_paths() -> typing.Tuple[str, str, str]:
-    """Returns the paths for the bot to use"""
-    if path.exists("./data/config.json"):
-        config_path = "./data/config.json"
-    else:
-        from twi_secrets import DATAPATH as config_path
-    if path.exists("./data/guild_data.json"):
-        guild_path = "./data/guild_data.json"
-    else:
-        from twi_secrets import GUILD_DATAPATH as guild_path
-    if path.exists("./data/member_data.json"):
-        member_path = "./data/member_data.json"
-    else:
-        from twi_secrets import MEMBER_DATAPATH as member_path
-    return config_path, guild_path, member_path
-
-
-def setup_config(conf_path: str, guild_path: str, member_path: str) -> dict:
-    with open(conf_path) as fp:
-        ret = json.load(fp)
-    with open(guild_path) as fp:
-        guild = json.load(fp)
-    with open(member_path) as fp:
-        member = json.load(fp)
-    return ret, guild, member
+def setup_config() -> typing.Tuple[Config, Config, Config]:
+    config = Config(config_path)
+    guild = Config(guild_path)
+    member = Config(member_path)
+    return (config, guild, member)
 
 
 async def dev_mode(ctx: commands.Context):
@@ -89,10 +76,7 @@ class Twilight(Bot):
     __version__ = "2.0.1"  # \o/
 
     def __init__(self, cli_flags):
-        self.config_path, self.guild_path, self.member_path = setup_paths()
-        self.config, self.guild_config, self.member_config = setup_config(
-            self.config_path, self.guild_path, self.member_path
-        )
+        self.config, self.guild_config, self.member_config = setup_config()
 
         async def get_prefix(bot: self, m: discord.Message):
             base = [self.config["base_prefix"]]
@@ -121,8 +105,17 @@ class Twilight(Bot):
         if cli_flags.lock:
             self._disable_com.append("invite")
         self._exit_code = ShutdownCodes.CRITICAL
-        self.blacklist = []
+        self.blacklist = Config(BLACKLIST_PATH)
         self._changed_status = False
+
+    async def add_to_blacklist(self, id: int):
+        await self.blacklist.set(id, True)
+
+    async def remove_from_blacklist(self, id):
+        try:
+            await self.blacklist.remove(id)
+        except KeyError:
+            pass
 
     async def on_command_error(self, ctx: commands.Context, exc: Exception):
         if isinstance(exc, commands.NotOwner) or isinstance(exc, commands.CheckFailure):
@@ -226,6 +219,12 @@ class Twilight(Bot):
     async def on_guild_join(self, guild: discord.Guild):
         # Convert the id to a string as that's what I use
         # for keys in the data file
+        if guild.id in self.blacklist:
+            await guild.owner.send(
+                "This guild is blacklisted from Twilight. If you think this is an accident please contanct Jojo#7791."
+            )
+            await guild.leave()
+            return
         gid = str(guild.id)
         if gid not in self.guild_config.keys():
             self.guild_config[gid] = _guild_config
@@ -264,21 +263,7 @@ class Twilight(Bot):
         """
         found = self.guild_config.get(str(guild.id), None)
         if found is None:
-            self.guild_config[str(guild.id)] = _guild_config
-            await self._save_config()
-
-    async def _save_config(self):
-        """|coro|
-
-        Save and update the config
-        """
-        with open(self.guild_path, "w") as fp:
-            json.dump(self.guild_config, fp)
-        with open(self.member_path, "w") as fp:
-            json.dump(self.member_config, fp)
-        _, self.guild_config, self.member_config = setup_config(
-            self.config_path, self.guild_path, self.member_path
-        )
+            await self.guid_config.set(guild.id, _guild_config)
 
 
 class ShutdownCodes(IntEnum):

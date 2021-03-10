@@ -160,6 +160,9 @@ class Core(Cog):
             self._checked_guilds = True
         else:
             self.log.info("Checking guilds...")
-            for guild in self.bot.guilds:
-                await self.bot._check_guild(guild)
+            await self.bot.loop.run_in_executor(None, self._check_guilds)
             self.log.info("Finished checking guilds.")
+
+    def _check_guilds(self):
+        for guild in self.bot.guilds:
+            self.bot.loop.create_task(self.bot._check_guild(guild))

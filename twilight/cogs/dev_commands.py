@@ -126,6 +126,38 @@ class Dev(Cog):
 
         self.bot.dispatch("message", msg)
 
+    @commands.group()
+    async def blacklist(self, ctx):
+        """Commands for working with Twilight's Blacklist"""
+        if ctx.invoked_subcommand is None:
+            await ctx.send_help(ctx.command)
+
+    @blacklist.command(name="add")
+    async def blacklist_add(self, ctx, id: int):
+        """Add an id to the blacklist"""
+        await self.bot.add_to_blacklist(id)
+        await ctx.send("Added that id to the blacklist")
+
+    @blacklist.command(name="remove", aliases=["del", "rm"])
+    async def blacklist_remove(self, ctx, id: int):
+        """Remove an id from the blacklist"""
+        await self.bot.remove_from_blacklist(id)
+        await ctx.send("Removed that id from the blacklist")
+
+    @blacklist.command(name="list")
+    async def blacklist_list(self, ctx):
+        """List the ids in the blacklist"""
+        if len(self.bot.blacklist):
+            await ctx.message.add_reaction("\N{WHITE HEAVY CHECK MARK}")
+            source = TwilightPageSource(
+                list(self.bot.blacklist.keys()), title="Blacklist List"
+            )
+            await TwilightMenu(source=source).start(
+                ctx=ctx, channel=ctx.author.dm_channel
+            )
+        else:
+            await ctx.send("The blacklist is empty!")
+
     @tasks.loop(hours=24)
     async def clear_logs(self):
         # I wouldn't like the bot to wipe logs

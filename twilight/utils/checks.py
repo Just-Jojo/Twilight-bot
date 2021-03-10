@@ -25,75 +25,56 @@ SOFTWARE.
 import discord
 from discord.ext import commands
 
-import os.path
 import typing
-import json
 
 
 __all__ = ["admin", "guild_owner", "mod"]
 Role = typing.Literal["admins", "mods"]
 RoleList = typing.List[int]
 
-if os.path.exists("./data/guild_data.json"):
-    path = "./data/guild_data.json"
-else:
-    from twi_secrets import GUILD_DATAPATH as path
-
-
-def get_role(guild: discord.Guild, role: Role) -> RoleList:
-    ret = []
-    with open(path) as fp:
-        items = json.load(fp)
-    if role == "admins":
-        ret = items["admins"]
-    mods = items["mods"]
-    if ret:
-        ret.extend(mods)
-    else:
-        ret = mods
-    return ret
-
 
 def guild_owner():
-    """Checks if a user owns the guild"""
+    """Checks if the author is the guild's owner"""
 
     async def pred(ctx: commands.Context):
-        return ctx.guild is not None and ctx.author == ctx.guild.owner
-
-    return commands.check(pred)
-
-
-def admin():
-    """Checks if a user is an admin or higher"""
-
-    async def pred(ctx: commands.Context):
-        if ctx.guild is None:
-            return False
-        if await ctx.bot.is_owner(ctx.author):
-            return True
-        roles = get_role(ctx.guild, "admins")
-        for role in roles:
-            _ = ctx.guild.get_role(role)
-            if _ in ctx.author.roles:
-                return True
-        return False
+        return ctx.guild is not None and ctx.guild.owner == ctx.author
 
     return commands.check(pred)
 
 
 def mod():
-    """Checks if the user is a mod or higher"""
+    """Checks if the author is a mod or higher"""
 
     async def pred(ctx: commands.Context):
-        if ctx.guild is None:
-            return False
-        if await ctx.bot.is_owner(ctx.author):
-            return True
-        roles = get_role(ctx.guild, "mods")
-        for role in roles:
-            _ = ctx.guild.get_role(role)
-            if _ in ctx.author.roles:
-                return True
-        return False
+        return await checker(ctx, False)
 
     return commands.check(pred)
+
+
+def admin():
+    """Checks if the author is an admin"""
+
+    async def pred(ctx: commands.Context):
+        return await checker(ctx, True)
+
+    return commands.check(pred)
+
+
+async def checker(ctx: commands.Context, ad_only: bool) -> bool:
+    """Repeating logic is bad"""
+
+    bot = ctx.bot
+    guild = ctx.guild
+    if guild is None:
+        return False
+    if await bot.is_owner(ctx.author):
+        return True
+    conf = bot.guild_config
+    author_roles = [x.id for x in ctx.author.roles if x != guild.default_role]
+    to_check = conf[str(guild.id)]["admins"]
+    if not ad_only:
+        to_check.extend(conf[str(guild.id)]["mods"])
+    for role in to_check:
+        if role in author_roles:
+            return True
+    return False
