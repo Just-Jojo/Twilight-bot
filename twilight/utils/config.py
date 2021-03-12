@@ -37,12 +37,16 @@ class Config:
     loop: asyncio.AbstractEventLoop
 
     def __init__(self, name: str, **options):
-        self.name = name
+        self.name = f"./data/{name}"
         self.loop = asyncio.get_event_loop()
         self.lock = asyncio.Lock()
         self.sync_load()
 
     def sync_load(self):
+        """Attempts to load the data
+
+        **Do not use this except for initialization, this WILL block the bot**
+        """
         try:
             with open(self.name, "r") as fp:
                 self._data = json.load(fp)
@@ -50,40 +54,66 @@ class Config:
             self._data = {}
 
     async def load(self):
+        """|coro|
+
+        Loads the data in a non-blocking way
+        """
         async with self.lock:
             await self.loop.run_in_executor(None, self.sync_load)
 
+    def keys(self):
+        return self._data.keys()
+
     def _save_json(self):
+        """Saves the data to the proper file
+
+        **WARNING DO NOT USE THIS, THIS WILL BLOCK THE BOT**
+        """
         temp = "{}-{}.tmp".format(self.name, uuid.uuid4())
         with open(temp, "w", encoding="utf-8") as tmp:
             json.dump(self._data.copy(), tmp, ensure_ascii=True)
         os.replace(temp, self.name)
 
     async def save(self):
+        """|coro|
+
+        Saves the config's data in a non-blocking way
+        """
         async with self.lock:
             await self.loop.run_in_executor(None, self._save_json)
 
-    async def set(self, key: str, value: Any, *args):
+    async def set(self, key: str, value: Any, *args, **kwargs):
+        """|coro|
+
+        Set a value to a key
+        """
         # I'm not gonna trust myself to make sure
         # that this key is a string lol
         self._data[str(key)] = value
         await self.save()
 
     async def remove(self, key: str):
+        """Remove data via a key"""
         del self._data[str(key)]
         await self.save()
 
     def get(self, key: str, *args) -> Any:
+        """Get a value by a key"""
         return self._data.get(str(key), *args)
-
-    def __getitem__(self, key: str) -> Any:
-        return self._data[str(key)]
 
     def __contains__(self, key: str) -> bool:
         return str(key) in self._data
 
+    def __getitem__(self, key: str) -> Any:
+        return self._data[str(key)]
+
     def __len__(self):
         return len(self._data)
 
-    def keys(self):
-        return self._data.keys()
+    def __repr__(self):
+        return f"<Twilight Config={self._data}>"
+
+    __str__ = __repr__
+
+    def __setitem__(self, key: str, item: Any):
+        self._data[str(key)] = item
