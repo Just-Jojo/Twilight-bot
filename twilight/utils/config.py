@@ -37,7 +37,12 @@ class Config:
     loop: asyncio.AbstractEventLoop
 
     def __init__(self, name: str, **options):
-        self.name = f"./data/{name}"
+        if name.startswith("./data"):
+            # Since I'm an idiot I might wanna
+            # do this lol
+            self.name = name[6]
+        else:
+            self.name = f"./data/{name}"
         self.loop = asyncio.get_event_loop()
         self.lock = asyncio.Lock()
         self.sync_load()
