@@ -28,7 +28,7 @@ from discord.ext import commands
 import typing
 
 
-__all__ = ["admin", "guild_owner", "mod"]
+__all__ = ["admin", "guild_owner", "mod", "is_admin", "is_mod"]
 Role = typing.Literal["admins", "mods"]
 RoleList = typing.List[int]
 
@@ -58,6 +58,14 @@ def admin():
         return await checker(ctx, True)
 
     return commands.check(pred)
+
+
+async def is_admin(ctx: commands.Context, user: discord.Member):
+    return await checker(ctx, True)
+
+
+async def is_mod(ctx: commands.Context, user: discord.Member):
+    return await checker(ctx, False)
 
 
 async def checker(ctx: commands.Context, ad_only: bool) -> bool:

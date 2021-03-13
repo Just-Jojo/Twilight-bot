@@ -39,7 +39,6 @@ from twi_secrets import (
     BLACKLIST_PATH,
     DATAPATH as config_path,
     GUILD_DATAPATH as guild_path,
-    MEMBER_DATAPATH as member_path,
 )
 from twilight.cogs import Core, Dev, cogs
 from twilight.cogs.abc import Cog
@@ -48,22 +47,22 @@ from twilight.utils.help import TwilightHelp
 
 log = logging.getLogger("twilight.bot")
 
-_guild_config = {
+_default_guild = {
     "prefixes": [],
     "member_welcome": ["Welcome {0.mention} to {1.name}"],
     "member_leave": ["Goodbye {0.name}! We'll miss you!"],
     "welcome_channel": None,
     "admins": [],
     "mods": [],  # admins and mods are role ids
+    "modlog_channel": None,
 }
 __all__ = ["Twilight", "ShutdownCodes"]
 
 
-def setup_config() -> typing.Tuple[Config, Config, Config]:
+def setup_config() -> typing.Tuple[Config, Config]:
     config = Config(config_path)
     guild = Config(guild_path)
-    member = Config(member_path)
-    return (config, guild, member)
+    return (config, guild)
 
 
 async def dev_mode(ctx: commands.Context):
@@ -73,18 +72,20 @@ async def dev_mode(ctx: commands.Context):
 class Twilight(Bot):
     """Twilight bot class"""
 
-    __version__ = "2.0.1"  # \o/
+    __version__ = "2.0.2"  # \o/
 
     def __init__(self, cli_flags):
-        self.config, self.guild_config, self.member_config = setup_config()
+        self._config, self._guild_config = setup_config()
 
         async def get_prefix(bot: self, m: discord.Message):
-            base = [self.config["base_prefix"]]
+            base = [self._config["base_prefix"]]
             if m.guild:
-                thing = self.config.get(str(m.guild.id), [])
-                if thing:
-                    thing = thing["prefixes"]
-                base.extend(thing)
+                try:
+                    prefixes = self._guild_config[str(m.guild.id)]["prefixes"]
+                except KeyError:
+                    pass
+                else:
+                    base.extend(prefixes)
             return base
 
         allowed_mentions = discord.AllowedMentions(
@@ -97,7 +98,7 @@ class Twilight(Bot):
             command_prefix=get_prefix,
             help_command=TwilightHelp(),
             allowed_mentions=allowed_mentions,
-            owner_ids=self.config["owners"],
+            owner_ids=self._config["owners"],
             intents=intents,
         )
         if cli_flags.dev:
@@ -129,6 +130,8 @@ class Twilight(Bot):
                 await ctx.send(exc.args[0])
             else:
                 await ctx.send_help(ctx.command)
+        elif isinstance(exc, commands.errors.CommandOnCooldown):
+            await ctx.send(exc.args[0])
         else:
             await ctx.send(
                 f"`Error in command '{ctx.command}'. Check your console for details`"
@@ -163,7 +166,7 @@ class Twilight(Bot):
     async def start(self, *args, **kwargs):
         """This allows Twilight to load extensions before running"""
         await self.pre_launch()
-        return await super().start(self.config["token"], *args, **kwargs)
+        return await super().start(self._config["token"], *args, **kwargs)
 
     def disable_command(self, command: typing.Union[str, commands.Command]):
         """Disable a command.
@@ -226,8 +229,8 @@ class Twilight(Bot):
             await guild.leave()
             return
         gid = str(guild.id)
-        if gid not in self.guild_config.keys():
-            self.guild_config[gid] = _guild_config
+        if gid not in self._guild_config.keys():
+            self._guild_config[gid] = _default_guild
             await self._save_config()
         log.info(f"Joined {guild.name}")
 
@@ -239,7 +242,7 @@ class Twilight(Bot):
     async def on_member_join(self, member: discord.Member):
         guild = member.guild
         await self._check_guild(guild)
-        channel = self.guild_config[str(guild.id)]["welcome_channel"]
+        channel = self._guild_config[str(guild.id)]["welcome_channel"]
         log.info(f"{guild}, {member}, {channel}")
         if channel is None:
             return
@@ -247,7 +250,7 @@ class Twilight(Bot):
             channel = guild.get_channel(channel)
             if channel is None:
                 return
-        welcome = self.guild_config[str(guild.id)].get(
+        welcome = self._guild_config[str(guild.id)].get(
             "member_welcome", ["Welcome {0.mention} to {1.name}!"]
         )
         welcome = random.choice(welcome)
@@ -261,9 +264,13 @@ class Twilight(Bot):
 
         Check a guild to see if it is in the config
         """
-        found = self.guild_config.get(str(guild.id), None)
+        found = self._guild_config.get(str(guild.id), None)
         if found is None:
-            await self.guid_config.set(guild.id, _guild_config)
+            await self._guild_config.set(guild.id, _default_guild)
+
+    @property
+    def guild_config(self):
+        return self._guild_config
 
 
 class ShutdownCodes(IntEnum):

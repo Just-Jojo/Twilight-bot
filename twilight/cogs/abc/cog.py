@@ -1,7 +1,12 @@
+import abc
+
 import logging
 
 import discord
 from discord.ext import commands
+
+
+__all__ = ["Cog", "MetaClass"]
 
 
 class Cog(commands.Cog):
@@ -22,3 +27,7 @@ class Cog(commands.Cog):
             raise RuntimeError(
                 f"{self.qualified_name} does not have a logging method. Please add one."
             )
+
+
+class MetaClass(type(Cog), type(abc.ABC)):
+    pass

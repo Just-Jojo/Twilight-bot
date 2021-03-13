@@ -138,13 +138,6 @@ class Core(Cog):
         embed.set_footer(text="Twilight, a Discord bot by Jojo#7791")
         await ctx.send(embed=embed)
 
-    @commands.command()
-    @commands.is_owner()
-    async def test(self, ctx):
-        self._checked_guilds = True
-        await self.check_guilds()
-        self._checked_guilds = False
-
     def cog_unload(self):
         self.check_guilds.cancel()
 
