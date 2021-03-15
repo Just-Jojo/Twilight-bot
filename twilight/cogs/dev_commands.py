@@ -158,6 +158,31 @@ class Dev(Cog):
         else:
             await ctx.send("The blacklist is empty!")
 
+    @commands.command()
+    async def trace(self, ctx):
+        """Send the latest traceback"""
+        sending = await self.format_trace()
+        if sending is None:
+            return await ctx.send("No Exception has occured!")
+        source = TwilightPageSource(sending, "Traceback")
+        await TwilightMenu(source=source).start(ctx)
+
+    async def format_trace(self):
+        trace = self.bot.trace
+        if trace is None:
+            return None
+        ret = []
+        to_app = ""
+        for i in trace.split("\n"):
+            i = f"\n{i}"
+            if len(to_app + i) > 2000:
+                ret.append(box(to_app, "py"))
+                to_app = ""
+            to_app += i
+        if to_app:
+            ret.append(box(to_app, "py"))
+        return ret
+
     @tasks.loop(hours=24)
     async def clear_logs(self):
         # I wouldn't like the bot to wipe logs

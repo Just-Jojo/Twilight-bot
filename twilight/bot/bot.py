@@ -27,6 +27,7 @@ import json
 import logging
 import random
 import sys
+import traceback
 import typing
 from enum import IntEnum
 from os import path
@@ -108,6 +109,7 @@ class Twilight(Bot):
         self._exit_code = ShutdownCodes.CRITICAL
         self.blacklist = Config(BLACKLIST_PATH)
         self._changed_status = False
+        self.trace = None
 
     async def add_to_blacklist(self, id: int):
         await self.blacklist.set(id, True)
@@ -136,6 +138,11 @@ class Twilight(Bot):
             await ctx.send(
                 f"`Error in command '{ctx.command}'. Check your console for details`"
             )
+            trace = f"Exception in command '{ctx.command.qualified_name}'\n"
+            trace += "".join(
+                traceback.format_exception(type(exc), exc, exc.__traceback__)
+            )
+            self.trace = trace
             raise exc
 
     async def on_message(self, msg: discord.Message):
