@@ -61,11 +61,10 @@ def rps_game(
     # If the argument was invalid ask the user if they want to play again
     if maybe_piece == "null":
         return "Hm, I didn't understand that. Try again, perhaps?"
-    else:
-        # Now we get the computer's choice
-        bot_choice = random.randint(0, 2)
-        # Since the game pieces have the result return that
-        result = GAME_PIECES[maybe_piece][bot_choice]
-        if extra_info:
-            return result, list(GAME_KEYS.values())[bot_choice], maybe_piece
-        return result
+    # Now we get the computer's choice
+    bot_choice = random.randint(0, 2)
+    # Since the game pieces have the result return that
+    result = GAME_PIECES[maybe_piece][bot_choice]
+    if extra_info:
+        return result, list(GAME_KEYS.values())[bot_choice], maybe_piece
+    return result
