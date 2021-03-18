@@ -82,7 +82,4 @@ async def checker(ctx: commands.Context, ad_only: bool) -> bool:
     to_check = conf[str(guild.id)]["admins"]
     if not ad_only:
         to_check.extend(conf[str(guild.id)]["mods"])
-    for role in to_check:
-        if role in author_roles:
-            return True
-    return False
+    return any(role in author_roles for role in to_check)

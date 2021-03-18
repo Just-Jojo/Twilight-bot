@@ -121,9 +121,9 @@ class Twilight(Bot):
             pass
 
     async def on_command_error(self, ctx: commands.Context, exc: Exception):
-        if isinstance(exc, commands.NotOwner) or isinstance(exc, commands.CheckFailure):
-            pass
-        elif isinstance(exc, commands.CommandNotFound):
+        if isinstance(exc, commands.CommandNotFound):
+            return
+        if isinstance(exc, (commands.NotOwner, commands.CheckFailure)):
             pass
         elif isinstance(exc, commands.MissingRequiredArgument):
             await ctx.send_help(ctx.command)
@@ -210,10 +210,7 @@ class Twilight(Bot):
 
     async def shutdown(self, restart: bool = False):
         """Have the bot shutdown"""
-        if restart:
-            self._exit_code = ShutdownCodes.RESTART
-        else:
-            self._exit_code = ShutdownCodes.SHUTDOWN
+        self._exit_code = ShutdownCodes.RESTART if restart else ShutdownCodes.SHUTDOWN
         await self.logout()
         sys.exit(self._exit_code)
 
@@ -253,10 +250,9 @@ class Twilight(Bot):
         log.info(f"{guild}, {member}, {channel}")
         if channel is None:
             return
-        else:
-            channel = guild.get_channel(channel)
-            if channel is None:
-                return
+        channel = guild.get_channel(channel)
+        if channel is None:
+            return
         welcome = self._guild_config[str(guild.id)].get(
             "member_welcome", ["Welcome {0.mention} to {1.name}!"]
         )

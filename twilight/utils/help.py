@@ -74,7 +74,7 @@ class TwilightHelpMenu(menus.Menu):
                 await self.show_page(page_number)
             elif page_number >= max_pages:
                 await self.show_page(0)
-            elif page_number < 0:
+            else:
                 await self.show_page(max_pages - 1)
         except IndexError:
             pass
@@ -154,10 +154,7 @@ class Paginator:
 
             if command.help:
                 to_add = f"**{command.name}: **"
-                if len(command.help) > 30:
-                    to_add += command.help[:27] + "..."
-                else:
-                    to_add += command.help
+                to_add += command.help[:27] + "..." if len(command.help) > 30 else command.help
             else:
                 to_add = f"**{command.name}**"
             try:
@@ -280,7 +277,7 @@ class TwilightHelp(commands.HelpCommand):
     async def send_bot_help(self, mapping: dict):
         bot = self.context.bot
         channel = self.get_destination()
-        mapping = dict((name, []) for name in mapping)
+        mapping = {name: [] for name in mapping}
         help_filtered = (
             filter(lambda c: c.name != "help", bot.commands)
             if len(bot.commands) > 1

@@ -42,14 +42,14 @@ class TwilightPageSource(menus.ListPageSource):
         ctx = menu.ctx
         footnote = f"Page {menu.current_page + 1}/{self.get_max_pages()}"
 
-        if ctx.channel.permissions_for(ctx.me).embed_links:
-            embed = discord.Embed(
-                title=self.title, description=page, colour=discord.Colour.purple()
-            )
-            embed.set_footer(text=footnote)
-            return embed
-        else:
+        if not ctx.channel.permissions_for(ctx.me).embed_links:
             return page + f"\n{footnote}"
+
+        embed = discord.Embed(
+            title=self.title, description=page, colour=discord.Colour.purple()
+        )
+        embed.set_footer(text=footnote)
+        return embed
 
 
 class TwilightMenu(menus.MenuPages, inherit_buttons=False):
@@ -84,7 +84,7 @@ class TwilightMenu(menus.MenuPages, inherit_buttons=False):
                 await self.show_page(page_number)
             elif page_number >= max_pages:
                 await self.show_page(0)
-            elif page_number < 0:
+            else:
                 await self.show_page(max_pages - 1)
         except IndexError:
             pass
