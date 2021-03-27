@@ -31,18 +31,17 @@ CLS = "cls" if os.name == "nt" else "clear"
 
 
 def run(no_cogs: bool, dev: bool):
+    cmd = ["py", "-m", "twilight"]
+    if no_cogs:
+        cmd.append("--no-cogs")
+    if dev:
+        cmd.append("--dev")
     while True:
         print("Starting Twilight...")
-        cmd = ["py", "-m", "twilight"]
-        if no_cogs:
-            cmd.append("--no-cogs")
-        if dev:
-            cmd.append("--dev")
         status = subp.call(cmd)
         if status != 2:
             break
-        else:
-            os.system(CLS)
+        os.system(CLS)
 
 
 @click.command()
