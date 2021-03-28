@@ -22,40 +22,121 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-import os
-import subprocess as subp
-
-import click
-
-CLS = "cls" if os.name == "nt" else "clear"
+import asyncio
+from tkinter import *
+from tkinter import messagebox
+import os  # I think?
 
 
-def run(no_cogs: bool, dev: bool):
+dev: bool = False
+no_cogs: bool = False
+is_running = False
+title = "Twilight launcher GUI"
+
+
+async def _a_run_bot():
+    global dev, no_cogs  # I hate this as much as you do
+    cmd = "py -m twilight"
+    if dev:
+        cmd += " --dev"
+    if no_cogs:
+        cmd += " --no-cogs"
     while True:
-        print("Starting Twilight...")
-        cmd = ["py", "-m", "twilight"]
-        if no_cogs:
-            cmd.append("--no-cogs")
-        if dev:
-            cmd.append("--dev")
-        status = subp.call(cmd)
-        if status != 2:
+        x = await asyncio.create_subprocess_shell(cmd)
+        await x.communicate()
+        if x.returncode != 2:
             break
-        else:
-            os.system(CLS)
+        await asyncio.create_subprocess_shell("cls")
 
 
-@click.command()
-@click.option("-nc", "--no-cogs", is_flag=True, default=False)
-@click.option("-d", "--dev", is_flag=True, default=False)
-def main(no_cogs, dev):
-    os.system(CLS)
-    run(no_cogs=no_cogs, dev=dev)
-    print("Thank you for running!")
-    if os.name == "nt":
-        # Windows only sadly
-        os.system("PAUSE")
+def run_bot():
+    global is_running, title
+    if is_running:
+        messagebox.showwarning(title=title, message="Twilight is already runnning!")
+        return None
+    is_running = True
+    return asyncio.get_event_loop().create_task(_a_run_bot())
+
+
+async def _a_kill_process():
+    """This one's a weird one
+
+    It iterates over the tasks and tries to
+    """
+    for task in asyncio.all_tasks():
+        if str(task).split()[2] == "_a_run_bot":  # Fucking weird
+            task.cancel()
+            messagebox.showinfo(title="Stopped Twilight")
+            return
+
+
+def kill_process():
+    global is_running, title
+    if not is_running:
+        messagebox.showwarning(title=title, message="Twilight is not running!")
+        return None
+    is_running = False
+    return asyncio.get_event_loop().create_task(_a_kill_process())
+
+
+def update_no_cogs():
+    global no_cogs
+    no_cogs = not no_cogs
+
+
+def update_dev():
+    global dev
+    dev = not dev
+
+
+async def run_tk(root: Tk):
+    try:
+        while True:
+            root.update()
+            await asyncio.sleep(0.05)
+    except TclError as exc:
+        pass
+
+
+async def main():
+    global title
+    loop = asyncio.get_event_loop()
+    root = Tk()
+    root.title = title
+    root.maxsize(800, 550)
+    root.configure(background="purple")
+    root.geometry("800x550")
+    Button(root, text="Run Twilight", command=run_bot, width=35, height=1).grid(
+        row=8, column=1, padx=350
+    )
+    Button(
+        root,
+        text="Shutdown Twilight (This shouldn't be ran)",
+        command=kill_process,
+        width=35,
+        height=1,
+    ).grid(row=9, column=1, padx=350)
+    throw_away = IntVar()
+    Checkbutton(
+        root,
+        text="Set whether dev should be enabled or not",
+        variable=throw_away,
+        command=update_dev,
+    ).grid(row=15, column=1, padx=10)
+    throw_away1 = IntVar()
+    Checkbutton(
+        root,
+        text="Set whether the bot should run without cogs",
+        variable=throw_away1,
+        command=update_no_cogs,
+    ).grid(row=20, column=1, padx=10)
+    await run_tk(root)
 
 
 if __name__ == "__main__":
-    main()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+    for task in asyncio.all_tasks(loop):
+        loop.run_until_complete(task)
+    print("Done!")
+    os.system("pause")
