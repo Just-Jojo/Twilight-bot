@@ -108,6 +108,7 @@ def twilight_exception_handler(bot: Twilight, bot_task: asyncio.Future):
 
 def main():
     cli_flags = parse_cli_stuff(sys.argv[1:])
+    twilight = None # Just in case we can't actually initialize Twilight
     with init_logging():
 
         try:
@@ -143,9 +144,9 @@ def main():
             asyncio.set_event_loop(None)
             loop.stop()
             loop.close()
-            try:
+            if twilight is not None:
                 exit_code = twilight._exit_code
-            except UnboundLocalError:
+            else:
                 exit_code = 1
             sys.exit(exit_code)
 
