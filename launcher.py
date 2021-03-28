@@ -32,10 +32,9 @@ dev: bool = False
 no_cogs: bool = False
 is_running = False
 title = "Twilight launcher GUI"
-
+CLEAR = "CLS" if os.name == "nt" else "CLEAR"
 
 async def _a_run_bot():
-    global dev, no_cogs  # I hate this as much as you do
     cmd = "py -m twilight"
     if dev:
         cmd += " --dev"
@@ -50,7 +49,7 @@ async def _a_run_bot():
 
 
 def run_bot():
-    global is_running, title
+    global is_running
     if is_running:
         messagebox.showwarning(title=title, message="Twilight is already runnning!")
         return None
@@ -71,7 +70,7 @@ async def _a_kill_process():
 
 
 def kill_process():
-    global is_running, title
+    global is_running
     if not is_running:
         messagebox.showwarning(title=title, message="Twilight is not running!")
         return None
@@ -99,7 +98,6 @@ async def run_tk(root: Tk):
 
 
 async def main():
-    global title
     loop = asyncio.get_event_loop()
     root = Tk()
     root.title = title
@@ -135,6 +133,7 @@ async def main():
 
 if __name__ == "__main__":
     loop = asyncio.get_event_loop()
+    loop.run_until_complete(asyncio.create_subprocess_shell("cls"))
     loop.run_until_complete(main())
     for task in asyncio.all_tasks(loop):
         loop.run_until_complete(task)
