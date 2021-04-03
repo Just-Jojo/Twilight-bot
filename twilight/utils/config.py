@@ -34,13 +34,11 @@ from typing import Any
 class Config:
     """An asynchronous way to write to and get stuff from files"""
 
-    loop: asyncio.AbstractEventLoop
-
     def __init__(self, name: str, **options):
         if name.startswith("./data"):
             # Since I'm an idiot I might wanna
             # do this lol
-            self.name = name[6]
+            self.name = name[6:]
         else:
             self.name = f"./data/{name}"
         self.loop = asyncio.get_event_loop()
@@ -69,7 +67,7 @@ class Config:
     def keys(self):
         return self._data.keys()
 
-    def _save_json(self):
+    def sync_save(self):
         """Saves the data to the proper file
 
         **WARNING DO NOT USE THIS, THIS WILL BLOCK THE BOT**
@@ -85,7 +83,7 @@ class Config:
         Saves the config's data in a non-blocking way
         """
         async with self.lock:
-            await self.loop.run_in_executor(None, self._save_json)
+            await self.loop.run_in_executor(None, self.sync_save)
 
     async def set(self, key: str, value: Any, *args, **kwargs):
         """|coro|
