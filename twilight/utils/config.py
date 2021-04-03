@@ -38,7 +38,7 @@ class Config:
         if name.startswith("./data"):
             # Since I'm an idiot I might wanna
             # do this lol
-            self.name = name[6:]
+            self.name = name
         else:
             self.name = f"./data/{name}"
         self.loop = asyncio.get_event_loop()
